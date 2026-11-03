@@ -50,8 +50,7 @@ describe('custodian', () => {
 
   it('is none of the addresses that could sign', () => {
     expect(CUSTODIAN_ADDRESS).not.toBe('11111111111111111111111111111111');
-    // A program-derived address hashes seeds || program id || "ProgramDerivedAddress". Our input does
-    // not end that way, so matching it would need a SHA-256 second preimage.
+    // PDA hashes end with "ProgramDerivedAddress"; ours does not, so matching one needs a SHA-256 second preimage.
     expect(CUSTODIAN_SEED.endsWith('ProgramDerivedAddress')).toBe(false);
   });
 

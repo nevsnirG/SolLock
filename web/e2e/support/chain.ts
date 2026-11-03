@@ -29,17 +29,12 @@ export interface LockOnChain {
   locked: bigint;
 }
 
-/**
- * A small stand-in for Solana devnet. It answers the site's RPC calls, but only those the Worker's own
- * rules would let through, and it carries out the transactions the test wallet sends.
- */
+/** Answers only the RPC calls the Worker's rules allow, and runs the transactions the test wallet sends. */
 export class FakeChain {
   private readonly accounts = new Map<string, Account>();
   private readonly balances = new Map<string, bigint>();
   private readonly confirmed = new Set<string>();
-  /** Every RPC method the site called, in order. */
   readonly calls: string[] = [];
-  /** Seconds since 1970 by the network's clock, for the lockup check on withdrawals. */
   clock = BigInt(Date.UTC(2026, 10, 1, 14, 30) / 1000);
 
   fund(owner: Address, lamports: bigint) {
@@ -66,14 +61,12 @@ export class FakeChain {
     });
   }
 
-  /** Answers one JSON-RPC request body, as the Worker plus a provider would. */
   answer(body: string): unknown {
     const { request } = parseRequest(body);
     this.calls.push(request.method);
     return { jsonrpc: '2.0', id: request.id, result: this.result(request.method, request.params) };
   }
 
-  /** Carries out a signed transaction from the test wallet, like a validator would. */
   execute(wire: Uint8Array, signature: string) {
     const { instructions } = readTransaction(wire);
     const lockupError = this.lockupProblem(instructions);

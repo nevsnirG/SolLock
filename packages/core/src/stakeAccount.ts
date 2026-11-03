@@ -7,7 +7,6 @@ import { formatUtc, type UnixSeconds } from './time.ts';
 
 const NEVER = 0xffff_ffff_ffff_ffffn;
 
-/** An account as `getAccountInfo` / `getMultipleAccounts` returns it, already base64-decoded. */
 export interface RawAccount {
   lamports: bigint;
   programAddress: Address;
@@ -16,45 +15,35 @@ export interface RawAccount {
 
 export type LockState =
   | 'missing'
-  /** Not owned by the Stake program, or not a stake account. */
   | 'not-stake'
   | 'uninitialized'
-  /** Has a lockup and is not staked: the normal state of a v1 lock. */
   | 'initialized'
-  /** Staked (delegated), possibly through another wallet. */
   | 'staked';
 
 export interface LockView {
   address: Address;
   state: LockState;
   lamports: bigint;
-  /** Lamports above the rent deposit: what was locked. */
   lockedAmount: bigint;
   staker?: Address;
   withdrawer?: Address;
   unlockAt?: UnixSeconds;
   lockupEpoch?: bigint;
   custodian?: Address;
-  /** The custodian is the published address nobody has a key for. */
   custodianIsNobody?: boolean;
-  /** The lockup still holds at the given time and epoch. */
   lockedNow?: boolean;
   delegation?: { deactivationEpoch: bigint | null };
-  /** The date has passed and nothing else stands in the way of Withdraw. */
   canWithdraw?: boolean;
-  /** Staked, so it must be deactivated (and cool down) before Withdraw. */
   mustDeactivate?: boolean;
 }
 
 export interface ReadContext {
   now: UnixSeconds;
-  /** Current epoch. Needed to tell whether a deactivated stake has cooled down. */
   epoch: bigint;
-  /** Rent-exempt minimum for a 200-byte account, read from the network. Never the account's own field. */
+  /** From the network, never the account's own rent field, which can differ. */
   rent: bigint;
 }
 
-/** Decode a stake account into what My locks and the read-back after locking need. */
 export function readLockAccount(address: Address, account: RawAccount | null, ctx: ReadContext): LockView {
   if (!account) return { address, state: 'missing', lamports: 0n, lockedAmount: 0n };
   const base = { address, lamports: account.lamports, lockedAmount: account.lamports > ctx.rent ? account.lamports - ctx.rent : 0n };
@@ -94,13 +83,11 @@ export function readLockAccount(address: Address, account: RawAccount | null, ct
   const deactivation = deactivationEpoch === NEVER ? null : deactivationEpoch;
   view.delegation = { deactivationEpoch: deactivation };
   view.mustDeactivate = deactivation === null;
-  // Cooldown takes at least one epoch, sometimes more when much stake leaves at once.
-  // The withdraw itself is the final check; this only decides which button to show.
+  // Cooldown can take more than one epoch; the Withdraw itself is the final check, this only picks the button.
   view.canWithdraw = !lockedNow && deactivation !== null && deactivation < ctx.epoch;
   return view;
 }
 
-/** The lock in plain words, as shown after locking and in My locks. */
 export function describeLock(view: LockView): string[] {
   switch (view.state) {
     case 'missing':
@@ -127,18 +114,13 @@ export function describeLock(view: LockView): string[] {
   return lines;
 }
 
-/** What a lock must hold on chain right after it was made. */
 export interface LockAccountExpectation {
-  /** Staker and withdrawer: the funder, or the gift recipient. */
+  /** Also the staker. */
   withdrawer: Address;
   amount: bigint;
   unlockAt: UnixSeconds;
 }
 
-/**
- * Check a lock as the network returns it after locking, field by field, against what was built.
- * Returns plain-word problems; empty when the chain holds exactly the lock the user signed.
- */
 export function verifyLockAccount(view: LockView, expected: LockAccountExpectation): string[] {
   if (view.state === 'missing') return ['The network does not show the lock account yet.'];
   if (view.state !== 'initialized') return [`The account is not a fresh, unstaked lock (it is ${view.state}).`];
@@ -157,13 +139,8 @@ export function verifyLockAccount(view: LockView, expected: LockAccountExpectati
 
 export const isLockAccount = (view: LockView) => view.state === 'initialized' || view.state === 'staked';
 
-/** A lock as SolLock makes them: the published custodian and no epoch lockup, so the date alone decides. */
 export const isPlainLock = (view: LockView) => view.custodianIsNobody === true && (view.lockupEpoch ?? 0n) === 0n;
 
-/**
- * The view as of `now`, so a lock turns withdrawable the moment its date passes, without a reload.
- * Only for unstaked locks that wait for a date alone; anything else keeps what the network said.
- */
 export function lockViewAt(view: LockView, now: UnixSeconds): LockView {
   if (view.state !== 'initialized' || view.unlockAt === undefined || (view.lockupEpoch ?? 0n) !== 0n) return view;
   const lockedNow = view.unlockAt > now;

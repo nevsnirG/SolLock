@@ -1,7 +1,5 @@
-# Runs the LiteSVM tests on Linux, since LiteSVM has no Windows build.
-# From the repo root:  pnpm test:svm
-# Only the files git tracks go in, as a tar on stdin: local keys (.dev.vars, .devnet) never reach a
-# container that installs packages from the network.
+# LiteSVM has no Windows build, so its tests run here on Linux.
+# Only git-tracked files arrive, as a tar on stdin, so local keys never reach this container.
 services:
   test-svm:
     image: node:24-bookworm-slim

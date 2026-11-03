@@ -26,7 +26,6 @@ interface ConfirmStepProps {
   onSign: () => void;
 }
 
-/** The last step: the lock in plain words, what it costs, the safeguards, and the button. */
 export function ConfirmStep(props: ConfirmStepProps) {
   const { draft, preview, rent, price, confirmations, onConfirmations, onEdit, wallet, phase, onConnect, onSign } = props;
   const busy = isBusy(phase);
@@ -111,7 +110,6 @@ function LockSummary({ draft, rent, price, onEdit }: { draft: Draft; rent: bigin
   );
 }
 
-/** Which fee rule applies, so the page never says 0.25% when the minimum decides. */
 function feeDescription(draft: Draft): string {
   if (draft.amount === null || draft.testLock) return 'Free for a test lock';
   const rule = feeRule(draft.amount, draft.testLock);

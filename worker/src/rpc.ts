@@ -5,15 +5,12 @@ import { readCapped, RETRY_AFTER_SECONDS, visitorKey } from './limits.ts';
 import { TtlCache } from './ttlCache.ts';
 import { forward, upstreamsFor } from './upstream.ts';
 
-/** The largest request we accept. A full getMultipleAccounts or a transaction fits easily. */
+/** Fits a full getMultipleAccounts or a transaction with room to spare. */
 const MAX_BODY_BYTES = 16 * 1024;
 
 const LOCALHOST = /^http:\/\/(localhost|127\.0\.0\.1)(:\d{1,5})?$/;
 
-/**
- * Only the SolLock site may use the proxy. Browsers always send Origin on a POST, so a missing one
- * means a script, not our page. On devnet, localhost is allowed for development.
- */
+/** Browsers always send Origin on a POST, so a missing one means a script, not the site. */
 function originAllowed(origin: string | undefined, env: Env): boolean {
   if (!origin) return false;
   const allowed = env.ALLOWED_ORIGINS.split(',').map((o) => o.trim()).filter(Boolean);
@@ -21,7 +18,7 @@ function originAllowed(origin: string | undefined, env: Env): boolean {
   return clusterOf(env) === 'devnet' && LOCALHOST.test(origin);
 }
 
-/** Server errors of our own, in the JSON-RPC range kept for implementations. */
+/** From the JSON-RPC range for implementation-defined server errors, -32000 to -32099. */
 const ORIGIN_REFUSED = -32000;
 const RATE_LIMITED = -32029;
 
@@ -50,7 +47,7 @@ export function mountRpc(app: Hono<{ Bindings: Env }>, deps: Deps): void {
       return refusal(c, ORIGIN_REFUSED, 'Requests are only accepted from the SolLock site.', 403);
     }
 
-    // Counted before the body is read, so an oversized or endless body costs the sender their limit.
+    // Counted before the body is read, so an oversized body still costs the sender.
     const key = visitorKey(c);
     if (!(await c.env.RPC_LIMITER.limit({ key })).success) return tooMany(c);
 
@@ -76,7 +73,7 @@ export function mountRpc(app: Hono<{ Bindings: Env }>, deps: Deps): void {
       if (hit !== undefined) return reply(c, request.id, { result: hit });
     }
 
-    // Send a normalised request, not the visitor's body: only the fields we checked go upstream.
+    // Rebuilt from the checked fields, so nothing unchecked from the visitor goes upstream.
     const body = JSON.stringify({ jsonrpc: '2.0', id: 1, method: request.method, params: request.params });
     const upstreams = upstreamsFor(c.env);
     if (upstreams.length === 0) return refusal(c, INTERNAL_ERROR, 'No RPC provider is configured.', 503, request.id);

@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { DAY, HOUR, isTestLock, LAMPORTS_PER_SOL, lockFee, parseSol, TEST_LOCK_AMOUNT, vatShare } from '../src/index.ts';
 
 const SOL = LAMPORTS_PER_SOL;
-const now = 1_793_491_200n; // 1 Nov 2026, 00:00 UTC
+const now = 1_793_491_200n;
 
 describe('fee', () => {
-  it('matches the examples in the spec', () => {
+  it('is 0.01 SOL on 2 SOL and 0.25 SOL on 100 SOL', () => {
     expect(lockFee(2n * SOL, false)).toBe(parseSol('0.01'));
     expect(lockFee(100n * SOL, false)).toBe(parseSol('0.25'));
   });

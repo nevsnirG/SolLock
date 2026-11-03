@@ -1,6 +1,4 @@
-// Social preview images (Open Graph, 1200×630 PNG), made before each build. satori lays out the text
-// with the site's own fonts into an SVG, resvg turns that into a PNG. Output goes to public/og/ (not
-// committed). Run: pnpm og (the build runs it first).
+// 1200×630 is the standard Open Graph image size.
 
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -20,16 +18,14 @@ const fonts = [
   { name: 'Figtree', data: font('@fontsource/figtree', 'figtree-latin-600-normal.woff'), weight: 600, style: 'normal' },
 ];
 
-// The light palette from global.css: warm paper, near-black ink and the sun.
+// The light theme's colours, copied from global.css.
 const BG = '#fbf8f3';
 const INK = '#17130f';
 const INK_2 = '#463e36';
 const SUN = '#f7a823';
 
-/** A tiny element helper, since satori takes React-shaped objects and we have no JSX here. */
 const h = (type, style, ...children) => ({ type, props: { style: { display: 'flex', ...style }, children: children.flat() } });
 
-/** The logo: a sun with clock hands. */
 function sun(size) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 34">
     <circle cx="17" cy="17" r="16" fill="${SUN}"/>

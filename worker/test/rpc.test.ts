@@ -53,7 +53,7 @@ describe('fallback', () => {
     ['a network error', () => { throw new TypeError('network down'); }],
     ['an answer that is not JSON', () => new Response('<html>')],
     ['a rate-limit JSON error', () => Response.json({ jsonrpc: '2.0', id: 1, error: { code: -32429, message: 'rate limited' } })],
-    // What api.devnet.solana.com answers a Worker: HTTP 403 with a JSON-RPC body.
+    // What api.devnet.solana.com answers a Worker.
     ['a "blocked" refusal', () => Response.json({ jsonrpc: '2.0', id: 1, error: { code: 403, message: 'Your IP or provider is blocked' } }, { status: 403 })],
     ['a bad key', () => new Response('Unauthorized', { status: 401 })],
   ];

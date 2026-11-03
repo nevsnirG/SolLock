@@ -31,7 +31,7 @@ beforeAll(async () => {
 });
 
 function meta(custodian: Address = CUSTODIAN_ADDRESS, epoch = 0n) {
-  // The account's own rent field is frozen at 2,282,880 on chain. The reader must ignore it.
+  // On chain this field is frozen at 2,282,880; the reader must ignore it and use the network rent.
   return {
     rentExemptReserve: 2_282_880n,
     authorized: { staker: owner, withdrawer: owner },

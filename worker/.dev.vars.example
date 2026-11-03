@@ -1,12 +1,7 @@
-# Copy this file to .dev.vars (same folder) and fill in your keys. .dev.vars is never committed.
-# wrangler dev reads it; for the deployed Worker, use `wrangler secret put <NAME>` instead.
-
-# https://dashboard.helius.dev: API Keys. The same key works for devnet and mainnet.
 HELIUS_API_KEY=
 
-# https://dashboard.alchemy.com: your Solana app, API key. Enable Solana devnet and mainnet on the app.
+# The Alchemy app must have Solana devnet and mainnet enabled.
 ALCHEMY_API_KEY=
 
-# https://www.coingecko.com/en/developers/dashboard: a free Demo key. Optional locally; deployed on Cloudflare,
-# CoinGecko refuses keyless requests, so without it the site shows SOL only.
+# A CoinGecko Demo key. Deployed on Cloudflare, CoinGecko refuses keyless requests.
 COINGECKO_API_KEY=

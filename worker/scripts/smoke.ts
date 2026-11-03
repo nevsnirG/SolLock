@@ -1,15 +1,8 @@
-/**
- * Call a running SolLock Worker the way the site will, and check the answers.
- *
- *   pnpm --filter @sollock/worker dev            (in one terminal)
- *   pnpm --filter @sollock/worker smoke          (in another; defaults to http://127.0.0.1:8791)
- *   pnpm --filter @sollock/worker smoke -- http://127.0.0.1:8791 <wallet address>
- */
 import { address, getBase64Encoder } from '@solana/kit';
 import { CUSTODIAN_ADDRESS, describeLock, lockAddressBatch, readLockAccount, STAKE_PROGRAM_ADDRESS } from '@sollock/core';
 
 const base = process.argv[2] ?? 'http://127.0.0.1:8791';
-// The devnet wallet of packages/core's devnet script; it owns a few test locks.
+// A devnet wallet that owns a few test locks.
 const wallet = address(process.argv[3] ?? 'J25CTTarrkbvpzX2W8yhmq85ybb9XFY2Ki33D1bdHD1c');
 const origin = 'http://localhost:4321';
 let failures = 0;

@@ -4,22 +4,17 @@ import type { Cluster } from '../config.ts';
 import { unlockLabel, unlockLabelLong } from './dates.ts';
 import type { LockResult } from './lockFlow.ts';
 
-/** A lock just made, and the network it was made on. */
 export type LockedFacts = LockResult & { cluster: Cluster };
 
-/** Everything a recovery note can say. Made from a fresh lock, or from one read back later. */
 export interface NoteFacts {
   lock: Address;
   unlockAt: UnixSeconds;
   lockedAmount: bigint;
   rent: bigint;
   withdrawer: Address;
-  /** Who the withdrawer is, from the reader's side: "your wallet", "the gift recipient's wallet". */
   withdrawerLabel: string;
-  /** The wallet and seed it was made from, when known. */
   madeFrom?: { wallet: Address; seed: string };
   signature?: Signature;
-  /** When it was made, if known; otherwise the note says when it was written. */
   madeAt?: UnixSeconds;
   writtenAt: UnixSeconds;
   cluster: Cluster;
@@ -42,12 +37,11 @@ export function noteFactsFromLock(facts: LockedFacts): NoteFacts {
   };
 }
 
-/** For a lock found later on My locks: what the chain says, plus the seed if this wallet made it. */
 export function noteFactsFromView(
   view: LockView,
   ctx: { wallet: Address | null; seed?: string; now: UnixSeconds; cluster: Cluster },
 ): NoteFacts | null {
-  // The note vouches for the SolLock custodian and a date-only lockup; anything else gets no note.
+  // The note vouches that nobody can lift the lock early, so only plain locks get one.
   if (!view.withdrawer || view.unlockAt === undefined || !isPlainLock(view)) return null;
   const mine = ctx.wallet !== null && view.withdrawer === ctx.wallet;
   return {
@@ -65,10 +59,6 @@ export function noteFactsFromView(
 
 const dayUtc = (at: UnixSeconds) => unlockLabel(at - (at % DAY));
 
-/**
- * The recovery note: everything needed to find and withdraw the lock without SolLock, and never the
- * seed phrase. Plain text, so it can be copied, printed or saved anywhere.
- */
 export function recoveryNote(note: NoteFacts, siteUrl: string): string {
   const host = siteUrl.replace(/^https?:\/\//, '');
   const cliUrl = note.cluster === 'devnet' ? ' --url devnet' : '';
@@ -121,7 +111,6 @@ export interface Seller {
   vat: string | null;
 }
 
-/** A receipt for our fee, made in the browser. Null for a free test lock: there is nothing to receipt. */
 export function receiptText(facts: LockedFacts, seller: Seller, feeFiatValue?: string): string | null {
   const { plan } = facts;
   if (plan.fee === 0n) return null;

@@ -3,12 +3,11 @@ import type { Page } from '@playwright/test';
 import { expect, SOL_PRICE_USD, test } from './fixtures.ts';
 
 const PAGES = ['/', '/lock', '/my-locks', '/faq', '/custodian', '/terms', '/privacy', '/affiliates'];
-/** The lawyer words the legal pages, so the house style rules skip them. */
+/** Legal texts need their own wording, so the house style rules skip them. */
 const LEGAL_PAGES = new Set(['/terms', '/privacy']);
 
 const visibleText = (page: Page) => page.locator('body').innerText();
 
-/** Other sites the pages must never name or link to. The list stays in notes/, outside the published code. */
 const NEVER_NAMED_FILE = new URL('../../notes/never-named.json', import.meta.url);
 const NEVER_NAMED: string[] = existsSync(NEVER_NAMED_FILE) ? JSON.parse(readFileSync(NEVER_NAMED_FILE, 'utf8')) : [];
 

@@ -82,7 +82,6 @@ describe('a recovery note written later, from the chain', () => {
     expect(note).toContain(`wallet ${WALLET}, seed "sl1-4"`);
     expect(note).toContain('2 SOL, plus a 0.00166624 SOL deposit');
     expect(note).not.toContain('Transaction');
-    // Everything the original note says about finding and withdrawing the lock is there too.
     const original = recoveryNote(f, 'https://sollock.io');
     for (const line of original.split('\n').filter((l) => /withdraw-stake|Custodian|EcS8|Opens|unix/.test(l))) expect(note).toContain(line);
   });

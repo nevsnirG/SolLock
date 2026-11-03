@@ -21,7 +21,6 @@ export default function MyLocksIsland() {
   );
 }
 
-/** Often enough that a lock turns withdrawable soon after its date passes. */
 const CLOCK_TICK_MS = 15_000;
 
 function MyLocks() {
@@ -63,7 +62,6 @@ function MyLocks() {
 
 type ListState = { kind: 'idle' } | { kind: 'loading' } | { kind: 'ok'; rows: LockRow[]; giftsChecked: boolean } | { kind: 'error' };
 
-/** The wallet's locks, read from the chain: by seed (its own and gifts given) and by withdrawer (gifts received). */
 function useMyLocks(wallet: Address | null, reloadCount: number): ListState {
   const [state, setState] = useState<ListState>({ kind: 'idle' });
   useEffect(() => {
@@ -92,7 +90,7 @@ async function readLocks(wallet: Address): Promise<ListState> {
   const ctx = await fetchReadContext(rpc);
   const [seeded, received] = await Promise.all([
     findSeededLocks(rpc, wallet, ctx),
-    // The gift lookup is rate-limited harder; without it the wallet's own locks still show.
+    // This lookup is rate-limited harder; its failure must not hide the wallet's own locks.
     findLocksWithdrawableBy(rpc, wallet, ctx).catch(() => null),
   ]);
   return { kind: 'ok', rows: mergeLocks(wallet, seeded, received ?? []), giftsChecked: received !== null };
@@ -111,7 +109,6 @@ function finishedMessage(result: UnlockResult): string {
     : 'Deactivated. You can withdraw once the network has finished cooling it down, usually within a few days.';
 }
 
-/** Withdraw or deactivate, one lock at a time, each with its own status line. */
 function useUnlockActions(wallet: SiteWallet, onChanged: () => void) {
   const [phases, setPhases] = useState<Record<string, SigningPhase>>({});
   const [finished, setFinished] = useState<FinishedAction[]>([]);

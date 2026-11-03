@@ -6,23 +6,16 @@ export interface PreviewContext {
   now: UnixSeconds;
   feeAddress: Address;
   rent: bigint;
-  /** The connected wallet. Without one, the preview uses a stand-in shown as "your wallet". */
   wallet?: Address | undefined;
-  /** The first free seed for the wallet. Unknown before connecting: 0 is shown, marked as such. */
   seedIndex?: number | undefined;
 }
 
 export interface LockPreview {
   plan: LockPlan;
   instructions: DecodedInstruction[];
-  /** True while no wallet is connected: wallet and lock address are placeholders. */
   placeholder: boolean;
 }
 
-/**
- * Builds the real lock transaction for the draft and decodes it back into plain words: the same
- * builder and decoder the signing flow uses. Null while the draft still has problems.
- */
 export async function previewLock(draft: Draft, ctx: PreviewContext): Promise<LockPreview | null> {
   if (!isCompleteDraft(draft)) return null;
   const placeholder = ctx.wallet === undefined;
@@ -33,7 +26,6 @@ export async function previewLock(draft: Draft, ctx: PreviewContext): Promise<Lo
   try {
     plan = await planLock(request);
   } catch (error) {
-    // The draft checks the same rules first, so this only happens when time moved on in between.
     if (error instanceof LockRequestError) return null;
     throw error;
   }

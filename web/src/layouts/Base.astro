@@ -7,7 +7,6 @@ import { CLUSTER } from '../config.ts';
 interface Props {
   title?: string;
   description?: string;
-  /** The social preview image, from public/og/ (made by scripts/og.mjs). */
   image?: string;
 }
 const {
@@ -46,8 +45,7 @@ const canonical = new URL(Astro.url.pathname.replace(/\.html$/, '').replace(/\/i
     {CLUSTER === 'devnet' && <meta name="robots" content="noindex" />}
   </head>
   <body>
-    <!-- Blocking on purpose: sets the saved theme before the first paint. It sits here, after the CSP
-         <meta> that Astro puts in <head>, so the policy covers it like everything else. -->
+    <!-- Blocking so the saved theme applies before first paint; after Astro's CSP <meta> so the policy covers it. -->
     <script is:inline src="/theme.js"></script>
     <div class="shell">
       {

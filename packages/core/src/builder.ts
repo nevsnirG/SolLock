@@ -24,33 +24,27 @@ import { type LockExpectation, verifyLockInstructions } from './verify.ts';
 export const MIN_LOCK_AMOUNT = LAMPORTS_PER_SOL / 1_000n;
 export const MIN_LOCK_AMOUNT_PROBLEM = 'The smallest lock is 0.001 SOL.';
 
-/** A request the builder refuses. The message is for the user. */
 export class LockRequestError extends Error {
   override name = 'LockRequestError';
 }
 
 export interface LockRequest {
-  /** The connected wallet. It pays, is the base of the seed address, and is the only signer. */
   funder: TransactionSigner;
-  /** For a gift: the recipient's wallet. Leave out to lock for yourself. */
   recipient?: Address | undefined;
-  /** Lamports to lock, not counting the rent deposit. */
+  /** Lamports, excluding the rent deposit. */
   amount: bigint;
   unlockAt: UnixSeconds;
-  /** The `n` in `sl1-<n>`; the first free one for this wallet. */
   seedIndex: number;
-  /** Rent-exempt minimum for a 200-byte account, read from the network. */
   rent: bigint;
   feeAddress: Address;
   now: UnixSeconds;
-  /** From the simulation. Left out, the transaction has no compute-budget instruction. */
   computeUnitLimit?: number | undefined;
 }
 
 export interface LockPlan {
   signer: TransactionSigner;
   funder: Address;
-  /** Staker and withdrawer: the funder, or the recipient of a gift. */
+  /** Also the staker. */
   withdrawer: Address;
   gift: boolean;
   lockAddress: Address;
@@ -58,22 +52,16 @@ export interface LockPlan {
   amount: bigint;
   rent: bigint;
   fee: bigint;
-  /** The VAT inside the fee. */
   vat: bigint;
   testLock: boolean;
   unlockAt: UnixSeconds;
   computeUnitLimit: number | undefined;
-  /** What leaves the wallet before the network fee: amount, rent deposit and our fee. */
+  /** Lamports leaving the wallet, excluding the network fee. */
   total: bigint;
   instructions: readonly Instruction[];
-  /** What the transaction must contain, for {@link verifyLockMessage} after a round trip. */
   expectation: LockExpectation;
 }
 
-/**
- * Check a lock request and build its instructions. The custodian is always the published one; there
- * is no way to pass another. The result is checked by the same verifier the preview uses.
- */
 export async function planLock(req: LockRequest): Promise<LockPlan> {
   const { withdrawer, seed, units } = validateLockRequest(req);
   const funder = req.funder.address;
@@ -179,7 +167,6 @@ function lockInstructions(req: LockRequest, { address, seed, withdrawer, fee, un
   return instructions;
 }
 
-/** The plan as a v0 transaction message, paid for and signed by the funder only. */
 export function lockTransactionMessage(plan: LockPlan, lifetime: BlockhashLifetime) {
   return transactionMessage(plan.signer, lifetime, plan.instructions);
 }

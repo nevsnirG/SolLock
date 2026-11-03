@@ -16,7 +16,6 @@ import { firstFreeSeed, lockAddressBatch, SEED_BATCH_SIZE, type SeededAddress } 
 import { type LockView, type RawAccount, type ReadContext, readLockAccount } from './stakeAccount.ts';
 import { nowSeconds } from './time.ts';
 
-/** How far we look for a free seed before giving up: 10 batches, 1,000 locks per wallet. */
 const MAX_SEED_BATCHES = 10;
 
 export async function fetchLockRent(rpc: Rpc<GetMinimumBalanceForRentExemptionApi>): Promise<bigint> {
@@ -38,7 +37,6 @@ async function fetchRaw(rpc: Rpc<GetMultipleAccountsApi>, addresses: Address[]):
   return value.map((account) => (account ? toRawAccount(account) : null));
 }
 
-/** The first `sl1-<n>` seed with no account yet for this wallet. */
 export async function findFreeSeed(rpc: Rpc<GetMultipleAccountsApi>, base: Address): Promise<SeededAddress> {
   for (let batch = 0; batch < MAX_SEED_BATCHES; batch++) {
     const seeds = await lockAddressBatch(base, batch * SEED_BATCH_SIZE);
@@ -57,7 +55,6 @@ export async function fetchLock(
   return readLockAccount(address, account ? toRawAccount(account) : null, ctx);
 }
 
-/** What reading a lock needs from the network: the time, the epoch and the rent for 200 bytes. */
 export async function fetchReadContext(rpc: Rpc<GetEpochInfoApi & GetMinimumBalanceForRentExemptionApi>): Promise<ReadContext> {
   const [epochInfo, rent] = await Promise.all([rpc.getEpochInfo().send(), fetchLockRent(rpc)]);
   return { now: nowSeconds(), epoch: epochInfo.epoch, rent };
@@ -67,10 +64,6 @@ export interface SeededLock extends SeededAddress {
   view: LockView;
 }
 
-/**
- * Every account this wallet made with an `sl1-<n>` seed, its own locks and the gifts it gave. Reads
- * batches of 100 seeds and stops at the first batch with nothing in it. No database needed.
- */
 export async function findSeededLocks(
   rpc: Rpc<GetMultipleAccountsApi>,
   base: Address,
@@ -93,11 +86,7 @@ export async function findSeededLocks(
   return found;
 }
 
-/**
- * SolLock locks this wallet can withdraw, whoever made them: how a gift recipient finds a gift.
- * One getProgramAccounts call with exactly the three filters our proxy allows: 200-byte stake
- * accounts, this withdrawer, and our custodian.
- */
+/** Uses exactly the three filters the RPC proxy allows. */
 export async function findLocksWithdrawableBy(rpc: Rpc<GetProgramAccountsApi>, wallet: Address, ctx: ReadContext): Promise<LockView[]> {
   const accounts = await rpc
     .getProgramAccounts(STAKE_PROGRAM_ADDRESS, {
@@ -113,7 +102,6 @@ export async function findLocksWithdrawableBy(rpc: Rpc<GetProgramAccountsApi>, w
 }
 
 
-/** Who owns an address on the network, which decides whether a gift could ever be withdrawn from it. */
 export async function fetchGiftAccount(rpc: Rpc<GetAccountInfoApi>, address: Address): Promise<GiftAccountInfo> {
   const { value } = await rpc.getAccountInfo(address, { encoding: 'base64', dataSlice: { offset: 0, length: 0 } }).send();
   return value ? { exists: true, programAddress: value.owner, executable: value.executable } : { exists: false };

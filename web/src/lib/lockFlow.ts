@@ -27,7 +27,6 @@ import type { SiteRpc } from './siteRpc.ts';
 export interface PreparedLock {
   plan: LockPlan;
   message: ReturnType<typeof lockTransactionMessage>;
-  /** Decoded from the compiled bytes, so it is exactly what the wallet is asked to sign. */
   instructions: DecodedInstruction[];
   lastValidBlockHeight: bigint;
 }
@@ -43,15 +42,9 @@ interface PrepareContext {
   signer: TransactionSendingSigner;
   feeAddress: Address;
   now: UnixSeconds;
-  /** What the preview showed the user. If the network now says otherwise, they confirm again. */
   shown?: { rent: bigint; total: bigint } | undefined;
 }
 
-/**
- * Builds the final transaction for a draft and checks it every way we can before the wallet sees it:
- * the wallet's balance, a test run on the network (which also measures the compute it needs), and
- * our own verifier on the compiled bytes.
- */
 export async function prepareLock(draft: Draft, ctx: PrepareContext): Promise<PreparedLock> {
   if (!isCompleteDraft(draft)) throw new FlowError(draft.problems[0] ?? 'The form is not complete.');
   const { rpc, signer } = ctx;
@@ -97,7 +90,7 @@ function assertCanAfford(plan: LockPlan, balance: bigint) {
   throw new FlowError(`Your wallet has ${formatSol(balance)} SOL. This lock needs ${formatSol(needed)} SOL, including the rent deposit and fees.`);
 }
 
-/** Checks the compiled bytes, exactly what the wallet will be asked to sign, and decodes them for the page. */
+/** Verifies and decodes the compiled bytes, not the plan, so the page shows exactly what the wallet signs. */
 async function verifiedInstructions(message: PreparedLock['message'], plan: LockPlan, feeAddress: Address): Promise<DecodedInstruction[]> {
   const compiled = roundTripMessage(message);
   const problems = await verifyLockMessage(compiled, plan.expectation);
@@ -118,10 +111,6 @@ async function asFlowError<T>(work: Promise<T>): Promise<T> {
 
 const READ_BACK_TRIES = 4;
 
-/**
- * Reads the lock back from the network and checks it, field by field, against what was built. Null
- * when the account is not there after a few tries: a node can lag a moment behind.
- */
 export async function readBackLock(
   rpc: SiteRpc,
   plan: LockPlan,
@@ -138,10 +127,7 @@ export async function readBackLock(
   return null;
 }
 
-/**
- * After the wallet has sent it: waits for the network, then reads the lock back. The lock account has
- * the last word, so an expired-looking transaction that landed after all still counts.
- */
+/** The lock account has the last word: a transaction that looked expired but landed still counts. */
 export async function finishLock(rpc: SiteRpc, prepared: PreparedLock, signature: Signature, options: PollOptions = {}): Promise<LockResult> {
   const outcome = await waitForConfirmation(rpc, signature, prepared.lastValidBlockHeight, options);
   const view = await readBackLock(rpc, prepared.plan, { ...options, tries: outcome === 'confirmed' ? READ_BACK_TRIES : 1 });

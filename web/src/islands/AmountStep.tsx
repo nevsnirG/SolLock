@@ -14,13 +14,11 @@ interface AmountStepProps {
   draft: Draft;
   price: Price | null;
   currency: Currency;
-  /** The connected wallet's balance, when known. */
   balance: bigint | null;
   rent: bigint;
   onChange: (next: Partial<DraftInput>) => void;
   onCurrency: (currency: Currency) => void;
   onToggleTestLock: () => void;
-  /** Opened from the home page's buy button: start with "Need Solana first?" open and in view. */
   showBuy: boolean;
 }
 

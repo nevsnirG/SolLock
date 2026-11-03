@@ -6,7 +6,7 @@ export class AmountError extends Error {
   override name = 'AmountError';
 }
 
-/** Parse what a user typed ("2", "0.5", "1,25") into lamports, exactly, without floating point. */
+/** Returns lamports; parsed as text so there is no floating-point rounding. */
 export function parseSol(input: string): bigint {
   const text = input.trim().replace(',', '.');
   if (text === '') throw new AmountError('Enter an amount.');
@@ -18,7 +18,6 @@ export function parseSol(input: string): bigint {
   return BigInt(whole) * LAMPORTS_PER_SOL + BigInt(fraction.padEnd(SOL_DECIMALS, '0'));
 }
 
-/** Lamports as SOL with no trailing zeros: 2000000000n is "2", 1500000n is "0.0015". */
 export function formatSol(lamports: bigint): string {
   const negative = lamports < 0n;
   const abs = negative ? -lamports : lamports;
@@ -27,7 +26,6 @@ export function formatSol(lamports: bigint): string {
   return `${negative ? '-' : ''}${whole}${fraction ? `.${fraction}` : ''}`;
 }
 
-/** Today's value of an amount, given a price per SOL. For display only; never for a forecast. */
 export function lamportsToFiat(lamports: bigint, pricePerSol: number): number {
   return (Number(lamports) / Number(LAMPORTS_PER_SOL)) * pricePerSol;
 }
@@ -36,10 +34,7 @@ export function formatFiat(value: number, currency: string, locale: string): str
   return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(value);
 }
 
-/**
- * Currencies we offer, all of which CoinGecko quotes. The user's locale picks the default; they can
- * switch to any of these.
- */
+/** All quoted by CoinGecko, the price source. */
 export const CURRENCIES = [
   'EUR', 'USD', 'GBP', 'CHF', 'SEK', 'NOK', 'DKK', 'PLN', 'CZK', 'HUF', 'RON', 'TRY',
   'CAD', 'AUD', 'NZD', 'JPY', 'KRW', 'CNY', 'HKD', 'SGD', 'INR', 'BRL', 'MXN', 'ZAR',
@@ -61,7 +56,6 @@ export function isCurrency(code: string): code is Currency {
   return (CURRENCIES as readonly string[]).includes(code);
 }
 
-/** The default currency for a browser locale such as "nl-NL" or "en". Falls back to USD. */
 export function currencyForLocale(locale: string): Currency {
   let region: string | undefined;
   try {

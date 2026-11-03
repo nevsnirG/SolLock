@@ -11,18 +11,11 @@ import type { FakeChain } from './chain.ts';
 
 export const WALLET_NAME = 'Test Wallet';
 
-/** The reply the page-side wallet gets for one transaction. */
 type SendReply = { signature: number[] } | { rejected: true };
 
-/**
- * A browser wallet for the tests. In the page it is a Wallet Standard wallet, found the same way as
- * Phantom or Solflare. Here it signs with a real key, keeps every transaction it was asked to send, and
- * hands it to the fake chain.
- */
+/** In the page a Wallet Standard wallet; here in Node it signs with a real key and hands each transaction to the fake chain. */
 export class TestWallet {
-  /** Wire bytes of every transaction sent, in order. */
   readonly sent: Uint8Array[] = [];
-  /** Say no in the wallet to the next request, as a user would. */
   rejectNext = false;
 
   private constructor(
@@ -67,7 +60,7 @@ interface WalletSpec {
   chain: string;
 }
 
-/** Runs in the page before any of its scripts: registers a wallet the way the Wallet Standard says. */
+/** Runs in the page before its scripts, so it can use only its argument and browser globals. */
 function registerWalletStandardWallet(spec: WalletSpec) {
   type Listener = (properties: { accounts: unknown[] }) => void;
   const send = (bytes: number[]) => (window as unknown as { __testWalletSend: (b: number[]) => Promise<SendReply> }).__testWalletSend(bytes);

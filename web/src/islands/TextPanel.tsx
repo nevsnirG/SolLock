@@ -19,7 +19,6 @@ function download(text: string, filename: string) {
   setTimeout(() => URL.revokeObjectURL(url), 1_000);
 }
 
-/** Print only one part of the page: the recovery note or the receipt (see .print-* in global.css). */
 function printPart(part: 'note' | 'receipt') {
   document.body.dataset.print = part;
   const clear = () => {
@@ -30,7 +29,6 @@ function printPart(part: 'note' | 'receipt') {
   window.print();
 }
 
-/** A text to keep, with buttons to save, print and copy it. Folded hides the text until asked; saving and printing work either way. */
 export function TextPanel({ text, filename, part, folded = false }: { text: string; filename: string; part: 'note' | 'receipt'; folded?: boolean }) {
   const [status, setStatus] = useState('');
   const [open, setOpen] = useState(!folded);

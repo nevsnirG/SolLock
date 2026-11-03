@@ -1,6 +1,5 @@
 import { STEP_LABELS, type Step } from '../lib/steps.ts';
 
-/** Where the user is in the steps, as a row of bars; steps already answered can be revisited. */
 export function StepProgress({ steps, current, onGo, disabled }: { steps: readonly Step[]; current: Step; onGo: (step: Step) => void; disabled: boolean }) {
   const currentIndex = steps.indexOf(current);
   return (
@@ -31,9 +30,7 @@ export function StepProgress({ steps, current, onGo, disabled }: { steps: readon
 
 interface StepNavProps {
   onBack: (() => void) | null;
-  /** Null on the last step, which signs instead. */
   onContinue: (() => void) | null;
-  /** Why Continue is off, when the step doesn't show it next to its field already. */
   problem: string | null;
   canContinue: boolean;
   busy: boolean;

@@ -12,7 +12,7 @@ import {
   yearsFromNow,
 } from '../src/index.ts';
 
-const now = utcMidnight(2026, 11, 1); // 1 Nov 2026, 00:00 UTC
+const now = utcMidnight(2026, 11, 1);
 
 describe('time', () => {
   it('puts the drawers at 1 January, 00:00 UTC', () => {

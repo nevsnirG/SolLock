@@ -15,7 +15,6 @@ const heading = (page: Page, name: string | RegExp) => page.getByRole('heading',
 const continueButton = (page: Page) => page.getByRole('button', { name: 'Continue' });
 const amountField = (page: Page) => page.getByLabel('Amount in SOL');
 const safeguards = (page: Page) => page.getByRole('group', { name: 'Before you lock' });
-/** One row of the summary on the confirm screen, by its label. */
 const summary = (page: Page, label: string) => page.locator('dt', { hasText: label }).locator('xpath=following-sibling::dd[1]');
 const changeButton = (page: Page, label: string) => page.locator('dt', { hasText: label }).locator('..').getByRole('button', { name: 'Change' });
 

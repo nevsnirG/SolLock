@@ -10,7 +10,6 @@ export function ExternalLink({ href, className, sponsored = false, children }: {
   );
 }
 
-/** One answer to a question: a big row with a radio in it. */
 export function Choice({
   name,
   checked,
@@ -50,7 +49,6 @@ export function ErrorNote({ message, logs = [] }: { message: string; logs?: read
   );
 }
 
-/** Where a signing attempt stands, in one line, for both locking and withdrawing. */
 export function SigningStatus({ phase, walletName }: { phase: SigningPhase; walletName: string }) {
   switch (phase.kind) {
     case 'preparing':

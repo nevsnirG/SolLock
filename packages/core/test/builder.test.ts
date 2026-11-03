@@ -75,7 +75,6 @@ function request(overrides: Partial<LockRequest> = {}): LockRequest {
   };
 }
 
-/** Build, compile to wire bytes and read back: what a wallet would actually be asked to sign. */
 async function builtAndReadBack(overrides: Partial<LockRequest> = {}) {
   const plan = await planLock(request(overrides));
   const message = roundTripMessage(lockTransactionMessage(plan, { blockhash, lastValidBlockHeight: 100n }));

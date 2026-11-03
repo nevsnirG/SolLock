@@ -1,15 +1,3 @@
-/**
- * Create a real lock on devnet with the lock core, and read it back. Devnet only.
- *
- *   pnpm --filter @sollock/core devnet:lock                       free test lock: 0.01 SOL, 24 hours
- *   pnpm --filter @sollock/core devnet:lock -- --amount 0.5 --until 2026-11-02T12:00:00Z
- *   pnpm --filter @sollock/core devnet:lock -- --gift <address> --amount 0.05 --until 2028-01-01
- *   pnpm --filter @sollock/core devnet:lock -- read <lock address>
- *   pnpm --filter @sollock/core devnet:lock -- withdraw <lock address>
- *
- * The script keeps a throwaway devnet wallet and fee address in packages/core/.devnet/ (never
- * committed). The site itself never holds keys: in the browser, the user's wallet signs.
- */
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { parseArgs } from 'node:util';
@@ -65,7 +53,6 @@ const sendAndConfirm = sendAndConfirmTransactionFactory({ rpc, rpcSubscriptions 
 const dir = new URL('../.devnet/', import.meta.url);
 const explorer = (kind: 'address' | 'tx', id: string) => `https://explorer.solana.com/${kind}/${id}?cluster=devnet`;
 
-/** A keypair in the Solana CLI's JSON format, so it can be imported elsewhere if needed. */
 async function devnetKeypair(name: string): Promise<KeyPairSigner> {
   const file = new URL(`${name}.json`, dir);
   if (!existsSync(file)) {
@@ -135,7 +122,6 @@ async function createLock(opts: { amount?: string; until?: string; gift?: string
   console.log(`Fee address:    ${fee.address} (devnet throwaway)`);
 
   const rent = await fetchLockRent(rpc);
-  // Amount, rent deposit, our fee and a little for network fees.
   await ensureFunds(wallet.address, amount + rent + lockFee(amount, isTestLock(amount, unlockAt, now)) + parseSol('0.001'));
   const seed = await findFreeSeed(rpc, wallet.address);
   const request = {
@@ -149,7 +135,6 @@ async function createLock(opts: { amount?: string; until?: string; gift?: string
     now,
   };
 
-  // Simulate a draft to size the compute-unit limit, as the site will.
   const draft = await planLock(request);
   const { value: lifetime } = await rpc.getLatestBlockhash().send();
   const draftTx = await signTransactionMessageWithSigners(lockTransactionMessage(draft, lifetime));
@@ -160,7 +145,6 @@ async function createLock(opts: { amount?: string; until?: string; gift?: string
   const used = Number(sim.value.unitsConsumed ?? 0n);
   const plan = await planLock({ ...request, computeUnitLimit: Math.ceil(used * 1.2) + 1_000 });
 
-  // Verify and show exactly what will be signed: the compiled bytes, read back.
   const message = lockTransactionMessage(plan, lifetime);
   const readBack = roundTripMessage(message);
   const problems = await verifyLockMessage(readBack, plan.expectation);

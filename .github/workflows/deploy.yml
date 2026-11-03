@@ -1,12 +1,4 @@
-# Staging (devnet, devnet.sollock.io) on every push to main; production (mainnet, sollock.io) only by
-# hand: Actions → Deploy → Run workflow → production, from main only (the "production" GitHub Environment
-# allows only main; it also requires the owner's approval where the plan offers that). scripts/check-deploy-config.mjs
-# refuses production until its open items are done.
-# Each GitHub Environment (staging, production) holds that deployment's secrets: CLOUDFLARE_API_TOKEN,
-# CLOUDFLARE_ACCOUNT_ID, HELIUS_API_KEY, COINGECKO_API_KEY and optionally ALCHEMY_API_KEY; and the
-# variable PUBLIC_SITE (https://devnet.sollock.io or https://sollock.io).
-# Nothing secret lives in the repository. Actions are pinned to exact commits (Dependabot proposes updates),
-# because whatever this job deploys is what users sign with.
+# Actions are pinned to commit SHAs: this job holds the Cloudflare token and deploys what users sign with.
 name: Deploy
 
 on:
@@ -29,8 +21,6 @@ permissions:
 
 jobs:
   deploy:
-    # Production deploys only from main. Defence in depth: the environment's own branch rules (where the
-    # GitHub plan offers them) and the reviewers are the real gate.
     if: inputs.target != 'production' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
@@ -40,7 +30,6 @@ jobs:
       TARGET: ${{ inputs.target || 'staging' }}
       CLUSTER: ${{ inputs.target == 'production' && 'mainnet' || 'devnet' }}
     steps:
-      # Until Cloudflare is set up, pushes to main end here, green, with a note.
       - name: Check that Cloudflare is set up
         id: ready
         env:
@@ -74,7 +63,7 @@ jobs:
         with:
           persist-credentials: false
       - if: steps.ready.outputs.go == 'true'
-        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6 (as of 2 Nov 2026)
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
       - if: steps.ready.outputs.go == 'true'
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
@@ -108,15 +97,12 @@ jobs:
           packageManager: pnpm
           environment: ${{ env.TARGET }}
           command: deploy
-          # Uploaded as a Worker secret from this GitHub Environment on every deploy. Required: the
-          # deploy stops if the environment does not have it.
           secrets: |
             HELIUS_API_KEY
         env:
           HELIUS_API_KEY: ${{ secrets.HELIUS_API_KEY }}
 
-      # The backup RPC provider and the CoinGecko key are optional: uploaded only when this GitHub
-      # Environment has them. Removing one here later does not remove it from Cloudflare.
+      # Unsetting one in the GitHub Environment does not remove it from the Worker.
       - name: Upload the optional secrets that are set
         if: steps.ready.outputs.go == 'true'
         working-directory: worker
@@ -134,9 +120,7 @@ jobs:
             fi
           done
 
-      # The deployed site must answer on the right cluster, with its security policy and headers.
-      # A brand-new custom domain needs a few minutes for its DNS record and HTTPS certificate, so the
-      # first request may retry for up to ten minutes; later deploys answer at once.
+      # A new custom domain can take up to ten minutes for its DNS record and certificate, hence the retries.
       - name: Smoke test
         if: steps.ready.outputs.go == 'true'
         env:

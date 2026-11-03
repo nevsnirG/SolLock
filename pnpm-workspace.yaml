@@ -5,6 +5,5 @@ packages:
 allowBuilds:
   esbuild: true
   workerd: true
-# A package version must be a day old before pnpm installs it: most poisoned releases are
-# caught and pulled within hours.
+# In minutes: a day's wait lets poisoned releases be pulled before they are installed.
 minimumReleaseAge: 1440

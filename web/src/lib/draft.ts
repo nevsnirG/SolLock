@@ -17,16 +17,10 @@ import {
 } from '@sollock/core';
 import { DEFAULT_CHOICE, type UnlockChoice, unlockAtFor, YEAR_PRESETS } from './unlockDate.ts';
 
-/**
- * Stands in for the wallet until one is connected, so the preview can show the real instructions.
- * The page shows it as "your wallet"; nothing is ever signed with it.
- */
 export const PREVIEW_WALLET: Address = getAddressDecoder().decode(new Uint8Array(32).fill(0x5a));
 
-/** What the user has filled in so far. */
 export interface DraftInput {
   amountText: string;
-  /** The free test lock: 0.01 SOL, opening about 24 hours from now. */
   wantsTestLock: boolean;
   choice: UnlockChoice;
   gift: boolean;
@@ -35,10 +29,6 @@ export interface DraftInput {
 
 export const EMPTY_INPUT: DraftInput = { amountText: '1', wantsTestLock: false, choice: DEFAULT_CHOICE, gift: false, giftText: '' };
 
-/**
- * Where the lock page starts: ?test for the free test lock, or the home page's start box
- * (?amount=…&years=…). Anything unexpected falls back to the defaults.
- */
 export function inputFromQuery(search: string): DraftInput {
   const query = new URLSearchParams(search);
   const amount = (query.get('amount') ?? '').trim();
@@ -54,27 +44,22 @@ export function inputFromQuery(search: string): DraftInput {
 export interface DraftContext {
   now: UnixSeconds;
   feeAddress: Address;
-  /** The connected wallet, once there is one. */
   wallet?: Address | undefined;
 }
 
-/** The input checked and worked out: what the lock would be, and what is still wrong with it. */
 export interface Draft {
   amount: bigint | null;
   amountProblem: string | null;
   unlockAt: UnixSeconds | null;
   unlockProblem: string | null;
-  /** More than 10 years away: warn that wallets will change. */
   longLock: boolean;
   gift: boolean;
-  /** The gift recipient, once the address passes every check. */
   recipient: Address | null;
   giftProblem: string | null;
-  /** Exactly 0.01 SOL, opening within about a day. Worked out, never taken from the button. */
+  /** Worked out from amount and date, never from wantsTestLock, because it waives the fee. */
   testLock: boolean;
   fee: bigint;
   vat: bigint;
-  /** Every problem, in the order of the steps. */
   problems: string[];
 }
 
@@ -120,7 +105,6 @@ function checkGiftInput(input: DraftInput, ctx: DraftContext): { recipient: Addr
   return giftProblem ? { recipient: null, giftProblem } : { recipient: text as Address, giftProblem: null };
 }
 
-/** What the network says about the gift address (owned by a program, say) joins the draft's own checks. */
 export function withNetworkGiftProblem(draft: Draft, problem: string | null): Draft {
   if (!draft.gift || draft.giftProblem !== null || problem === null) return draft;
   return { ...draft, giftProblem: problem, problems: [...draft.problems, problem] };
@@ -144,12 +128,11 @@ export function lockRequestFromDraft(
   };
 }
 
-/** "Read it back with them: starts 7xKX, ends 9fGh." For a gift address that passed its checks. */
 export function readAloudHint(address: string): string {
   return `Read it back with them: starts ${address.slice(0, 4)}, ends ${address.slice(-4)}.`;
 }
 
 export const shortAddress = (address: string) => `${address.slice(0, 4)}…${address.slice(-4)}`;
 
-/** The whole address in groups of four, so every character gets compared, not just the ends. */
+/** Every character in view, not just the ends, so a look-alike address stands out. */
 export const groupedAddress = (address: string) => address.match(/.{1,4}/g)?.join(' ') ?? address;

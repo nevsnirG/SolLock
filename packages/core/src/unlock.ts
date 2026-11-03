@@ -15,24 +15,19 @@ import type { VerifiableMessage } from './verify.ts';
 
 export type UnlockAction = 'withdraw' | 'deactivate';
 
-/**
- * Withdraw everything from an unlocked lock to `destination`. Taking the full balance closes the
- * account and returns the rent deposit too.
- */
+/** Withdrawing the full balance closes the account and returns the rent deposit too. */
 export function withdrawAllInstruction(view: LockView, withdrawer: TransactionSigner, destination: Address): Instruction {
   if (!view.canWithdraw) throw new Error('This lock cannot be withdrawn yet.');
   if (view.withdrawer !== withdrawer.address) throw new Error('Only the withdraw authority can withdraw this lock.');
   return getWithdrawInstruction({ stake: view.address, recipient: destination, withdrawAuthority: withdrawer, args: view.lamports });
 }
 
-/** For a lock someone staked: stop staking, so it can be withdrawn after the cooldown. */
 export function deactivateInstruction(view: LockView, staker: TransactionSigner): Instruction {
   if (!view.mustDeactivate) throw new Error('This lock is not staked.');
   if (view.staker !== staker.address) throw new Error('Only the stake authority can deactivate this lock.');
   return getDeactivateInstruction({ stake: view.address, stakeAuthority: staker });
 }
 
-/** The unlock as a v0 message from the wallet, with a compute-unit limit once the test run measured one. */
 export function unlockTransactionMessage(instruction: Instruction, wallet: TransactionSigner, lifetime: BlockhashLifetime, units?: number) {
   const instructions = units === undefined ? [instruction] : [getSetComputeUnitLimitInstruction({ units }), instruction];
   return transactionMessage(wallet, lifetime, instructions);
@@ -41,9 +36,7 @@ export function unlockTransactionMessage(instruction: Instruction, wallet: Trans
 export interface UnlockExpectation {
   action: UnlockAction;
   lock: Address;
-  /** The connected wallet: the authority, the only signer, and for a withdraw the recipient. */
   wallet: Address;
-  /** For a withdraw: the lock's whole balance, which closes the account. */
   lamports?: bigint;
 }
 
@@ -52,11 +45,6 @@ export function verifyUnlockMessage(message: VerifiableMessage, expected: Unlock
   return [...problems, ...verifyUnlockInstructions(message.instructions, expected)];
 }
 
-/**
- * Check a withdraw or deactivate before the wallet sees it: an optional compute-unit limit, then
- * exactly one Withdraw (everything, to the wallet) or Deactivate, signed only by the wallet and never
- * with a custodian. Returns plain-word problems; empty when it is exactly that.
- */
 export function verifyUnlockInstructions(instructions: readonly Instruction[], expected: UnlockExpectation): string[] {
   const budget = splitComputeBudget(instructions);
   const problems = [...budget.problems, ...foreignSignerProblems(instructions, expected.wallet)];

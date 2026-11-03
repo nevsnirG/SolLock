@@ -14,7 +14,6 @@ export interface Call {
   body: string;
 }
 
-/** A stand-in for the internet: records every outbound call and answers with `respond`. */
 export function fakeNetwork(respond: (call: Call) => Response | Promise<Response>) {
   const calls: Call[] = [];
   const fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {

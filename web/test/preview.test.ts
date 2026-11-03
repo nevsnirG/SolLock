@@ -36,7 +36,6 @@ describe('previewLock', () => {
     expect(fieldOf(init, 'lockup.custodian')).toMatchObject({ value: CUSTODIAN_ADDRESS, note: 'off-curve, nobody has a key' });
     expect(fieldOf(transfer, 'to (fee)')?.value).toBe(FEE);
 
-    // The stand-in never leaks onto the page.
     expect(JSON.stringify(p!.instructions)).not.toContain(PREVIEW_WALLET);
   });
 

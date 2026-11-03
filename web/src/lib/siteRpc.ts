@@ -14,7 +14,7 @@ import {
 import { CLUSTER } from '../config.ts';
 import { FlowError } from './signing.ts';
 
-/** The RPC methods the site uses, all of them allowed by our proxy. */
+/** Must stay within the methods the site's RPC proxy allows. */
 export type SiteRpc = Rpc<
   GetAccountInfoApi &
     GetBalanceApi &
@@ -33,10 +33,6 @@ export const siteRpc = (): SiteRpc => createSolanaRpc(siteRpcUrl());
 
 let clusterCheck: Promise<void> | null = null;
 
-/**
- * The page and the server must be on the same network. A devnet page in front of a mainnet server
- * would pay the devnet fee address and write devnet recovery notes.
- */
 export function assertServerCluster(): Promise<void> {
   clusterCheck ??= fetch('/api/health')
     .then((response) => response.json() as Promise<{ cluster?: string }>)

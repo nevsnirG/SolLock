@@ -2,7 +2,6 @@
 import { CUSTODIAN_ADDRESS, CUSTODIAN_SEED, deriveCustodian } from '@sollock/core/custodian';
 import Base from '../layouts/Base.astro';
 
-// Worked out at build time; the button below works it out again in the visitor's browser.
 const derivation = deriveCustodian();
 if (derivation.address !== CUSTODIAN_ADDRESS) throw new Error('The custodian derivation no longer matches the published address.');
 const hex = (bytes: Uint8Array) => Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');

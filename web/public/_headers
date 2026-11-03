@@ -1,5 +1,4 @@
-# Cloudflare applies these to every static file it serves (the pages never run the Worker).
-# The page CSP is a <meta> tag that Astro writes with script hashes; frame-ancestors only works here.
+# Static files bypass the Worker. This CSP only adds frame-ancestors, which the hashed <meta> CSP cannot set.
 /*
   Content-Security-Policy: frame-ancestors 'none'
   X-Frame-Options: DENY

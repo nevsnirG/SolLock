@@ -1,7 +1,3 @@
-/**
- * A small in-memory cache with expiry. Each Worker isolate keeps its own; that is enough for
- * "cache the blockhash for 2 seconds", where sharing across data centres would gain nothing.
- */
 export class TtlCache<V> {
   private readonly entries = new Map<string, { value: V; expires: number }>();
 
@@ -22,7 +18,7 @@ export class TtlCache<V> {
 
   set(key: string, value: V, ttlMs: number): void {
     if (this.entries.size >= this.maxEntries) {
-      // Drop the oldest entry. Maps keep insertion order.
+      // Maps iterate in insertion order, so this is the oldest entry.
       const oldest = this.entries.keys().next();
       if (!oldest.done) this.entries.delete(oldest.value);
     }

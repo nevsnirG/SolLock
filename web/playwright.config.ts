@@ -2,11 +2,6 @@ import { defineConfig, devices } from '@playwright/test';
 
 const PORT = 8792;
 
-/**
- * Browser tests against the built site, served by the real Worker in Wrangler's local runtime. The
- * Solana network and the price service are faked in the browser, so no request leaves the machine.
- * Run `pnpm build` first.
- */
 export default defineConfig({
   testDir: './e2e',
   testMatch: '**/*.e2e.ts',

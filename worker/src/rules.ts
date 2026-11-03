@@ -20,15 +20,13 @@ export interface JsonRpcRequest {
 }
 
 export interface MethodRule {
-  /** A problem with the parameters, or null when they are fine. */
   check(params: unknown[]): string | null;
-  /** Serve repeats from memory for this long. Only for data that is the same for everyone. */
+  /** Only for answers that are the same for every visitor: the cache is shared. */
   cacheMs?: number;
-  /** Also counted against the stricter lookup limiter. */
   lookup?: boolean;
 }
 
-/** Standard JSON-RPC error codes. */
+/** Standard JSON-RPC 2.0 error codes. */
 export const PARSE_ERROR = -32700;
 export const INTERNAL_ERROR = -32603;
 export const INVALID_REQUEST = -32600;
@@ -46,7 +44,7 @@ export class RpcRefusal extends Error {
 }
 
 const COMMITMENTS = new Set(['processed', 'confirmed', 'finalized']);
-/** The site reads raw account data only; jsonParsed would let callers make the provider do more work. */
+/** Raw data only: jsonParsed would let callers make the provider do more work. */
 const ACCOUNT_ENCODING = 'base64';
 const BASE58 = /^[1-9A-HJ-NP-Za-km-z]+$/;
 const BASE64 = /^[A-Za-z0-9+/]+={0,2}$/;
@@ -82,7 +80,6 @@ function signatureListProblem(value: unknown, max: number): string | null {
   return valid ? null : 'Not a valid signature.';
 }
 
-/** The optional config object: only the given keys, each with a sane value. */
 function configProblem(value: unknown, allowed: readonly string[], required: readonly string[] = []): string | null {
   if (value === undefined) return required.length ? `Missing ${required.join(', ')}.` : null;
   if (!isPlainObject(value)) return 'The config must be an object.';
@@ -111,10 +108,8 @@ function wireTransactionProblem(value: unknown): string | null {
   return typeof value === 'string' && value.length <= MAX_WIRE_TX_BASE64 && BASE64.test(value) ? null : 'Not a base64 transaction.';
 }
 
-/** The programs a lock, a withdraw or a deactivate calls. Test runs of anything else are refused. */
 const SIMULATION_PROGRAMS = new Set<string>([SYSTEM_PROGRAM_ADDRESS, STAKE_PROGRAM_ADDRESS, COMPUTE_BUDGET_PROGRAM_ADDRESS, MEMO_PROGRAM_ADDRESS]);
 
-/** Only version 0 transactions for SolLock's own programs, without address lookup tables, can be test-run. */
 function simulationProgramsProblem(value: unknown): string | null {
   try {
     const transaction = getTransactionDecoder().decode(getBase64Encoder().encode(value as string));
@@ -144,10 +139,6 @@ function lookupFilterKind(filter: unknown): LookupFilter | string {
   return 'The lookup may only filter on the withdrawer and the SolLock custodian.';
 }
 
-/**
- * getProgramAccounts is only for "gifts received": SolLock stake accounts (200 bytes, our custodian)
- * whose withdrawer is the given wallet. Exactly these three filters.
- */
 function lockLookupProblem(params: unknown[]): string | null {
   const problem =
     arityProblem(params, 2, 2) ??
@@ -165,10 +156,7 @@ function lockLookupProblem(params: unknown[]): string | null {
   return kinds.size === 3 ? null : 'The lookup needs the size, withdrawer and custodian filters.';
 }
 
-/**
- * The only RPC methods the proxy forwards, each with a check of its parameters. All are reads; there
- * is no sendTransaction, because the user's wallet broadcasts. Anything not listed here is refused.
- */
+/** No sendTransaction: the user's wallet broadcasts, never this proxy. */
 const RULES: Readonly<Record<string, MethodRule>> = {
   getLatestBlockhash: { check: (params) => arityProblem(params, 0, 1) ?? configProblem(params[0], READ), cacheMs: 2_000 },
   getEpochInfo: { check: (params) => arityProblem(params, 0, 1) ?? configProblem(params[0], READ), cacheMs: 2_000 },
@@ -189,7 +177,6 @@ const RULES: Readonly<Record<string, MethodRule>> = {
   getProgramAccounts: { check: lockLookupProblem, lookup: true },
 };
 
-/** Parse and check one JSON-RPC request. Throws {@link RpcRefusal} for anything we won't forward. */
 export function parseRequest(text: string): { request: JsonRpcRequest; rule: MethodRule } {
   let body: unknown;
   try {

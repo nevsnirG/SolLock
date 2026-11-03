@@ -20,7 +20,7 @@ import { type FullInstruction, foreignSignerProblems, splitComputeBudget } from 
 import { lockAddress, lockSeed } from './seeds.ts';
 import type { UnixSeconds } from './time.ts';
 
-/** What the user asked for. The verifier derives everything else (address, seed, fee) itself. */
+/** Only what the user asked for; the verifier derives the address, seed and fee itself. */
 export interface LockExpectation {
   funder: Address;
   withdrawer: Address;
@@ -32,26 +32,16 @@ export interface LockExpectation {
   now: UnixSeconds;
 }
 
-/** The parts of a transaction message the verifier reads. */
 export interface VerifiableMessage {
   feePayer: { address: Address };
   instructions: readonly Instruction[];
 }
 
-/**
- * Check a whole message: the fee payer, the signers and every instruction. Returns plain-words
- * problems; an empty list means the message is exactly the lock the user asked for.
- */
 export async function verifyLockMessage(message: VerifiableMessage, expected: LockExpectation): Promise<string[]> {
   const problems = message.feePayer.address === expected.funder ? [] : [`The fee payer is ${message.feePayer.address}, not your wallet.`];
   return [...problems, ...(await verifyLockInstructions(message.instructions, expected))];
 }
 
-/**
- * Check the instructions of a lock, field by field: compute budget (optional), CreateAccountWithSeed,
- * Initialize with the published custodian and epoch 0, the fee transfer (unless it is a free test
- * lock), and the memo. Nothing else may be present, and only the funder may sign.
- */
 export async function verifyLockInstructions(instructions: readonly Instruction[], expected: LockExpectation): Promise<string[]> {
   const problems = foreignSignerProblems(instructions, expected.funder);
   if (expected.rent <= 0n || expected.rent > MAX_LOCK_RENT) problems.push(`A rent deposit of ${expected.rent} lamports is out of range.`);

@@ -1,10 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import wranglerText from '../wrangler.jsonc?raw';
 
-/** wrangler.jsonc without comments, as Wrangler reads it. */
 const config = JSON.parse(wranglerText.replace(/^\s*\/\/.*$/gm, '')) as Record<string, any>;
 
-// Cloudflare settings no test can exercise: logging, storage and which network each deploy uses.
 describe('wrangler.jsonc', () => {
   it('switches off every kind of logging', () => {
     expect(config.observability).toEqual({ enabled: false, logs: { enabled: false } });

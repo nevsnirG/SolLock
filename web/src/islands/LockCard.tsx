@@ -8,7 +8,6 @@ import { ExternalLink, SigningStatus } from './shared.tsx';
 import { TextPanel } from './TextPanel.tsx';
 import type { SiteWallet } from './wallet.tsx';
 
-/** What every card on My locks shares: the wallet, the clock, and how to act on a lock. */
 export interface CardContext {
   wallet: SiteWallet;
   now: UnixSeconds;
@@ -69,7 +68,6 @@ function LockBadge({ open }: { open: boolean }) {
   );
 }
 
-/** Locks SolLock did not make: a custodian that can lift the lock, or an extra epoch lockup, or staking. */
 function LockWarnings({ view }: { view: LockView }) {
   if (isPlainLock(view) && view.state !== 'staked') return null;
   return (

@@ -27,7 +27,7 @@ describe('gift address', () => {
   });
 
   it('refuses what is not an address', () => {
-    // Never a valid address: wrong characters (0, O, I and l are not base58) or wrong length.
+    // 0, O, I and l are not base58; the others have the wrong length.
     for (const bad of ['', 'hello', `${friend.slice(0, -1)}0`, '1'.repeat(45), friend.slice(0, 20), '0OIl0OIl0OIl0OIl0OIl0OIl0OIl0OIl']) {
       expect(giftAddressProblem(bad, { funder, feeAddress }), bad).toMatch(/not a Solana address/);
     }

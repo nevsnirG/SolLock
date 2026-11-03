@@ -10,7 +10,6 @@ import {
 import { getStakeStateAccountEncoder } from '@solana-program/stake';
 import { accountExists, CUSTODIAN_ADDRESS, LockRequestError, MAX_LOCK_COMPUTE_UNITS, STAKE_PROGRAM_ADDRESS, type LockPlan } from '@sollock/core';
 import { beforeEach, describe, expect, it } from 'vitest';
-// The Worker's own allow-list: every request the browser makes must pass it.
 import { parseRequest } from '../../worker/src/rules.ts';
 import { type DraftInput, draftLock } from '../src/lib/draft.ts';
 import { finishLock, prepareLock, readBackLock } from '../src/lib/lockFlow.ts';
@@ -28,11 +27,8 @@ interface Chain {
   simulation: { err: unknown; unitsConsumed: number; logs: string[] };
   statuses: (null | { confirmationStatus: string; err: unknown })[];
   blockHeight: number;
-  /** The lock account the network returns, once there is one. */
   lock: { owner: Address; unlockAt: bigint; lamports: number; custodian?: Address } | null;
-  /** What the network says the rent deposit is. */
   rent: number;
-  /** Other accounts by address, with the program that owns them (a gift recipient, say). */
   owners: Map<string, string>;
 }
 
@@ -92,7 +88,6 @@ function answer(method: string, params: unknown[]): unknown {
   }
 }
 
-/** A transport that checks each request against the Worker's rules, like the real proxy would. */
 const transport = (async ({ payload }: { payload: unknown }) => {
   const text = JSON.stringify(payload, (_, v) => (typeof v === 'bigint' ? Number(v) : v));
   const { request } = parseRequest(text); // throws, failing the test, if the proxy would refuse it

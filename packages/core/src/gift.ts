@@ -2,7 +2,6 @@ import { type Address, isAddress, isOffCurveAddress } from '@solana/kit';
 import { SYSTEM_PROGRAM_ADDRESS } from './constants.ts';
 import { CUSTODIAN_ADDRESS } from './custodian.ts';
 
-/** Program and sysvar addresses that are never somebody's wallet. */
 const NOT_WALLETS = new Set<string>([
   '11111111111111111111111111111111',
   'Stake11111111111111111111111111111111111111',
@@ -41,10 +40,6 @@ export interface GiftContext {
   feeAddress: Address;
 }
 
-/**
- * Why a gift address must be refused, in plain words, or null when it may be used. These are the
- * checks that need no network. {@link giftAccountWarnings} adds the ones that need the account.
- */
 export function giftAddressProblem(input: string, ctx: GiftContext): string | null {
   const text = input.trim();
   if (!isAddress(text)) return 'That is not a Solana address. It should be 32 to 44 letters and numbers.';
@@ -60,15 +55,10 @@ export function giftAddressProblem(input: string, ctx: GiftContext): string | nu
 
 export interface GiftAccountInfo {
   exists: boolean;
-  /** The program that owns the account. */
   programAddress?: Address;
   executable?: boolean;
 }
 
-/**
- * Why the network's view of the recipient's account rules it out, or null. An account owned by a
- * program (a token account, another lock) has no wallet key that could ever withdraw.
- */
 export function giftAccountProblem(account: GiftAccountInfo): string | null {
   if (!account.exists) return null;
   if (account.executable) return 'That address is a program, so no wallet could withdraw the gift.';
@@ -78,7 +68,6 @@ export function giftAccountProblem(account: GiftAccountInfo): string | null {
   return null;
 }
 
-/** Warnings about the recipient's account that don't block the gift. */
 export function giftAccountWarnings(account: GiftAccountInfo): string[] {
   return account.exists ? [] : ['This address has never been used. Check it with the recipient before you lock.'];
 }

@@ -1,8 +1,3 @@
-/**
- * Today's SOL price in the visitor's currency, for showing what an amount is worth now. Never a
- * forecast. One upstream call a minute covers every currency, and the visitor never talks to the
- * price service directly.
- */
 import { CURRENCIES, type Currency, isCurrency } from '@sollock/core/money';
 import type { Hono } from 'hono';
 import { type Deps, type Env, USER_AGENT } from './env.ts';
@@ -17,7 +12,7 @@ export const EDGE_CACHE_KEY = 'https://price.sollock.internal/solana';
 
 interface Quotes {
   prices: Partial<Record<Currency, number>>;
-  /** When CoinGecko last updated the price, in Unix seconds. */
+  /** Unix seconds. */
   asOf: number;
 }
 
@@ -63,7 +58,7 @@ export function mountPrice(app: Hono<{ Bindings: Env }>, deps: Deps): void {
     return fresh;
   }
 
-  // The edge cache is shared by every isolate in a data centre. It does nothing on workers.dev.
+  // Shared by every isolate in a data centre. The Cache API does nothing on workers.dev.
   async function fromEdgeCache(): Promise<Quotes | null> {
     const cached = await caches.default.match(EDGE_CACHE_KEY);
     if (!cached) return null;
@@ -93,7 +88,6 @@ export function mountPrice(app: Hono<{ Bindings: Env }>, deps: Deps): void {
   });
 }
 
-/** Quotes as this Worker stored them in the edge cache, or null for anything else. */
 function isQuotes(value: unknown): Quotes | null {
   const { prices, asOf } = (value ?? {}) as Partial<Quotes>;
   return typeof asOf === 'number' && typeof prices === 'object' && prices !== null ? { prices, asOf } : null;

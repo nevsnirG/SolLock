@@ -29,7 +29,6 @@ export interface BlockhashLifetime {
   lastValidBlockHeight: bigint;
 }
 
-/** A v0 transaction message, paid for by `feePayer`. */
 export function transactionMessage(feePayer: TransactionSigner, lifetime: BlockhashLifetime, instructions: readonly Instruction[]) {
   return pipe(
     createTransactionMessage({ version: 0 }),
@@ -47,10 +46,6 @@ export function foreignSignerProblems(instructions: readonly Instruction[], wall
   return [...foreign].map((signer) => `${signer} would have to sign. Only your wallet should.`);
 }
 
-/**
- * Splits off an optional leading compute-unit limit and checks it. The rest are the instructions
- * that do the work.
- */
 export function splitComputeBudget(instructions: readonly Instruction[]): { problems: string[]; rest: FullInstruction[] } {
   const list = instructions.map(withAccountsAndData);
   const first = list[0];

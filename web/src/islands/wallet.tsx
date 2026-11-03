@@ -10,10 +10,6 @@ import { siteRpcUrl } from '../lib/siteRpc.ts';
 
 const CHAIN = `solana:${CLUSTER}` as const;
 
-/**
- * ConnectorKit, set up for SolLock: Wallet Standard discovery, Mobile Wallet Adapter on Android, and
- * our own /api/rpc as the only RPC. Nothing else is configured, so nothing else is called.
- */
 export function WalletProvider({ children }: { children: ReactNode }) {
   const config = useMemo(
     () =>
@@ -39,12 +35,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 export interface SiteWallet {
   status: 'disconnected' | 'connecting' | 'connected' | 'error';
   address: Address | null;
-  /** The wallet's own name, or "your wallet" before one is connected. */
   displayName: string;
   icon: string | null;
-  /** Signs and sends in the wallet itself, on our cluster. Null when the wallet can't do that. */
   signer: TransactionSendingSigner | null;
-  /** Why there is no signer although a wallet is connected, in plain words. */
   signerProblem: string | null;
   connectors: { id: string; name: string; icon: string; ready: boolean }[];
   connect: (id: string) => Promise<void>;
@@ -85,7 +78,6 @@ export function useSiteWallet(): SiteWallet {
   };
 }
 
-/** The header's wallet button and the wallet picker, the same on every page with an island. */
 export function WalletChrome({
   wallet,
   balance,
@@ -107,7 +99,7 @@ export function WalletChrome({
 
 const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-/** Opens this page inside a wallet app's own browser: the way in on iOS, where browsers have no wallets. */
+/** iOS browsers can't reach wallet apps, so the way in is this page opened in the wallet's own browser. */
 function browseLinks(): { name: string; href: string }[] {
   const url = encodeURIComponent(window.location.href);
   const ref = encodeURIComponent(window.location.origin);
@@ -117,7 +109,6 @@ function browseLinks(): { name: string; href: string }[] {
   ];
 }
 
-/** Focus moves into the dialog and back to its opener; Escape closes it. */
 function useDialog(dialog: RefObject<HTMLElement | null>, onClose: () => void) {
   const close = useEffectEvent(onClose);
   useEffect(() => {
@@ -217,7 +208,6 @@ function OpenInWalletApp() {
   );
 }
 
-/** The wallet button in the page header, rendered there from inside the island. */
 function HeaderWallet({ wallet, balance, onOpen }: { wallet: SiteWallet; balance: bigint | null; onOpen: () => void }) {
   const [slot, setSlot] = useState<HTMLElement | null>(null);
   useEffect(() => setSlot(document.getElementById('wallet-slot')), []);

@@ -49,7 +49,6 @@ const account = (withdrawer: Address) => ({
   space: 200,
 });
 
-/** A fake network: which addresses hold a lock, and every request it was sent. */
 function fakeRpc(locks: Map<string, Address>) {
   const requests: { method: string; params: unknown[] }[] = [];
   const transport = (async ({ payload }: { payload: unknown }) => {
@@ -75,7 +74,7 @@ describe('finding locks without a database', () => {
   it('finds every seeded lock, own and given, and stops at the first empty batch', async () => {
     const locks = new Map<string, Address>([
       [await lockAddress(wallet, 0), wallet],
-      [await lockAddress(wallet, 2), friend], // a gift this wallet gave
+      [await lockAddress(wallet, 2), friend],
       [await lockAddress(wallet, 150), wallet], // in the second batch
     ]);
     const { rpc, requests } = fakeRpc(locks);

@@ -17,7 +17,6 @@ async function lookUp(text: string): Promise<LookupState> {
   }
 }
 
-/** Any lock by its address, from a recovery note or a message from whoever gave it. */
 export function LockLookup({ context }: { context: CardContext }) {
   const [text, setText] = useState('');
   const [state, setState] = useState<LookupState>({ kind: 'idle' });

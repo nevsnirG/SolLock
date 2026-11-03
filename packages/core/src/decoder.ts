@@ -40,9 +40,7 @@ import { formatUtc } from './time.ts';
 export interface DecodedField {
   label: string;
   value: string;
-  /** A short remark next to the value, such as "nobody has a key". */
   note?: string;
-  /** True when the value should alarm the user. */
   warning?: boolean;
 }
 
@@ -51,14 +49,12 @@ export interface DecodedInstruction {
   name: string;
   why: string;
   fields: DecodedField[];
-  /** Set for anything we don't recognise. The UI must refuse to sign. */
+  /** The UI must refuse to sign when this is set. */
   unknown?: boolean;
 }
 
 export interface DecodeContext {
-  /** Labels the fee transfer. */
   feeAddress?: Address;
-  /** Labels the connected wallet as "you". */
   wallet?: Address;
 }
 
@@ -89,7 +85,6 @@ function unknownInstruction(ix: FullInstruction, program: string): DecodedInstru
   };
 }
 
-/** One instruction in plain words, for "The full transaction" on the confirm screen. */
 export function decodeInstruction(instruction: Instruction, ctx: DecodeContext = {}): DecodedInstruction {
   const ix = withAccountsAndData(instruction);
   try {
@@ -234,10 +229,7 @@ function decompileMessageBytes(messageBytes: ReadonlyUint8Array) {
   return { ...message, instructions };
 }
 
-/**
- * Compile a message to the bytes a wallet signs, and read those bytes back. Verify and preview the
- * result of this, not the message you built, so you check exactly what gets signed.
- */
+/** Verify the decompiled bytes, not the built message, so the check covers exactly what gets signed. */
 export function roundTripMessage(message: Parameters<typeof compileTransaction>[0]) {
   return decompileMessageBytes(compileTransaction(message).messageBytes);
 }

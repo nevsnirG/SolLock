@@ -22,7 +22,7 @@ import {
 
 const MEMO_PROGRAM = 'MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr';
 
-/** Reads wire bytes with Solana's own decoders and program parsers, none of the site's code. */
+/** Decodes with Solana's own libraries only, never the site's code, so the check stays independent. */
 export function readTransaction(wire: Uint8Array) {
   const { messageBytes, signatures } = getTransactionDecoder().decode(wire);
   const message = decompileTransactionMessage(getCompiledTransactionMessageDecoder().decode(messageBytes));
@@ -34,7 +34,6 @@ export const isSystem = (ix: Instruction, kind: SystemInstruction) =>
 export const isStake = (ix: Instruction, kind: StakeInstruction) =>
   ix.programAddress === STAKE_PROGRAM_ADDRESS && ix.data !== undefined && identifyStakeInstruction(ix.data) === kind;
 
-/** What a lock transaction does, in the terms the user chose. */
 export function readLock(wire: Uint8Array) {
   const tx = readTransaction(wire);
   const create = tx.instructions.find((ix) => isSystem(ix, SystemInstruction.CreateAccountWithSeed));
@@ -63,7 +62,6 @@ export function readLock(wire: Uint8Array) {
   };
 }
 
-/** What a withdrawal transaction does. */
 export function readWithdrawal(wire: Uint8Array): { from: Address; to: Address; lamports: bigint; signers: string[] } {
   const tx = readTransaction(wire);
   const withdraw = tx.instructions.find((ix) => isStake(ix, StakeInstruction.Withdraw));

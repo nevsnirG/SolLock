@@ -1,8 +1,4 @@
-/**
- * Runs our lock transactions on the Stake and Memo programs as deployed on mainnet (see
- * programs/manifest.json), inside LiteSVM, and tries every way out of the lock we know of.
- * LiteSVM has no Windows build: run these with `pnpm test:svm` from the repo root (Docker).
- */
+/** LiteSVM has no Windows build, so these tests run apart from the unit tests, in Docker. */
 import { readFileSync } from 'node:fs';
 import {
   type Address,
@@ -91,7 +87,6 @@ function expectOk(result: TransactionMetadata | FailedTransactionMetadata): Tran
   return result;
 }
 
-/** Assert failure, and return the logs so the test can check why. */
 function expectFailure(result: TransactionMetadata | FailedTransactionMetadata): string {
   expect(result).toBeInstanceOf(FailedTransactionMetadata);
   const failed = result as FailedTransactionMetadata;
@@ -113,7 +108,6 @@ function balance(addr: Address): bigint {
   return svm.getBalance(addr) ?? 0n;
 }
 
-/** The real flow: plan, simulate for the compute units, plan again with a limit, send. */
 async function lock(overrides: Partial<LockRequest> = {}): Promise<{ plan: LockPlan; computeUnits: bigint }> {
   const req: LockRequest = { funder: user, amount: parseSol('2'), unlockAt: UNLOCK, seedIndex: 0, rent, feeAddress, now: NOW, ...overrides };
   const lifetime = { blockhash: svm.latestBlockhash(), lastValidBlockHeight: 1_000_000n };
@@ -129,7 +123,6 @@ async function lock(overrides: Partial<LockRequest> = {}): Promise<{ plan: LockP
   return { plan, computeUnits: result.computeUnitsConsumed() };
 }
 
-/** An extra stake account from the user's wallet, for split and merge attempts. */
 async function stakeAccount(seed: string, lockup?: { unixTimestamp: bigint; custodian: Address }, extra = 0n): Promise<Address> {
   const addr = await createAddressWithSeed({ baseAddress: user.address, programAddress: STAKE_PROGRAM_ADDRESS, seed });
   const ixs: Instruction[] = [
@@ -187,7 +180,7 @@ describe('creating a lock on the real stake program', () => {
       canWithdraw: false,
     });
     expect(balance(feeAddress)).toBe(parseSol('0.01'));
-    // Amount, rent deposit and fee, plus the 5,000-lamport signature fee.
+    // Plus the 5,000-lamport signature fee.
     expect(before - balance(user.address)).toBe(plan.total + 5_000n);
     expect(computeUnits).toBeLessThan(BigInt(plan.computeUnitLimit ?? 0));
     console.log(`Lock used ${computeUnits} compute units; limit set to ${plan.computeUnitLimit}.`);

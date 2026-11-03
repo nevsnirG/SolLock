@@ -1,7 +1,3 @@
-/**
- * Download the Stake and Memo program binaries as deployed on mainnet, for the LiteSVM tests.
- * Run again when the Stake program is upgraded:  pnpm --filter @sollock/core fetch-programs
- */
 import { createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { address, createSolanaRpc, getBase64Encoder } from '@solana/kit';
@@ -21,9 +17,9 @@ async function fetchBytes(account: string): Promise<{ bytes: Uint8Array; slot: b
 async function main() {
   await mkdir(out, { recursive: true });
   const programs = [
-    // Stake11111111111111111111111111111111111111, via its ProgramData account.
+    // ProgramData account of Stake11111111111111111111111111111111111111.
     { name: 'stake.so', account: '6WU8Nxarf9fudRK5atWwjLY4vFaw5UrrWhL88qz7iCMJ', skip: PROGRAM_DATA_HEADER },
-    // The classic Memo program, on BPF loader 2: the account data is the program itself.
+    // BPF loader 2 program: the account data is the program itself.
     { name: 'memo.so', account: 'MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr', skip: 0 },
   ];
   const manifest: Record<string, { account: string; slot: string; sha256: string; bytes: number }> = {};

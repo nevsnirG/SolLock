@@ -4,7 +4,6 @@ import { Choice } from './shared.tsx';
 interface WhoStepProps {
   input: DraftInput;
   draft: Draft;
-  /** What the network says about the gift address, beyond what the draft can check. */
   giftWarnings: string[];
   onChange: (next: Partial<DraftInput>) => void;
 }

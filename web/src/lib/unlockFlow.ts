@@ -16,16 +16,11 @@ import type { SiteRpc } from './siteRpc.ts';
 
 export interface PreparedUnlock {
   action: UnlockAction;
-  /** The lock as read just before preparing. */
   view: LockView;
   message: ReturnType<typeof unlockTransactionMessage>;
   lastValidBlockHeight: bigint;
 }
 
-/**
- * Builds a withdraw (everything, back to the wallet) or a deactivate for a lock, read fresh from the
- * network, and checks it the same way as a lock: a test run, then our own check on the compiled bytes.
- */
 export async function prepareUnlock(action: UnlockAction, lock: Address, { rpc, signer }: { rpc: SiteRpc; signer: TransactionSendingSigner }): Promise<PreparedUnlock> {
   const view = await fetchLock(rpc, lock);
   const instruction = unlockInstruction(action, view, signer);
@@ -63,7 +58,7 @@ async function simulateUnlock(rpc: SiteRpc, action: UnlockAction, message: Param
   }
 }
 
-/** Stake program error 1 is LockupInForce: the network's clock has not reached the date yet. */
+/** The stake program's custom error 1, LockupInForce. */
 const LOCKUP_IN_FORCE = 1;
 
 function isLockupInForce(networkError: unknown): boolean {
@@ -74,13 +69,10 @@ function isLockupInForce(networkError: unknown): boolean {
 export interface UnlockResult {
   action: UnlockAction;
   signature: Signature;
-  /** For a withdraw: what came back to the wallet, rent deposit included. */
   withdrawn: bigint;
-  /** The account afterwards: 'missing' once a withdraw has closed it. */
   after: LockView;
 }
 
-/** Waits for the network, then reads the account again until the withdraw or deactivate shows. */
 export async function finishUnlock(rpc: SiteRpc, prepared: PreparedUnlock, signature: Signature, options: PollOptions = {}): Promise<UnlockResult> {
   const outcome = await waitForConfirmation(rpc, signature, prepared.lastValidBlockHeight, options);
   const { tries = outcome === 'confirmed' ? 4 : 1, intervalMs = 1_500, wait = sleep } = options;
@@ -98,7 +90,6 @@ export async function finishUnlock(rpc: SiteRpc, prepared: PreparedUnlock, signa
   );
 }
 
-/** What the withdraw or deactivate changed on the account, or null while nothing shows yet. */
 function unlockEffect(prepared: PreparedUnlock, after: LockView): { withdrawn: bigint } | null {
   if (prepared.action === 'deactivate') return after.delegation?.deactivationEpoch != null ? { withdrawn: 0n } : null;
   const before = prepared.view.lamports;
@@ -106,7 +97,6 @@ function unlockEffect(prepared: PreparedUnlock, after: LockView): { withdrawn: b
   return after.lamports < before ? { withdrawn: before - after.lamports } : null;
 }
 
-/** Whether a withdraw or deactivate reached the network, for a wallet that reported an error. */
 export async function unlockLanded(rpc: SiteRpc, prepared: PreparedUnlock): Promise<boolean> {
   return unlockEffect(prepared, await fetchLock(rpc, prepared.view.address)) !== null;
 }

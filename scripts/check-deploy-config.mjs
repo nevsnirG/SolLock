@@ -1,17 +1,9 @@
-// Before a deploy: refuse while the configuration for the target is unfinished.
-// Usage: node scripts/check-deploy-config.mjs staging|production
-//
-// Every target: env.<target> exists in worker/wrangler.jsonc, with no REPLACE placeholders, and its
-// CLUSTER is the one the target must have (staging is devnet, production is mainnet).
-// Production (mainnet) also needs everything only the owner can supply: the final legal texts (LEGAL_DRAFT = false, no [brackets] left) and the business details for the receipt.
-
 import { readFileSync } from 'node:fs';
 
 const target = process.argv[2];
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 const problems = [];
 
-/** JSONC to JSON: drops // and /* *\/ comments outside strings, and trailing commas. */
 function stripJsonc(s) {
   let out = '';
   for (let i = 0; i < s.length; i++) {
@@ -61,7 +53,7 @@ if (target === 'production') {
 }
 
 if (problems.length) {
-  console.error(`Not deploying ${target}:\n  ${problems.join('\n  ')}\n(The top of .github/workflows/deploy.yml lists the values.)`);
+  console.error(`Not deploying ${target}:\n  ${problems.join('\n  ')}`);
   process.exit(1);
 }
 console.log(`${target}: the configuration is complete.`);

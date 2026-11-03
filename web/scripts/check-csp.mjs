@@ -1,7 +1,3 @@
-// After `astro build`: every page must carry the CSP <meta>, every inline <script> and <style> must be
-// allowed by its hash, and no element may carry a style attribute (the CSP allows none). Run in CI;
-// exits 1 on a problem. Astro hashes what it bundles, but not everything one could add by hand.
-
 import { createHash } from 'node:crypto';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';

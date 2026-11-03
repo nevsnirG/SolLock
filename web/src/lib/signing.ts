@@ -8,7 +8,6 @@ import {
 import { MAX_LOCK_COMPUTE_UNITS } from '@sollock/core';
 import type { SiteRpc } from './siteRpc.ts';
 
-/** Where a signing attempt stands, for the line under the button. */
 export type SigningPhase =
   | { kind: 'idle' }
   | { kind: 'preparing' }
@@ -19,7 +18,6 @@ export type SigningPhase =
 
 export const isBusy = (phase: SigningPhase) => phase.kind !== 'idle' && phase.kind !== 'error';
 
-/** Something went wrong before or after signing. The message is for the user, in plain words. */
 export class FlowError extends Error {
   override name = 'FlowError';
   constructor(
@@ -30,7 +28,6 @@ export class FlowError extends Error {
   }
 }
 
-/** A failed test run, keeping the network's own error for callers that recognise it. */
 export class TestRunError extends FlowError {
   override name = 'TestRunError';
   constructor(
@@ -54,15 +51,10 @@ export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve
 const COMPUTE_HEADROOM = 1.2;
 const COMPUTE_MARGIN_UNITS = 1_000;
 
-/** Room above what the test run used, so small differences on the network don't make it fail. */
 export function computeUnitLimit(consumed: bigint): number {
   return Math.min(MAX_LOCK_COMPUTE_UNITS, Math.ceil(Number(consumed) * COMPUTE_HEADROOM) + COMPUTE_MARGIN_UNITS);
 }
 
-/**
- * Runs a transaction on the network without sending it, unsigned, to see that it would succeed and
- * how much compute it uses. `what` names it in the error: "this lock", "this withdrawal".
- */
 export async function testRun(rpc: SiteRpc, message: Parameters<typeof compileTransaction>[0], what: string): Promise<{ unitsConsumed: bigint }> {
   const wire = getBase64EncodedWireTransaction(compileTransaction(message));
   const { value } = await rpc.simulateTransaction(wire, { encoding: 'base64', sigVerify: false, replaceRecentBlockhash: true, commitment: 'confirmed' }).send();
@@ -80,16 +72,13 @@ function explainNetworkError(err: unknown): string {
   return `The network said: ${text}`;
 }
 
-/**
- * Hands the transaction to the wallet, which shows it to the user, signs it and sends it to the
- * network itself. Our server never sees the signed transaction.
- */
+/** The wallet signs and broadcasts; the site's server never handles a signed transaction. */
 export async function signAndSend(message: Parameters<typeof signAndSendTransactionMessageWithSigners>[0]): Promise<Signature> {
   const bytes = await signAndSendTransactionMessageWithSigners(message);
   return getBase58Decoder().decode(bytes) as Signature;
 }
 
-/** EIP-1193's "user rejected the request", which Solana wallets use too. */
+/** EIP-1193's "user rejected the request" code, which Solana wallets use too. */
 const USER_REJECTED_CODE = 4001;
 const MAX_CAUSE_DEPTH = 5;
 
@@ -103,10 +92,6 @@ export function isWalletRejection(error: unknown): boolean {
   return false;
 }
 
-/**
- * Waits until the network confirms the transaction. Gives up once the blockhash has expired (the
- * transaction can then never land) or after `maxMs`.
- */
 export async function waitForConfirmation(
   rpc: SiteRpc,
   signature: Signature,
@@ -124,19 +109,16 @@ export async function waitForConfirmation(
   return 'expired';
 }
 
-/** One signing attempt: prepare it, let the wallet send it, then see it through on the network. */
 export interface SigningSteps<Prepared, Result> {
   prepare(): Promise<Prepared>;
   send(prepared: Prepared): Promise<Signature>;
   finish(prepared: Prepared, signature: Signature): Promise<Result>;
-  /** Whether it reached the network after all, although the wallet reported an error. */
   landed(prepared: Prepared): Promise<boolean>;
   landedMessage: string;
 }
 
 export type SigningOutcome<Result> = { kind: 'done'; result: Result } | { kind: 'landed' } | { kind: 'failed' };
 
-/** Runs the steps, reporting each phase, and turns any failure into plain words. */
 export async function runSigning<Prepared, Result>(
   steps: SigningSteps<Prepared, Result>,
   onPhase: (phase: SigningPhase) => void,
@@ -167,10 +149,7 @@ export async function runSigning<Prepared, Result>(
   }
 }
 
-/**
- * A wallet can report an error and still send. Looks a few times before believing nothing arrived.
- * Null when the network could not be asked.
- */
+/** Wallets can report an error and still send, so look a few times; null when the network can't be asked. */
 async function checkLanded(landed: () => Promise<boolean>, { tries = 3, intervalMs = 2_000, wait = sleep }: PollOptions = {}): Promise<boolean | null> {
   for (let attempt = 0; attempt < tries; attempt++) {
     if (attempt > 0) await wait(intervalMs);

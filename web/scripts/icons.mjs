@@ -1,6 +1,4 @@
-// Bitmap icons made from public/favicon.svg before each build, for what cannot use an SVG: favicon.ico
-// (mobile wallets ask for it by that name, and Google's favicon service feeds the wallet popups),
-// a 192px PNG and the iPhone home-screen icon. Output goes to public/ (not committed). Run: pnpm icons.
+// Mobile wallets, and Google's favicon service behind wallet popups, ask for /favicon.ico by name.
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -13,14 +11,13 @@ const require = createRequire(import.meta.url);
 const pub = join(here, '../public');
 const logo = readFileSync(join(pub, 'favicon.svg'), 'utf8');
 
-// The sun from the logo, for the iPhone icon: iOS rounds the corners itself and turns transparency
-// black, so the sun fills the whole square.
+// iOS rounds the corners itself and turns transparency black, so the touch icon fills the whole square.
 const SUN = '#f7a823';
 const tile = logo.replace('<circle cx="17" cy="17" r="16"', `<rect width="34" height="34" fill="${SUN}"/><circle cx="17" cy="17" r="16"`);
 
 const png = (svg, size) => new Resvg(svg, { fitTo: { mode: 'width', value: size } }).render().asPng();
 
-/** An .ico that holds PNG images, which every browser since Windows Vista reads. */
+/** An .ico that holds PNG images rather than bitmaps. */
 function ico(images) {
   const header = Buffer.alloc(6 + 16 * images.length);
   header.writeUInt16LE(1, 2);

@@ -1,19 +1,3 @@
-/**
- * Run the browser's signing flow (src/lib/lockFlow.ts) end to end on devnet, without a browser:
- * every read goes through the local Worker's /api/rpc, as in the page, and a stand-in wallet (the
- * throwaway keypair of packages/core's devnet script) signs and sends, as a real wallet does.
- *
- *   pnpm --filter @sollock/worker dev                         (in one terminal)
- *   pnpm --filter @sollock/web devnet:flow                    a free test lock
- *   pnpm --filter @sollock/web devnet:flow -- --amount 0.02 --days 2 [--gift <address>]
- *   pnpm --filter @sollock/web devnet:flow -- --minutes 3            a lock that opens in 3 minutes
- *   pnpm --filter @sollock/web devnet:flow -- --withdraw <lock>      withdraw it, as My locks does
- *
- * --minutes exists only here, to test withdrawing without waiting a day: the site never allows a lock
- * shorter than an hour. It builds a free 0.01 SOL lock with the same builder.
- *
- * Devnet only. The stand-in wallet sends through the public devnet RPC, never through our proxy.
- */
 import { readFileSync } from 'node:fs';
 import { parseArgs } from 'node:util';
 import {
@@ -61,11 +45,11 @@ const keypair = (name: string) =>
 
 const key = await keypair('wallet');
 const fee = (await keypair('fee')).address;
-// The page's own RPC: our proxy, as a page on localhost would call it.
+// The proxy refuses requests without an allowed Origin.
 const rpc = createSolanaRpc(`${opts.proxy}/api/rpc`, { headers: { origin: 'http://localhost:4331' } }) as unknown as SiteRpc;
 const publicDevnet = createSolanaRpc(process.env.DEVNET_RPC ?? 'https://api.devnet.solana.com');
 
-/** Signs and sends like a Wallet Standard wallet's signAndSendTransaction. */
+// The proxy has no sendTransaction, so this stand-in broadcasts through its own RPC, as a real wallet does.
 const wallet: TransactionSendingSigner = {
   address: key.address,
   async signAndSendTransactions(transactions) {
@@ -111,8 +95,7 @@ const draft = draftLock(
 );
 if (draft.problems.length) throw new Error(draft.problems.join(' '));
 
-// --minutes: the same free test lock, opening in a few minutes. Built as if "now" were two hours
-// earlier, so the builder's one-hour minimum is met; devnet testing only.
+// Built as if now were two hours earlier, so a lock minutes away passes the builder's one-hour minimum.
 let lockDraft: Draft = draft;
 let builderNow = nowSeconds();
 if (opts.minutes) {

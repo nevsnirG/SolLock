@@ -4,7 +4,6 @@ import { SALE_PRICE_2020_USD } from '../config.ts';
 import Base from '../layouts/Base.astro';
 import { YEAR_PRESETS } from '../lib/unlockDate.ts';
 
-// The hero's example: this many dollars of SOL at the 2020 sale price, valued at today's price.
 const EXAMPLE_SPEND = 1000;
 const usd = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
 ---
@@ -224,7 +223,6 @@ const usd = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', c
 </Base>
 
 <script>
-  // The hero's example at today's price, from our own /api/price (CoinGecko, cached a minute).
   const sale = Number(document.querySelector<HTMLElement>('.then-now')?.dataset.sale);
   const title = document.getElementById('heroTitle');
   const spend = Number(title?.dataset.spend);
@@ -238,7 +236,6 @@ const usd = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', c
     return typeof perSol === 'number' && perSol > 0 && typeof asOf === 'number';
   };
 
-  /** Without today's price: what the money bought, which needs no price. */
   function showSolBought() {
     if (title) title.textContent = `${usd(spend, 0)} in Solana in 2020 bought ${Math.floor(spend / sale).toLocaleString('en-US')} SOL.`;
   }

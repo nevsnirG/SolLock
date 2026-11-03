@@ -10,7 +10,6 @@ export interface DurationParts {
   hours: number;
 }
 
-/** Whole calendar years from `now` to `until`, then the days and hours left over. */
 export function durationParts(now: UnixSeconds, until: UnixSeconds): DurationParts {
   const start = new Date(Number(now) * 1000);
   const end = Number(until) * 1000;
@@ -27,7 +26,6 @@ export function durationParts(now: UnixSeconds, until: UnixSeconds): DurationPar
 
 export const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`;
 
-/** "5 years, 12 days"; "25 hours" under two days, like a test lock; "40 minutes" in the last hour. Rounded up. */
 export function durationText(now: UnixSeconds, until: UnixSeconds): string {
   const seconds = until > now ? Number(until - now) : 0;
   if (seconds < HOUR) return plural(Math.ceil(seconds / MINUTE), 'minute');

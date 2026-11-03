@@ -30,7 +30,6 @@ describe('/api/price', () => {
     expect(url.searchParams.get('vs_currencies')?.split(',')).toContain('eur');
     expect(url.searchParams.get('vs_currencies')?.split(',')).toContain('usd');
     expect(net.calls[0]?.headers.get('x-cg-demo-api-key')).toBe('cg-key');
-    // CoinGecko answers 403 without a descriptive User-Agent.
     expect(net.calls[0]?.headers.get('user-agent')).toMatch(/^SolLock\//);
   });
 

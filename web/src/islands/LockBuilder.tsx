@@ -25,10 +25,6 @@ export default function LockBuilderIsland() {
   );
 }
 
-/**
- * One question per screen: amount, date, who, then the lock in plain words with the safeguards and
- * the sign button. The browser's back button goes back a step. After signing, the success screen.
- */
 function LockBuilder() {
   const builder = useLockBuilder();
   const { wallet, balance, signing, input, draft, step, goToStep, flowRef } = builder;
@@ -165,7 +161,6 @@ function useLockBuilder() {
   };
 }
 
-/** Each step is a browser history entry, so the back button goes back a question. */
 function useStepHistory(initial: Step, canEnter: (step: Step) => boolean, locked: boolean) {
   const [step, setStep] = useState(initial);
   const flowRef = useRef<HTMLDivElement>(null);
@@ -187,7 +182,6 @@ function useStepHistory(initial: Step, canEnter: (step: Step) => boolean, locked
   return { step, goToStep, flowRef };
 }
 
-/** A new step starts at its question, for eyes and screen readers alike. */
 function useFocusQuestionOnChange(flowRef: RefObject<HTMLDivElement | null>, step: Step) {
   const firstRender = useRef(true);
   useEffect(() => {
@@ -200,7 +194,6 @@ function useFocusQuestionOnChange(flowRef: RefObject<HTMLDivElement | null>, ste
   }, [step]);
 }
 
-/** Ticks and the typed LOCK, cleared whenever the amount, date or recipient changes. */
 function useConfirmations(terms: string) {
   const [confirmations, setConfirmations] = useState<Confirmations>(NO_CONFIRMATIONS);
   const [confirmedTerms, setConfirmedTerms] = useState(terms);
@@ -213,7 +206,6 @@ function useConfirmations(terms: string) {
   return { confirmations, updateConfirmations, resetConfirmations };
 }
 
-/** The intro above the steps makes way for the success screen (see body[data-view] in global.css). */
 function useSuccessView(shown: boolean) {
   useEffect(() => {
     if (shown) document.body.dataset.view = 'success';
@@ -242,7 +234,6 @@ function useLockSigning({ wallet, input, draft, preview, confirmations, resetCon
   const sign = async () => {
     const signer = wallet.signer;
     if (!signer || isBusy(phase) || signBlockers(draft, confirmations).length > 0) return;
-    // Worked out again with the time right now, so a test lock that crossed the hour is confirmed again.
     const fresh = draftLock(input, { now: nowSeconds(), feeAddress: FEE_ADDRESS, wallet: signer.address });
     if (termsKey(fresh) !== termsKey(draft)) {
       onTimeMoved();
@@ -264,7 +255,7 @@ function useLockSigning({ wallet, input, draft, preview, confirmations, resetCon
       },
       setPhase,
     );
-    // A second lock is never one click away: after any attempt the user ticks and types again.
+    // Safeguards are redone after every attempt, so a second lock is never one click away.
     resetConfirmations();
     if (outcome.kind === 'done') setResult(outcome.result);
     if (outcome.kind !== 'failed') onLocked();

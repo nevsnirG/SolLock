@@ -1,5 +1,3 @@
-// Loaded at the start of <body> without defer (see Base.astro), so the saved theme applies before the first paint.
-// The choice is remembered in this browser only.
 (function () {
   var KEY = 'sollock:theme';
   var THEMES = ['system', 'light', 'dark'];
@@ -34,9 +32,7 @@
       apply(current);
       try {
         localStorage.setItem(KEY, current);
-      } catch (e) {
-        // Not remembered, then.
-      }
+      } catch (e) {}
       label();
     });
   });
