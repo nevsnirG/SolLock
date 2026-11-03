@@ -1,7 +1,9 @@
 import type { Address, Signature, TransactionSendingSigner } from '@solana/kit';
 import {
+  clockSkewProblem,
   type DecodedInstruction,
   decodeInstruction,
+  fetchChainTime,
   fetchGiftAccount,
   fetchLock,
   fetchLockRent,
@@ -43,17 +45,23 @@ interface PrepareContext {
   feeAddress: Address;
   now: UnixSeconds;
   shown?: { rent: bigint; total: bigint } | undefined;
+  /** How far `now` may be from the network's clock; the default is the core's ten minutes. */
+  clockTolerance?: UnixSeconds | undefined;
 }
 
 export async function prepareLock(draft: Draft, ctx: PrepareContext): Promise<PreparedLock> {
   if (!isCompleteDraft(draft)) throw new FlowError(draft.problems[0] ?? 'The form is not complete.');
   const { rpc, signer } = ctx;
-  const [rent, seed, balance] = await Promise.all([
+  const [rent, seed, balance, chainNow] = await Promise.all([
     fetchLockRent(rpc),
     findFreeSeed(rpc, signer.address),
     rpc.getBalance(signer.address, { commitment: 'confirmed' }).send(),
+    fetchChainTime(rpc).catch(() => {
+      throw new FlowError("We couldn't read the network's clock, so nothing was sent. Try again.");
+    }),
     checkRecipient(rpc, draft),
   ]);
+  assertClockInSync(chainNow, ctx);
 
   const request = lockRequestFromDraft(draft, { funder: signer, seedIndex: seed.index, rent, feeAddress: ctx.feeAddress, now: ctx.now });
   const trialPlan = await asFlowError(planLock(request));
@@ -74,6 +82,12 @@ async function checkRecipient(rpc: SiteRpc, draft: CompleteDraft): Promise<void>
     throw new FlowError("We couldn't check the recipient's address on the network, so nothing was sent. Try again.");
   });
   const problem = giftAccountProblem(account);
+  if (problem) throw new FlowError(problem);
+}
+
+/** The unlock time and the free test lock's day are worked out from the device clock, so a wrong one stops the lock. */
+function assertClockInSync(chainNow: UnixSeconds, ctx: PrepareContext) {
+  const problem = clockSkewProblem(chainNow, ctx.now, ctx.clockTolerance);
   if (problem) throw new FlowError(problem);
 }
 

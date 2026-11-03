@@ -13,6 +13,7 @@ import {
   describeLock,
   fetchLock,
   formatSol,
+  HOUR,
   nowSeconds,
   roundTripMessage,
   TEST_LOCK_AMOUNT,
@@ -108,7 +109,14 @@ console.log(`Wallet:   ${key.address} (devnet throwaway)`);
 console.log(`Lock:     ${formatSol(lockDraft.amount!)} SOL ${lockDraft.testLock ? '(free test lock)' : `with a ${formatSol(lockDraft.fee)} SOL fee`}${opts.gift ? `, a gift to ${opts.gift}` : ''}${opts.minutes ? `, opening in ${opts.minutes} minutes` : ''}`);
 
 console.log('\n1. Preparing: balance, free seed, test run, our own check');
-const prepared = await prepareLock(lockDraft, { rpc, signer: wallet, feeAddress: fee, now: opts.minutes ? builderNow : nowSeconds() });
+// The shifted "now" is two hours behind the network's clock on purpose, so the clock check gets room for it.
+const prepared = await prepareLock(lockDraft, {
+  rpc,
+  signer: wallet,
+  feeAddress: fee,
+  now: opts.minutes ? builderNow : nowSeconds(),
+  clockTolerance: opts.minutes ? 3n * HOUR : undefined,
+});
 console.log(`   compute-unit limit set to ${prepared.plan.computeUnitLimit}`);
 printInstructions(prepared.instructions);
 

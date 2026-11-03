@@ -13,6 +13,8 @@ import { isStake, isSystem, readTransaction } from './decode.ts';
 export const CUSTODIAN = 'EcS8zEEa4dZinCCRWDotMqVqQB1PrHjdnuSeEUBGoZav' as Address;
 export const LOCK_RENT = 1_666_240n;
 const STAKE_ACCOUNT_SPACE = 200;
+const CLOCK_SYSVAR = 'SysvarC1ock11111111111111111111111111111111';
+const SYSVAR_OWNER = 'Sysvar1111111111111111111111111111111111111' as Address;
 const LOCKUP_IN_FORCE = { InstructionError: [1, { Custom: 1 }] };
 
 interface Account {
@@ -87,7 +89,7 @@ export class FakeChain {
       case 'getEpochInfo':
         return { absoluteSlot: 1, blockHeight: 900, epoch: 1_198, slotIndex: 0, slotsInEpoch: 432_000, transactionCount: null };
       case 'getAccountInfo':
-        return { context, value: this.encoded(params[0] as string) };
+        return { context, value: this.encoded(params[0] as string, (params[1] as { dataSlice?: DataSlice } | undefined)?.dataSlice) };
       case 'getMultipleAccounts':
         return { context, value: (params[0] as string[]).map((a) => this.encoded(a)) };
       case 'getProgramAccounts':
@@ -146,17 +148,25 @@ export class FakeChain {
     if (to) this.balances.set(to, this.balanceOf(to) + lamports);
   }
 
-  private encoded(address: string) {
-    const account = this.accounts.get(address);
+  private encoded(address: string, slice?: DataSlice) {
+    const account = address === CLOCK_SYSVAR ? this.clockAccount() : this.accounts.get(address);
     if (!account) return null;
+    const data = slice ? account.data.subarray(slice.offset, slice.offset + slice.length) : account.data;
     return {
-      data: [getBase64Decoder().decode(account.data), 'base64'],
+      data: [getBase64Decoder().decode(data), 'base64'],
       executable: false,
       lamports: Number(account.lamports),
       owner: account.owner,
       rentEpoch: 0,
       space: account.data.length,
     };
+  }
+
+  /** The Clock sysvar as the network serves it: the unix timestamp is the last of its five 8-byte fields. */
+  private clockAccount(): Account {
+    const data = new Uint8Array(40);
+    new DataView(data.buffer).setBigInt64(32, this.clock, true);
+    return { lamports: 1_169_280n, owner: SYSVAR_OWNER, data };
   }
 
   private programAccounts(program: string, filters: Filter[]) {
@@ -167,6 +177,7 @@ export class FakeChain {
 }
 
 type Filter = { dataSize: number } | { memcmp: { offset: number; bytes: string } };
+type DataSlice = { offset: number; length: number };
 
 function matches(data: Uint8Array, filter: Filter): boolean {
   if ('dataSize' in filter) return data.length === filter.dataSize;

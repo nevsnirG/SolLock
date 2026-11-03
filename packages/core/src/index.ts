@@ -1,4 +1,5 @@
 export * from './builder.ts';
+export * from './clock.ts';
 export * from './constants.ts';
 export * from './custodian.ts';
 export * from './decoder.ts';

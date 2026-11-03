@@ -9,17 +9,26 @@ import {
   getBase64Encoder,
   type Rpc,
 } from '@solana/kit';
+import { CLOCK_SYSVAR_ADDRESS, CLOCK_UNIX_TIMESTAMP_OFFSET, CLOCK_UNIX_TIMESTAMP_SIZE, decodeClockUnixTimestamp } from './clock.ts';
 import { CUSTODIAN_OFFSET, STAKE_ACCOUNT_SPACE, STAKE_PROGRAM_ADDRESS, WITHDRAWER_OFFSET } from './constants.ts';
 import { CUSTODIAN_ADDRESS } from './custodian.ts';
 import type { GiftAccountInfo } from './gift.ts';
 import { firstFreeSeed, lockAddressBatch, SEED_BATCH_SIZE, type SeededAddress } from './seeds.ts';
 import { type LockView, type RawAccount, type ReadContext, readLockAccount } from './stakeAccount.ts';
-import { nowSeconds } from './time.ts';
+import { nowSeconds, type UnixSeconds } from './time.ts';
 
 const MAX_SEED_BATCHES = 10;
 
 export async function fetchLockRent(rpc: Rpc<GetMinimumBalanceForRentExemptionApi>): Promise<bigint> {
   return rpc.getMinimumBalanceForRentExemption(STAKE_ACCOUNT_SPACE).send();
+}
+
+/** Only the timestamp's eight bytes, through the same getAccountInfo the proxy already allows. */
+export async function fetchChainTime(rpc: Rpc<GetAccountInfoApi>): Promise<UnixSeconds> {
+  const slice = { offset: CLOCK_UNIX_TIMESTAMP_OFFSET, length: CLOCK_UNIX_TIMESTAMP_SIZE };
+  const { value } = await rpc.getAccountInfo(CLOCK_SYSVAR_ADDRESS, { encoding: 'base64', dataSlice: slice }).send();
+  if (!value) throw new Error('The network returned no clock.');
+  return decodeClockUnixTimestamp(getBase64Encoder().encode(value.data[0]) as Uint8Array);
 }
 
 interface Base64Account {

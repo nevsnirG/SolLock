@@ -8,7 +8,7 @@ import {
   type TransactionSendingSigner,
 } from '@solana/kit';
 import { getStakeStateAccountEncoder } from '@solana-program/stake';
-import { accountExists, CUSTODIAN_ADDRESS, LockRequestError, MAX_LOCK_COMPUTE_UNITS, STAKE_PROGRAM_ADDRESS, type LockPlan } from '@sollock/core';
+import { accountExists, CLOCK_SYSVAR_ADDRESS, CUSTODIAN_ADDRESS, DAY, LockRequestError, MAX_LOCK_COMPUTE_UNITS, STAKE_PROGRAM_ADDRESS, type LockPlan } from '@sollock/core';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { parseRequest } from '../../worker/src/rules.ts';
 import { type DraftInput, draftLock } from '../src/lib/draft.ts';
@@ -30,6 +30,8 @@ interface Chain {
   lock: { owner: Address; unlockAt: bigint; lamports: number; custodian?: Address } | null;
   rent: number;
   owners: Map<string, string>;
+  /** The network's clock; null when the network has none to give. */
+  clock: bigint | null;
 }
 
 let chain: Chain;
@@ -57,6 +59,13 @@ function stakeAccountBase64(lock: NonNullable<Chain['lock']>): string {
 
 const context = { slot: 1 };
 
+/** The eight timestamp bytes the site asks for with its dataSlice. */
+function clockSliceBase64(at: bigint): string {
+  const bytes = new Uint8Array(8);
+  new DataView(bytes.buffer).setBigInt64(0, at, true);
+  return getBase64Decoder().decode(bytes);
+}
+
 function answer(method: string, params: unknown[]): unknown {
   switch (method) {
     case 'getMinimumBalanceForRentExemption':
@@ -74,6 +83,10 @@ function answer(method: string, params: unknown[]): unknown {
     case 'getEpochInfo':
       return { absoluteSlot: 1, blockHeight: chain.blockHeight, epoch: 1_198, slotIndex: 0, slotsInEpoch: 432_000, transactionCount: null };
     case 'getAccountInfo':
+      if (params[0] === CLOCK_SYSVAR_ADDRESS) {
+        const value = chain.clock === null ? null : { data: [clockSliceBase64(chain.clock), 'base64'], executable: false, lamports: 1_169_280, owner: 'Sysvar1111111111111111111111111111111111111', rentEpoch: 0, space: 40 };
+        return { context, value };
+      }
       if (chain.owners.has(params[0] as string)) {
         return { context, value: { data: ['', 'base64'], executable: false, lamports: 2_039_280, owner: chain.owners.get(params[0] as string), rentEpoch: 0, space: 165 } };
       }
@@ -109,7 +122,7 @@ async function walletSigner(): Promise<TransactionSendingSigner> {
 }
 
 beforeEach(() => {
-  chain = { balance: 5_000_000_000, simulation: { err: null, unitsConsumed: 14_000, logs: ['Program log: ok'] }, statuses: [], blockHeight: 900, lock: null, rent: RENT, owners: new Map() };
+  chain = { balance: 5_000_000_000, simulation: { err: null, unitsConsumed: 14_000, logs: ['Program log: ok'] }, statuses: [], blockHeight: 900, lock: null, rent: RENT, owners: new Map(), clock: NOW };
   methods = [];
   sent = 0;
 });
@@ -191,6 +204,32 @@ describe('a network that lies, or changes its answer', () => {
     const signer = await walletSigner();
     const draft = draftLock({ ...base, gift: true, giftText: recipient }, { now: NOW, feeAddress: FEE });
     await expect(prepareLock(draft, { rpc, signer, feeAddress: FEE, now: NOW })).rejects.toThrow(/token account/);
+  });
+
+  it('refuses to build when the device clock is far from the network clock, before any test run', async () => {
+    chain.clock = NOW - 10n * 365n * DAY - 3n * DAY;
+    const signer = await walletSigner();
+    const testLock = draftLock({ ...base, wantsTestLock: true }, { now: NOW, feeAddress: FEE });
+    await expect(prepareLock(testLock, { rpc, signer, feeAddress: FEE, now: NOW })).rejects.toThrow(/clock is 10 years ahead of the Solana network's/);
+    expect(methods).not.toContain('simulateTransaction');
+    chain.clock = NOW + 3n * 3_600n;
+    await expect(prepareLock(draftLock(base, { now: NOW, feeAddress: FEE }), { rpc, signer, feeAddress: FEE, now: NOW })).rejects.toThrow(/3 hours behind/);
+  });
+
+  it('allows the few minutes the network clock can lag, and a wider tolerance when asked', async () => {
+    const signer = await walletSigner();
+    chain.clock = NOW - 5n * 60n;
+    await expect(prepareLock(draftLock(base, { now: NOW, feeAddress: FEE }), { rpc, signer, feeAddress: FEE, now: NOW })).resolves.toBeDefined();
+    chain.clock = NOW + 2n * 3_600n;
+    await expect(prepareLock(draftLock(base, { now: NOW, feeAddress: FEE }), { rpc, signer, feeAddress: FEE, now: NOW, clockTolerance: 3n * 3_600n })).resolves.toBeDefined();
+  });
+
+  it("stops when the network's clock cannot be read", async () => {
+    chain.clock = null;
+    const signer = await walletSigner();
+    await expect(prepareLock(draftLock(base, { now: NOW, feeAddress: FEE }), { rpc, signer, feeAddress: FEE, now: NOW })).rejects.toThrow(
+      "We couldn't read the network's clock, so nothing was sent. Try again.",
+    );
   });
 
   it('tells whether a lock exists, to settle a wallet error after sending', async () => {
