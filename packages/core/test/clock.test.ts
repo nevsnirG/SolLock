@@ -22,11 +22,15 @@ function fakeRpc(clock: bigint | null) {
 }
 
 describe('the network clock', () => {
-  it('decodes the little-endian timestamp, and only that', () => {
+  it('decodes the little-endian timestamp from the slice, or from the whole account', () => {
     expect(decodeClockUnixTimestamp(timestampBytes(now))).toBe(now);
     // 1,800,000,000 is 0x6B49D200.
     expect(decodeClockUnixTimestamp(new Uint8Array([0x00, 0xd2, 0x49, 0x6b, 0, 0, 0, 0]))).toBe(now);
-    expect(() => decodeClockUnixTimestamp(new Uint8Array(40))).toThrow(/8 bytes/);
+    const whole = new Uint8Array(40);
+    whole.set(timestampBytes(now), 32);
+    expect(decodeClockUnixTimestamp(whole)).toBe(now);
+    expect(() => decodeClockUnixTimestamp(new Uint8Array(39))).toThrow(/8 or at least 40 bytes/);
+    expect(() => decodeClockUnixTimestamp(new Uint8Array(7))).toThrow(/got 7/);
   });
 
   it('asks for the timestamp slice of the Clock sysvar', async () => {
@@ -40,12 +44,13 @@ describe('the network clock', () => {
     await expect(fetchChainTime(fakeRpc(null).rpc)).rejects.toThrow(/no clock/);
   });
 
-  it('allows ten minutes of drift either way, and no more', () => {
+  it('allows half an hour of drift either way, and no more', () => {
+    expect(MAX_CLOCK_SKEW).toBe(1_800n);
     expect(clockSkewProblem(now, now)).toBeNull();
     expect(clockSkewProblem(now, now + MAX_CLOCK_SKEW)).toBeNull();
     expect(clockSkewProblem(now, now - MAX_CLOCK_SKEW)).toBeNull();
-    expect(clockSkewProblem(now, now + MAX_CLOCK_SKEW + 1n)).toMatch(/^Your device's clock is 10 minutes ahead of the Solana network's\./);
-    expect(clockSkewProblem(now, now - MAX_CLOCK_SKEW - 1n)).toMatch(/10 minutes behind the Solana network's/);
+    expect(clockSkewProblem(now, now + MAX_CLOCK_SKEW + 1n)).toMatch(/^Your device's clock is 30 minutes ahead of the Solana network's\./);
+    expect(clockSkewProblem(now, now - MAX_CLOCK_SKEW - 1n)).toMatch(/30 minutes behind the Solana network's/);
   });
 
   it('says how far off, in plain units', () => {

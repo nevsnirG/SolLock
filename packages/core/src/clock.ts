@@ -8,12 +8,18 @@ export const CLOCK_SYSVAR_ADDRESS: Address = address('SysvarC1ock111111111111111
 export const CLOCK_UNIX_TIMESTAMP_OFFSET = 32;
 export const CLOCK_UNIX_TIMESTAMP_SIZE = 8;
 
-/** Ten minutes: the network's clock itself can run a few minutes behind the wall clock. */
-export const MAX_CLOCK_SKEW: UnixSeconds = 10n * 60n;
+/**
+ * Half an hour. The network's clock itself has lagged the wall clock by minutes, once by about this much, and the
+ * skew this guards against is hours or years, so a wide margin costs nothing.
+ */
+export const MAX_CLOCK_SKEW: UnixSeconds = 30n * 60n;
 
+/** Takes the eight-byte slice the site asks for, or the whole account from a provider that ignores the slice. */
 export function decodeClockUnixTimestamp(bytes: Uint8Array): UnixSeconds {
-  if (bytes.length !== CLOCK_UNIX_TIMESTAMP_SIZE) throw new Error(`Expected ${CLOCK_UNIX_TIMESTAMP_SIZE} bytes of clock, got ${bytes.length}`);
-  return getI64Decoder().decode(bytes);
+  const end = CLOCK_UNIX_TIMESTAMP_OFFSET + CLOCK_UNIX_TIMESTAMP_SIZE;
+  if (bytes.length === CLOCK_UNIX_TIMESTAMP_SIZE) return getI64Decoder().decode(bytes);
+  if (bytes.length >= end) return getI64Decoder().decode(bytes.subarray(CLOCK_UNIX_TIMESTAMP_OFFSET, end));
+  throw new Error(`Expected ${CLOCK_UNIX_TIMESTAMP_SIZE} or at least ${end} bytes of clock, got ${bytes.length}`);
 }
 
 /**

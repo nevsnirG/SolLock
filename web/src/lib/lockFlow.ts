@@ -45,7 +45,7 @@ interface PrepareContext {
   feeAddress: Address;
   now: UnixSeconds;
   shown?: { rent: bigint; total: bigint } | undefined;
-  /** How far `now` may be from the network's clock; the default is the core's ten minutes. */
+  /** How far `now` may be from the network's clock; the default is the core's half hour. */
   clockTolerance?: UnixSeconds | undefined;
 }
 

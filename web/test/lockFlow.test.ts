@@ -216,9 +216,9 @@ describe('a network that lies, or changes its answer', () => {
     await expect(prepareLock(draftLock(base, { now: NOW, feeAddress: FEE }), { rpc, signer, feeAddress: FEE, now: NOW })).rejects.toThrow(/3 hours behind/);
   });
 
-  it('allows the few minutes the network clock can lag, and a wider tolerance when asked', async () => {
+  it('allows the minutes the network clock can lag, and a wider tolerance when asked', async () => {
     const signer = await walletSigner();
-    chain.clock = NOW - 5n * 60n;
+    chain.clock = NOW - 25n * 60n;
     await expect(prepareLock(draftLock(base, { now: NOW, feeAddress: FEE }), { rpc, signer, feeAddress: FEE, now: NOW })).resolves.toBeDefined();
     chain.clock = NOW + 2n * 3_600n;
     await expect(prepareLock(draftLock(base, { now: NOW, feeAddress: FEE }), { rpc, signer, feeAddress: FEE, now: NOW, clockTolerance: 3n * 3_600n })).resolves.toBeDefined();
