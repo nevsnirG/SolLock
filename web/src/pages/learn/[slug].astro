@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import { SITE_URL } from '../../config.ts';
 import Base from '../../layouts/Base.astro';
+import { jsonLd } from '../../lib/jsonLd.ts';
 
 export async function getStaticPaths() {
   const guides = await getCollection('learn');
@@ -51,7 +52,7 @@ const structured = [
 
 <Base title={searchTitle} description={description} image={image} type="article" published={published} modified={updated}>
   <Fragment slot="head">
-    <script type="application/ld+json" set:html={JSON.stringify(structured)} />
+    <script type="application/ld+json" set:html={jsonLd(structured)} />
   </Fragment>
   <article class="guide">
     <nav class="crumbs" aria-label="Breadcrumb"><a href="/learn">Learn</a></nav>
