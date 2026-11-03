@@ -7,6 +7,6 @@ allowBuilds:
   workerd: true
 # In minutes: a day's wait lets poisoned releases be pulled before they are installed.
 minimumReleaseAge: 1440
-# satori pins fflate 0.7.3, which has a known unzip bug (GHSA-px8p-9vwx-vf98); 0.7.5 is the fixed release of that line.
+# satori pins fflate 0.7.3, which has a known unzip bug (GHSA-px8p-9vwx-vf98). The social preview images come out the same on 0.8.3.
 overrides:
-  fflate@<0.7.5: '0.7.5'
+  fflate@<0.8.3: '0.8.3'
