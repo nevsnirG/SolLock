@@ -2,7 +2,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import type { Page } from '@playwright/test';
 import { expect, SOL_PRICE_USD, test } from './fixtures.ts';
 
-const PAGES = ['/', '/lock', '/my-locks', '/faq', '/custodian', '/terms', '/privacy', '/affiliates'];
+const GUIDES = ['how-to-lock-solana', 'solana-stake-account-lockup', 'can-you-unlock-solana-early', 'solana-locking-vs-staking', 'verify-solana-lock-on-chain'];
+const PAGES = ['/', '/lock', '/my-locks', '/faq', '/custodian', '/terms', '/privacy', '/affiliates', '/learn', ...GUIDES.map((slug) => `/learn/${slug}`)];
 /** Legal texts need their own wording, so the house style rules skip them. */
 const LEGAL_PAGES = new Set(['/terms', '/privacy']);
 
@@ -205,5 +206,53 @@ test.describe('the home page example', () => {
     await page.route((url) => url.pathname === '/api/price', (route) => route.fulfill({ status: 503, json: { error: 'No price available right now.' } }));
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('$1,000 in Solana in 2020 bought 4,545 SOL.');
+  });
+});
+
+test.describe('the guides', () => {
+  test('are listed on the learn page, in order', async ({ page }) => {
+    await page.goto('/learn');
+    const hrefs = await page.locator('.guides a').evaluateAll((anchors) => anchors.map((a) => a.getAttribute('href')));
+    expect(hrefs).toEqual(GUIDES.map((slug) => `/learn/${slug}`));
+  });
+
+  for (const slug of GUIDES) {
+    test(`/learn/${slug} is a complete article that links to the product and to Solana's own docs`, async ({ page }) => {
+      await page.goto(`/learn/${slug}`);
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+
+      const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
+      expect(new URL(canonical!).pathname).toBe(`/learn/${slug}`);
+      expect((await page.locator('meta[name="description"]').getAttribute('content'))?.length).toBeGreaterThan(60);
+      await expect(page.locator('meta[property="og:type"]')).toHaveAttribute('content', 'article');
+      await expect(page.locator('meta[property="article:published_time"]')).toHaveAttribute('content', /^2026-/);
+
+      const structured = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent()) ?? '[]') as { '@type': string }[];
+      expect(structured.map((item) => item['@type'])).toEqual(['Article', 'BreadcrumbList']);
+
+      const links = await page.locator('article a[href]').evaluateAll((anchors) => anchors.map((a) => a.getAttribute('href') ?? ''));
+      expect(links).toContain('/lock');
+      expect(links).toContain('/lock?test');
+      expect(links.some((href) => href === '/custodian' || href.startsWith('/learn/'))).toBe(true);
+      expect(links.some((href) => href.startsWith('https://solana.com/docs/'))).toBe(true);
+    });
+  }
+
+  test('are linked from the FAQ', async ({ page }) => {
+    await page.goto('/faq');
+    const hrefs = await page.locator('.faq a[href^="/learn/"]').evaluateAll((anchors) => anchors.map((a) => a.getAttribute('href')));
+    expect(new Set(hrefs).size).toBeGreaterThanOrEqual(3);
+  });
+
+  test('are in the sitemap that robots.txt points to, with every other page and nothing else', async ({ request }) => {
+    const robots = await (await request.get('/robots.txt')).text();
+    const sitemapUrl = robots.match(/^Sitemap: (\S+)$/m)?.[1];
+    expect(sitemapUrl).toBeDefined();
+
+    const locs = async (path: string) =>
+      [...(await (await request.get(path)).text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]!).pathname);
+    const listed: string[] = [];
+    for (const part of await locs(new URL(sitemapUrl!).pathname)) listed.push(...(await locs(part)));
+    expect(listed.map((path) => path.replace(/\/$/, '') || '/').sort()).toEqual([...PAGES].sort());
   });
 });

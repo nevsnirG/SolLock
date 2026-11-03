@@ -1,4 +1,5 @@
 import react from '@astrojs/react';
+import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
@@ -6,7 +7,7 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'never',
   build: { format: 'file' },
-  integrations: [react()],
+  integrations: [react(), sitemap()],
   devToolbar: { enabled: false },
   // Shiki's inline styles would clash with the CSP.
   markdown: { syntaxHighlight: false },
