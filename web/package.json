@@ -1,0 +1,48 @@
+{
+  "name": "@sollock/web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The SolLock site: static Astro pages and one React island for the lock builder.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "node scripts/og.mjs && node scripts/icons.mjs && astro build",
+    "og": "node scripts/og.mjs",
+    "icons": "node scripts/icons.mjs",
+    "check:csp": "node scripts/check-csp.mjs",
+    "preview": "astro preview",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "typecheck": "astro check",
+    "devnet:flow": "tsx scripts/devnet-flow.ts"
+  },
+  "dependencies": {
+    "@astrojs/react": "7.1.2",
+    "@fontsource-variable/bricolage-grotesque": "5.3.0",
+    "@fontsource-variable/figtree": "5.3.0",
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "@solana-program/compute-budget": "0.20.0",
+    "@solana/connector": "0.3.0",
+    "@solana/kit": "8.6.0",
+    "@sollock/core": "workspace:*",
+    "astro": "7.4.4",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "@fontsource/bricolage-grotesque": "5.3.0",
+    "@fontsource/figtree": "5.3.0",
+    "@playwright/test": "1.64.1",
+    "@resvg/resvg-wasm": "2.6.2",
+    "@solana-program/stake": "0.11.0",
+    "@solana-program/system": "0.16.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "satori": "0.63.2",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3",
+    "vitest": "5.0.5"
+  }
+}

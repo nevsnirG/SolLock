@@ -1,0 +1,95 @@
+---
+import { BUSINESS } from '../config.ts';
+import Base from '../layouts/Base.astro';
+
+const mail = `mailto:${BUSINESS.email}`;
+---
+
+<Base title="Terms of use" description="The terms for using SolLock, the non-custodial time lock for your own Solana.">
+  <h1 class="section-title">Terms of use</h1>
+  <div class="prose">
+    <h2>1. Who we are</h2>
+    <p>
+      {BUSINESS.tradeName} (sollock.io) is a sole trader in {BUSINESS.place}{BUSINESS.kvk && `, registered with the Dutch Chamber of Commerce (KvK) under number ${BUSINESS.kvk}`}{BUSINESS.vat && `, VAT number ${BUSINESS.vat}`}.
+      You can reach us at <a href={mail}>{BUSINESS.email}</a>.
+    </p>
+
+    <h2>2. What SolLock does</h2>
+    <p>
+      SolLock is software that runs in your browser. It builds a Solana transaction that creates a stake account with a lockup: an
+      account holding your Solana that the Solana network will not let anyone withdraw from before the date you choose. You check that
+      transaction and sign it in your own wallet. The Solana network then keeps the lock. The lock's custodian is an address that
+      nobody has a key for, so nobody, including you and us, can lift the lock early.
+    </p>
+    <p>
+      We never hold, receive or control your crypto or your keys, and we never sign anything for you. We keep no accounts and store no
+      data about you or your locks.
+    </p>
+
+    <h2>3. What SolLock does not do</h2>
+    <ul>
+      <li>We do not look after your crypto. We are not a bank, an exchange or a custodian.</li>
+      <li>We give no financial, investment, legal or tax advice, and we never predict prices.</li>
+      <li>A lock pays no interest or other return.</li>
+      <li>We cannot unlock a lock early, for any reason, and we cannot recover a lost wallet or recovery phrase.</li>
+    </ul>
+
+    <h2>4. Fee</h2>
+    <p>
+      For each lock we charge 0.25% of the amount you lock, at least 0.01 SOL, including VAT. The fee is paid in
+      SOL, in the same transaction that creates the lock, and the preview shows it before you sign. Test locks of exactly 0.01 SOL that
+      open within about a day are free. The Solana network fee and the rent deposit are not ours: the network fee goes to Solana, and
+      the rent deposit stays in your lock and comes back when you withdraw.
+    </p>
+
+    <h2>5. Right of withdrawal</h2>
+    <p>
+      As a consumer in the EU you normally have 14 days to withdraw from a contract made online. Our service is performed in full the
+      moment your lock is created, and a lock cannot be undone. Before you sign, you ask us to perform the service straight away and
+      confirm that you lose your right of withdrawal once the lock is created.
+    </p>
+
+    <h2>6. Your part</h2>
+    <ul>
+      <li>Keep your wallet's recovery phrase safe and offline. Never share it. We will never ask for it.</li>
+      <li>Check the transaction in your wallet before you sign. Only sign what you understand.</li>
+      <li>For a gift, use the address of a self-custody wallet the recipient controls, never an exchange deposit address.</li>
+      <li>Do not use SolLock for anything illegal, such as hiding money from creditors, money laundering or avoiding sanctions.</li>
+    </ul>
+
+    <h2>7. Risks</h2>
+    <ul>
+      <li>If you, or the recipient of a gift, lose the wallet's recovery phrase, the Solana in the lock is lost for good.</li>
+      <li>The price of Solana can fall while it is locked, and you cannot sell it until the date.</li>
+      <li>Solana is run by others. Its software can change or have faults, and it can be slow or unavailable at times.</li>
+      <li>Wallet apps change over the years. You may need different software to withdraw on the date.</li>
+      <li>The network's clock can run a little behind real time, so a lock may open slightly after the moment you picked.</li>
+    </ul>
+
+    <h2>8. Liability</h2>
+    <p>
+      We build SolLock with care and test it thoroughly, but we cannot promise it is free of faults. As far as the law allows, we are
+      not liable for losses that come from the risks in section 7, from the Solana network, from your wallet software, or from you
+      signing a transaction. Our liability for any lock is limited to the fee you paid us for it. This does not limit our liability for
+      intent or gross negligence, or any right you have under mandatory consumer law.
+    </p>
+
+    <h2>9. If SolLock stops</h2>
+    <p>
+      The website may change or go away. Your locks do not depend on it: they are ordinary Solana stake accounts, and after the date you
+      can withdraw with any tool that supports stake accounts. The recovery note explains how.
+    </p>
+
+    <h2>10. Changes to these terms</h2>
+    <p>
+      We may change these terms. The version on this page when you create a lock applies to that lock. This version is dated 3 November 2026.
+    </p>
+
+    <h2>11. Law and complaints</h2>
+    <p>
+      Dutch law applies. If you live in another EU country, you keep the protection of the mandatory consumer law of that country.
+      Disputes go to the competent court in Rotterdam, unless the law gives you the right to go to the court where you live. If you
+      have a complaint, write to <a href={mail}>{BUSINESS.email}</a> and we will answer within 14 days.
+    </p>
+  </div>
+</Base>

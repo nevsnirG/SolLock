@@ -1,0 +1,110 @@
+---
+import { CUSTODIAN_ADDRESS, CUSTODIAN_SEED, deriveCustodian } from '@sollock/core/custodian';
+import Base from '../layouts/Base.astro';
+
+// Worked out at build time; the button below works it out again in the visitor's browser.
+const derivation = deriveCustodian();
+if (derivation.address !== CUSTODIAN_ADDRESS) throw new Error('The custodian derivation no longer matches the published address.');
+const hex = (bytes: Uint8Array) => Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+
+const snippet = `// Node 20 or later: npm install @noble/curves bs58
+import { createHash } from 'node:crypto';
+import { ed25519 } from '@noble/curves/ed25519.js';
+import bs58 from 'bs58';
+
+const seed = Buffer.from('${CUSTODIAN_SEED}');
+for (let counter = 0; counter < 256; counter++) {
+  const hash = createHash('sha256').update(Buffer.concat([seed, Buffer.from([counter])])).digest();
+  let onCurve = true;
+  try { ed25519.Point.fromBytes(hash); } catch { onCurve = false; }
+  console.log(counter, bs58.encode(hash), onCurve ? 'on the curve' : 'OFF the curve');
+  if (!onCurve) break;
+}`;
+---
+
+<Base title="The custodian address" image="/og/custodian.png" description="Every SolLock lock names a custodian that nobody has a key for. Here is how the address is made, so you can check it yourself.">
+  <h1 class="section-title">The custodian address</h1>
+  <p class="lede">
+    Every Solana time lock names a custodian: the one key that could lift the lock early. On every SolLock lock, the custodian is the
+    address below, which has no key.
+  </p>
+
+  <div class="check-panel prose">
+    <pre><code>{CUSTODIAN_ADDRESS}</code></pre>
+
+    <h2>How it is made</h2>
+    <ol>
+      <li>Take the text <code>{CUSTODIAN_SEED}</code> and add one byte, a counter, starting at 0.</li>
+      <li>Hash it with SHA-256. That gives 32 bytes, the size of a Solana address.</li>
+      <li>
+        Check whether those bytes are a point on the Ed25519 curve. Every wallet address is such a point, because it is a public key.
+        If the bytes are not on the curve, they are not a public key, so no private key can exist for them.
+      </li>
+      <li>Keep the first result that is off the curve.</li>
+    </ol>
+    <div class="table-scroll">
+      <table class="steps-table">
+        <thead>
+          <tr><th scope="col">Counter</th><th scope="col">SHA-256</th><th scope="col">As an address</th><th scope="col">On the curve?</th></tr>
+        </thead>
+        <tbody>
+          {
+            derivation.steps.map((s) => (
+              <tr>
+                <td>{s.counter}</td>
+                <td>{hex(s.hash)}</td>
+                <td>{s.address}</td>
+                <td>{s.offCurve ? 'No: this is the custodian' : 'Yes: skipped'}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Why nobody can sign for it</h2>
+    <p>
+      Signing needs a private key, and an off-curve address has none. Solana programs can sign for some off-curve addresses, called
+      program-derived addresses, but only for addresses made from that program's own ID with SHA-256. Finding one that comes out as this
+      address would mean breaking SHA-256.
+    </p>
+    <p>The address is fixed in our code and tests, and stays the same for good once locks exist on mainnet.</p>
+
+    <h2>Check it yourself</h2>
+    <p>
+      <button type="button" class="btn small" id="runCheck">Work it out in this browser</button>
+    </p>
+    <p class="status-line" id="checkResult" aria-live="polite"></p>
+    <p>Or run this on your own computer, with code that is not ours:</p>
+    <pre><code>{snippet}</code></pre>
+
+    <h2>Check a lock</h2>
+    <p>
+      The custodian is stored in the lock itself, on the blockchain. With the Solana command-line tool, <code
+        >solana stake-account &lt;lock address&gt;</code
+      > shows it as "Lockup Custodian". It must be the address above. If a lock shows any other custodian, SolLock did not make it, and
+      someone may be able to unlock it early.
+    </p>
+  </div>
+</Base>
+
+<script>
+  import { CUSTODIAN_ADDRESS, deriveCustodian } from '@sollock/core/custodian';
+
+  const button = document.getElementById('runCheck');
+  const result = document.getElementById('checkResult');
+  button?.addEventListener('click', () => {
+    if (!result) return;
+    try {
+      const d = deriveCustodian();
+      const match = d.address === CUSTODIAN_ADDRESS;
+      result.classList.toggle('bad', !match);
+      result.textContent = match
+        ? `Match. Counter ${d.counter} gives ${d.address}, off the curve: the address SolLock puts in every lock.`
+        : `No match: this browser got ${d.address}. Do not lock anything, and tell us.`;
+    } catch (e) {
+      result.classList.add('bad');
+      result.textContent = `The check could not run here: ${(e as Error).message}`;
+    }
+  });
+</script>

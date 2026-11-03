@@ -1,0 +1,134 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="FAQ" description="Lost keys, early unlocks, cost, taxes, and what happens to a lock if this site goes away.">
+  <h1 class="section-title">FAQ</h1>
+  <div class="faq">
+    <details open>
+      <summary>What if I lose my keys?</summary>
+      <div class="a">
+        <p>
+          Then your Solana is gone, for good. A lock only opens for the wallet that owns it, so its recovery phrase is the one way back in.
+        </p>
+        <p>
+          Back up your wallet's recovery phrase offline before you lock anything, start with a free test lock, and keep the recovery note
+          with your important papers. Your recovery phrase stays with you: SolLock only ever asks your wallet for a signature.
+        </p>
+      </div>
+    </details>
+    <details>
+      <summary>Can I unlock early?</summary>
+      <div class="a">
+        <p>No. The Solana network checks the date on every withdrawal, and the date is fixed once the lock exists.</p>
+      </div>
+    </details>
+    <details>
+      <summary>Who could open it early?</summary>
+      <div class="a">
+        <p>
+          Nobody. You sign the transaction in your own wallet, and your Solana goes into an account with a built-in time lock, which
+          the network keeps shut until the date. A lockup has one key that could open it early, the custodian. Every SolLock lock names an address that has no
+          key, and <a href="/custodian">how it is made</a> is public.
+        </p>
+      </div>
+    </details>
+    <details>
+      <summary>What does it cost?</summary>
+      <div class="a">
+        <p>
+          0.25% of the amount, at least 0.01 SOL, VAT included, paid in the same transaction. Test locks are free.
+          On top come the Solana network fee (a fraction of a cent) and a rent deposit of about 0.0017 SOL, which stays in the lock and
+          comes back when you withdraw.
+        </p>
+      </div>
+    </details>
+    <details>
+      <summary>What is SolLock for?</summary>
+      <div class="a">
+        <p>
+          Keeping your own hands off your Solana until a date you choose: a commitment device. It stays yours and keeps moving with
+          the price of Solana, which can go down. You can sell it again from the unlock date.
+        </p>
+      </div>
+    </details>
+    <details>
+      <summary>What about taxes?</summary>
+      <div class="a">
+        <p>
+          You still own the locked Solana. In the Netherlands it counts for Box 3, valued on 1 January, even while it is locked. The Box 3
+          rules from 2028 are still being settled. A lock you give away may count as a gift for gift tax.
+        </p>
+        <p>This is not tax advice. Ask a tax adviser about your own situation.</p>
+      </div>
+    </details>
+    <details>
+      <summary>What if this website goes away?</summary>
+      <div class="a">
+        <p>
+          Your lock carries on: it lives on the blockchain as a regular Solana account. Solana calls this kind, the one with a built-in
+          time lock, a "stake account", so block explorers such as Solana Explorer and Solscan list it under that name. After the date,
+          any tool that handles stake accounts can take the Solana out with your wallet's key, including the Solana command-line tool. The
+          recovery note says how.
+        </p>
+      </div>
+    </details>
+    <details>
+      <summary>What happens on the unlock date?</summary>
+      <div class="a">
+        <p>
+          The lock opens at the time you picked, usually 00:00 UTC. From then on you can withdraw everything, deposit included, in one
+          step on My locks. The network's own clock can run a minute or two behind, so right at that moment a withdrawal may need a
+          short wait.
+        </p>
+      </div>
+    </details>
+    <details>
+      <summary>I want to give a lock as a gift. What does the recipient need?</summary>
+      <div class="a">
+        <p>
+          A wallet they hold themselves, like Phantom or Solflare, and its address. An exchange deposit address can't withdraw from a
+          lock. Ask them to back up their recovery phrase. A gift is final.
+        </p>
+      </div>
+    </details>
+    <details>
+      <summary>What is a test lock?</summary>
+      <div class="a">
+        <p>
+          0.01 SOL, locked for about 24 hours, free: you pay only the network fee and the rent deposit, which comes back. It shows you
+          how locking and withdrawing work before you lock more.
+        </p>
+      </div>
+    </details>
+    <details>
+      <summary>What exactly do I sign?</summary>
+      <div class="a">
+        <p>
+          One transaction with five parts: a compute limit, creating the lock account, setting the lockup (the date, the custodian with
+          no key, and who can withdraw), our fee, and a short label. Your browser builds it, reads it back and checks every field; you can
+          see it all under "The full transaction". Your wallet shows it again before you approve.
+        </p>
+      </div>
+    </details>
+    <details>
+      <summary>Where can I get Solana?</summary>
+      <div class="a">
+        <p>
+          Under "Need Solana first?" on the lock page are exchanges that sell Solana, listed alphabetically. Their links are affiliate links,
+          as the note under them says: if you sign up through one, we may earn a commission from the exchange, and your price stays
+          the same. See <a href="/affiliates">affiliate links</a>.
+        </p>
+      </div>
+    </details>
+    <details>
+      <summary>What does SolLock keep about me?</summary>
+      <div class="a">
+        <p>
+          Only what your own browser keeps for you: your currency, your theme and the wallet you connected last. Your locks live on the
+          blockchain, which is public. See the <a href="/privacy">privacy statement</a>.
+        </p>
+      </div>
+    </details>
+  </div>
+</Base>

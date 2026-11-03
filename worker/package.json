@@ -1,0 +1,28 @@
+{
+  "name": "@sollock/worker",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SolLock Worker: serves the static site, a read-only Solana RPC proxy and today's SOL price.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json",
+    "smoke": "tsx scripts/smoke.ts"
+  },
+  "dependencies": {
+    "@sollock/core": "workspace:*",
+    "@solana/kit": "8.6.0",
+    "hono": "4.13.14"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "1.4.11",
+    "@cloudflare/workers-types": "5.20261031.1",
+    "@types/node": "24.19.2",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3",
+    "vitest": "5.0.5",
+    "wrangler": "4.156.0"
+  }
+}

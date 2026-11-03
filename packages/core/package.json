@@ -1,0 +1,35 @@
+{
+  "name": "@sollock/core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SolLock lock core: custodian, seeds, transaction builder, decoder, fee and money maths.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "test": "vitest run --dir test",
+    "test:svm": "vitest run --dir test-svm",
+    "typecheck": "tsc -p tsconfig.json",
+    "devnet:lock": "tsx scripts/devnet-lock.ts",
+    "fetch-programs": "tsx scripts/fetch-programs.ts"
+  },
+  "dependencies": {
+    "@noble/curves": "2.4.0",
+    "@noble/hashes": "2.4.0",
+    "@solana-program/compute-budget": "0.20.0",
+    "@solana-program/memo": "0.16.0",
+    "@solana-program/stake": "0.11.0",
+    "@solana-program/system": "0.16.0",
+    "@solana/kit": "8.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "litesvm": "1.6.1",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3",
+    "vitest": "5.0.5"
+  }
+}

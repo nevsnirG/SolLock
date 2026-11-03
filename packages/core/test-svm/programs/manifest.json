@@ -1,0 +1,14 @@
+{
+  "stake.so": {
+    "account": "6WU8Nxarf9fudRK5atWwjLY4vFaw5UrrWhL88qz7iCMJ",
+    "slot": "463837127",
+    "sha256": "3d2d39c596ce8be2d47816b4ee5db9fc759d80fde54b08c930ad0b6daed64c2c",
+    "bytes": 212056
+  },
+  "memo.so": {
+    "account": "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr",
+    "slot": "463837128",
+    "sha256": "f520eaf096361abbb9639ea4dc3e5388a87b9330e121f476607b87c46ef67954",
+    "bytes": 74800
+  }
+}

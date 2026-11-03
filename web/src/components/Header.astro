@@ -1,0 +1,40 @@
+---
+import Logo from './Logo.astro';
+
+const links = [
+  { href: '/#how', label: 'How it works' },
+  { href: '/my-locks', label: 'My locks' },
+  { href: '/faq', label: 'FAQ' },
+];
+const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/') || '/';
+---
+
+<header class="top">
+  <a class="logo" href="/" aria-label="SolLock, home">
+    <Logo />
+    <span aria-hidden="true">SolLock</span>
+  </a>
+  <nav class="nav" aria-label="Sections">
+    {
+      links.map((l) => (
+        <a href={l.href} aria-current={path === l.href ? 'page' : undefined}>
+          {l.label}
+        </a>
+      ))
+    }
+  </nav>
+  <div class="top-actions">
+    <!-- The lock page and My locks put the wallet button here. -->
+    <div class="top-actions" id="wallet-slot"></div>
+    {
+      path !== '/lock' && (
+        <a class="btn cta" href="/lock">
+          Lock Solana
+          <svg class="go" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M3 8h10M9 4l4 4-4 4" />
+          </svg>
+        </a>
+      )
+    }
+  </div>
+</header>

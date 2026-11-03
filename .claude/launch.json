@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "sollock",
+      "runtimeExecutable": "C:\\Program Files\\nodejs\\node.exe",
+      "runtimeArgs": ["worker/node_modules/wrangler/bin/wrangler.js", "dev", "--config", "worker/wrangler.jsonc", "--port", "8791"],
+      "port": 8791,
+      "autoPort": false
+    },
+    {
+      "name": "sollock-web",
+      "runtimeExecutable": "C:\\Program Files\\nodejs\\node.exe",
+      "runtimeArgs": ["web/node_modules/astro/bin/astro.mjs", "dev", "--root", "web", "--port", "4331"],
+      "port": 4331
+    }
+  ]
+}

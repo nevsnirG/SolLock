@@ -1,0 +1,26 @@
+node_modules/
+dist/
+coverage/
+.astro/
+.wrangler/
+.dev.vars
+.env
+.env.*
+*.log
+# devnet keypairs made by scripts: never commit
+.devnet/
+
+# Playwright output
+web/test-results/
+web/playwright-report/
+
+# Made by web/scripts/og.mjs before each build
+web/public/og/
+# Made by web/scripts/icons.mjs before each build
+web/public/favicon.ico
+web/public/icon-192.png
+web/public/apple-touch-icon.png
+
+# Local notes and project instructions, never pushed
+notes/
+CLAUDE.md

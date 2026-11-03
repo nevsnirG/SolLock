@@ -1,0 +1,19 @@
+---
+import MyLocks from '../islands/MyLocks.tsx';
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="My locks" description="Your SolLock locks, read straight from the Solana blockchain.">
+  <section class="page-intro">
+    <h1>My locks</h1>
+    <p>The locks you made and the ones given to you, read straight from the blockchain.</p>
+  </section>
+  <MyLocks client:only="react">
+    <div slot="fallback" class="locks-page">
+      <div class="flow-card locks-empty"><p>Loading…</p></div>
+      <noscript>
+        <p class="note warn">This page needs JavaScript. It runs only in your browser and reads your locks from the blockchain.</p>
+      </noscript>
+    </div>
+  </MyLocks>
+</Base>

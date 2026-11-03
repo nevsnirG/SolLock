@@ -1,0 +1,79 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Local development only. A plain `wrangler deploy` (without --env) creates this separate, unrouted
+  // Worker instead of replacing production, which is "sollock" under env.production below.
+  "name": "sollock-dev",
+  "workers_dev": false,
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-23",
+
+  // Local `wrangler dev` port. 8787 (the default) is taken by another local site's dev server.
+  "dev": { "port": 8791, "ip": "127.0.0.1" },
+
+  // The built Astro site (`pnpm --filter @sollock/web build`), served by Cloudflare directly without
+  // running (or billing) the Worker. Only /api/* reaches our code. web/public/_headers sets the
+  // security headers on every page.
+  "assets": {
+    "directory": "../web/dist",
+    "run_worker_first": ["/api/*"],
+    "not_found_handling": "404-page"
+  },
+
+  // Store nothing: no Workers logs, no Logpush, no tail workers. The code never logs either.
+  // These apply to every environment below; none of them may switch logging back on.
+  "observability": { "enabled": false, "logs": { "enabled": false } },
+  "logpush": false,
+
+  // Local development (`wrangler dev`): devnet.
+  "vars": {
+    // "devnet" or "mainnet". Mainnet only after the owner signs off.
+    "CLUSTER": "devnet",
+    // Sites allowed to call /api/rpc. On devnet, localhost is allowed as well, for development.
+    "ALLOWED_ORIGINS": "https://sollock.io,https://www.sollock.io"
+  },
+
+  // Cloudflare's rate limiter, counted per visitor IP at each data centre. Periods are 10 or 60 s.
+  "ratelimits": [
+    { "name": "RPC_LIMITER", "namespace_id": "1001", "simple": { "limit": 120, "period": 60 } },
+    // getProgramAccounts (the "gifts received" lookup) is heavy for the provider: far fewer.
+    { "name": "LOOKUP_LIMITER", "namespace_id": "1002", "simple": { "limit": 10, "period": 60 } }
+  ],
+
+  // Deployed by .github/workflows/deploy.yml. Vars and rate limits are not inherited by environments,
+  // so each one repeats them. Secrets come from the GitHub Environment on every deploy:
+  //   HELIUS_API_KEY (required), ALCHEMY_API_KEY and COINGECKO_API_KEY (optional).
+  "env": {
+    // Devnet, deployed on every push to main.
+    "staging": {
+      "name": "sollock-staging",
+      "workers_dev": false,
+      "routes": [{ "pattern": "devnet.sollock.io", "custom_domain": true }],
+      "vars": {
+        "CLUSTER": "devnet",
+        "ALLOWED_ORIGINS": "https://devnet.sollock.io"
+      },
+      "ratelimits": [
+        { "name": "RPC_LIMITER", "namespace_id": "2001", "simple": { "limit": 120, "period": 60 } },
+        { "name": "LOOKUP_LIMITER", "namespace_id": "2002", "simple": { "limit": 10, "period": 60 } }
+      ]
+    },
+    // Mainnet, deployed only by hand and only after the owner's approval. scripts/check-deploy-config.mjs
+    // refuses it until the mainnet fee address, the final legal texts and the business details are in.
+    "production": {
+      "name": "sollock",
+      "workers_dev": false,
+      "routes": [
+        { "pattern": "sollock.io", "custom_domain": true },
+        { "pattern": "www.sollock.io", "custom_domain": true }
+      ],
+      "vars": {
+        "CLUSTER": "mainnet",
+        "ALLOWED_ORIGINS": "https://sollock.io,https://www.sollock.io"
+      },
+      "ratelimits": [
+        { "name": "RPC_LIMITER", "namespace_id": "3001", "simple": { "limit": 120, "period": 60 } },
+        { "name": "LOOKUP_LIMITER", "namespace_id": "3002", "simple": { "limit": 10, "period": 60 } }
+      ]
+    }
+  }
+}

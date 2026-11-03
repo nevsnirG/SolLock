@@ -1,0 +1,23 @@
+# Runs the LiteSVM tests on Linux, since LiteSVM has no Windows build.
+# From the repo root:  pnpm test:svm
+# Only the files git tracks go in, as a tar on stdin: local keys (.dev.vars, .devnet) never reach a
+# container that installs packages from the network.
+services:
+  test-svm:
+    image: node:24-bookworm-slim
+    stdin_open: true
+    volumes:
+      - pnpm-store:/root/.local/share/pnpm/store
+    command:
+      - bash
+      - -c
+      - |
+        set -e
+        mkdir -p /work
+        tar -xf - -C /work
+        cd /work
+        npm install -g pnpm@12.16.1 --silent
+        pnpm install --frozen-lockfile --reporter=silent
+        pnpm --filter @sollock/core test:svm
+volumes:
+  pnpm-store:

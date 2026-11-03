@@ -1,0 +1,16 @@
+{
+  "name": "sollock",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.16.1",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "pnpm --filter @sollock/web build",
+    "test": "pnpm -r test",
+    "test:e2e": "pnpm --filter @sollock/web test:e2e",
+    "typecheck": "pnpm -r typecheck",
+    "test:svm": "git ls-files -z | tar --null -T - -cf - | docker compose -f docker/test-svm.yml run --rm -T test-svm"
+  }
+}

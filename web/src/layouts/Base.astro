@@ -1,0 +1,67 @@
+---
+import '../styles/global.css';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { CLUSTER } from '../config.ts';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** The social preview image, from public/og/ (made by scripts/og.mjs). */
+  image?: string;
+}
+const {
+  title,
+  image = '/og/default.png',
+  description = 'Lock your own Solana until a date you pick, with a lockup the network enforces, signed in your own wallet.',
+} = Astro.props;
+const fullTitle = title ? `${title} · SolLock` : 'SolLock · A time lock for your own Solana';
+const canonical = new URL(Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/'), Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#fbf8f3" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#100e0c" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="SolLock" />
+    <meta property="og:title" content={title ?? 'SolLock'} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(image, Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    {CLUSTER === 'devnet' && <meta name="robots" content="noindex" />}
+  </head>
+  <body>
+    <!-- Blocking on purpose: sets the saved theme before the first paint. It sits here, after the CSP
+         <meta> that Astro puts in <head>, so the policy covers it like everything else. -->
+    <script is:inline src="/theme.js"></script>
+    <div class="shell">
+      {
+        CLUSTER === 'devnet' && (
+          <p class="stage">
+            <span><b>Devnet preview</b> with test Solana. Set your wallet to devnet before you connect it.</span>
+          </p>
+        )
+      }
+      <Header />
+      <main>
+        <slot />
+      </main>
+      <Footer />
+    </div>
+  </body>
+</html>

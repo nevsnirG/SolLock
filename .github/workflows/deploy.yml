@@ -1,0 +1,147 @@
+# Staging (devnet, devnet.sollock.io) on every push to main; production (mainnet, sollock.io) only by
+# hand: Actions → Deploy → Run workflow → production, from main only (the "production" GitHub Environment
+# allows only main; it also requires the owner's approval where the plan offers that). scripts/check-deploy-config.mjs
+# refuses production until its open items are done.
+# Each GitHub Environment (staging, production) holds that deployment's secrets: CLOUDFLARE_API_TOKEN,
+# CLOUDFLARE_ACCOUNT_ID, HELIUS_API_KEY, COINGECKO_API_KEY and optionally ALCHEMY_API_KEY; and the
+# variable PUBLIC_SITE (https://devnet.sollock.io or https://sollock.io).
+# Nothing secret lives in the repository. Actions are pinned to exact commits (Dependabot proposes updates),
+# because whatever this job deploys is what users sign with.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Where to deploy
+        type: choice
+        options: [staging, production]
+        default: staging
+
+concurrency:
+  group: deploy-${{ inputs.target || 'staging' }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    # Production deploys only from main. Defence in depth: the environment's own branch rules (where the
+    # GitHub plan offers them) and the reviewers are the real gate.
+    if: inputs.target != 'production' || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.target || 'staging' }}
+      url: ${{ vars.PUBLIC_SITE }}
+    env:
+      TARGET: ${{ inputs.target || 'staging' }}
+      CLUSTER: ${{ inputs.target == 'production' && 'mainnet' || 'devnet' }}
+    steps:
+      # Until Cloudflare is set up, pushes to main end here, green, with a note.
+      - name: Check that Cloudflare is set up
+        id: ready
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::notice::The $TARGET environment has no CLOUDFLARE_API_TOKEN yet. Nothing was deployed."
+            echo "go=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check that this environment has every value the deploy needs
+        if: steps.ready.outputs.go == 'true'
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          HELIUS_API_KEY: ${{ secrets.HELIUS_API_KEY }}
+          PUBLIC_SITE: ${{ vars.PUBLIC_SITE }}
+        run: |
+          missing=0
+          for name in CLOUDFLARE_ACCOUNT_ID HELIUS_API_KEY PUBLIC_SITE; do
+            if [ -z "${!name}" ]; then
+              echo "::error::$name is not set in the $TARGET environment (GitHub: Settings, Environments, $TARGET)."
+              missing=1
+            fi
+          done
+          exit $missing
+
+      - if: steps.ready.outputs.go == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - if: steps.ready.outputs.go == 'true'
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6 (as of 2 Nov 2026)
+      - if: steps.ready.outputs.go == 'true'
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: pnpm
+      - if: steps.ready.outputs.go == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Refuse an unfinished configuration
+        if: steps.ready.outputs.go == 'true'
+        run: node scripts/check-deploy-config.mjs "$TARGET"
+      - if: steps.ready.outputs.go == 'true'
+        run: pnpm typecheck
+      - if: steps.ready.outputs.go == 'true'
+        run: pnpm test
+
+      - name: Build the site
+        if: steps.ready.outputs.go == 'true'
+        run: pnpm build && pnpm --filter @sollock/web check:csp
+        env:
+          PUBLIC_SOLANA_CLUSTER: ${{ env.CLUSTER }}
+          PUBLIC_SITE: ${{ vars.PUBLIC_SITE }}
+
+      - name: Deploy the Worker and the site
+        if: steps.ready.outputs.go == 'true'
+        uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4.1.3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: worker
+          packageManager: pnpm
+          environment: ${{ env.TARGET }}
+          command: deploy
+          # Uploaded as a Worker secret from this GitHub Environment on every deploy. Required: the
+          # deploy stops if the environment does not have it.
+          secrets: |
+            HELIUS_API_KEY
+        env:
+          HELIUS_API_KEY: ${{ secrets.HELIUS_API_KEY }}
+
+      # The backup RPC provider and the CoinGecko key are optional: uploaded only when this GitHub
+      # Environment has them. Removing one here later does not remove it from Cloudflare.
+      - name: Upload the optional secrets that are set
+        if: steps.ready.outputs.go == 'true'
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+        run: |
+          for name in ALCHEMY_API_KEY COINGECKO_API_KEY; do
+            if [ -n "${!name}" ]; then
+              printf '%s' "${!name}" | pnpm exec wrangler secret put "$name" --env "$TARGET"
+            else
+              echo "$name is not set in the $TARGET environment; skipped."
+            fi
+          done
+
+      # The deployed site must answer on the right cluster, with its security policy and headers.
+      # A brand-new custom domain needs a few minutes for its DNS record and HTTPS certificate, so the
+      # first request may retry for up to ten minutes; later deploys answer at once.
+      - name: Smoke test
+        if: steps.ready.outputs.go == 'true'
+        env:
+          SITE: ${{ vars.PUBLIC_SITE }}
+        run: |
+          curl -fsS --retry 30 --retry-delay 20 --retry-all-errors "$SITE/api/health" | grep -q "\"cluster\":\"$CLUSTER\""
+          curl -fsS "$SITE/" | grep -q "content-security-policy"
+          curl -fsSI "$SITE/" | grep -qi "^x-frame-options: DENY"

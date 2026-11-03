@@ -1,0 +1,76 @@
+---
+import { BUSINESS } from '../config.ts';
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Privacy" description="SolLock stores nothing about you: no accounts, no database, no analytics. Here is exactly what happens to your data.">
+  <h1 class="section-title">Privacy</h1>
+  <div class="prose">
+    <h2>The short version</h2>
+    <p>
+      We store nothing about you. No accounts, no database, no analytics, no tracking cookies. What your browser asks the Solana
+      network passes through our server without being logged.
+    </p>
+
+    <h2>Who is responsible</h2>
+    <p>
+      {BUSINESS.tradeName}, {BUSINESS.place}{BUSINESS.kvk && `, KvK ${BUSINESS.kvk}`}. Contact: <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>.
+    </p>
+
+    <h2>What happens when you use SolLock</h2>
+    <ul>
+      <li>
+        <strong>Hosting.</strong> Cloudflare serves this website. Like any web server, it receives your IP address and browser details
+        in order to deliver the pages and protect the site from attacks. We have switched off logging for our own server code. Cloudflare
+        processes this data for us under its data processing agreement.
+      </li>
+      <li>
+        <strong>Rate limits.</strong> To stop abuse, Cloudflare counts how many requests come from your IP address each minute, in
+        memory. The counts are not stored by us.
+      </li>
+      <li>
+        <strong>Blockchain requests.</strong> To build a lock and to find your locks, your browser asks the Solana network questions
+        through our server, for example the balance of a wallet address. Those questions contain public addresses. Our server passes them
+        on to our network providers, Helius and, as a backup, Alchemy, without your IP address or browser details, and does not log them.
+      </li>
+      <li>
+        <strong>Prices.</strong> Our server fetches today's Solana price from CoinGecko. CoinGecko never sees you or your request.
+      </li>
+      <li>
+        <strong>Nothing from other sites.</strong> Fonts and code come from our own domain. There are no third-party scripts, ads or
+        trackers.
+      </li>
+      <li>
+        <strong>Your browser.</strong> Your browser remembers your theme, your currency and the wallet you connected last (in local
+        storage), so you don't have to choose again. This never leaves your browser and is not used to track you. You can clear it in
+        your browser settings.
+      </li>
+      <li>
+        <strong>Your wallet.</strong> Your wallet app is not ours. It has its own privacy policy.
+      </li>
+    </ul>
+
+    <h2>The blockchain is public</h2>
+    <p>
+      A lock is a transaction on Solana. It is public and permanent: anyone can see your wallet address, the amount, the unlock date
+      and, for a gift, the recipient's address. Nobody can delete it, including us. A gift links the recipient's address to yours, so
+      think about that before you lock a gift.
+    </p>
+
+    <h2>Why we may process this</h2>
+    <p>
+      Delivering the website and keeping it safe is our legitimate interest. Passing on the blockchain requests you make is needed to
+      provide the service you ask for.
+    </p>
+
+    <h2>Your rights</h2>
+    <p>
+      You have the right to access, correct and delete your personal data, and to object to its use. Because we store nothing about
+      you, there is usually nothing for us to show or delete, but you can always ask. If you are unhappy with how we handle your data,
+      you can complain to the Dutch Data Protection Authority, the Autoriteit Persoonsgegevens.
+    </p>
+
+    <h2>Changes</h2>
+    <p>If this statement changes, the new version appears on this page. This version is dated 3 November 2026.</p>
+  </div>
+</Base>

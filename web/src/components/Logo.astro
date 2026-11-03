@@ -1,0 +1,14 @@
+---
+// The mark: a sun with clock hands. Colours come from the theme (.logo-sun, .logo-hand in global.css).
+interface Props {
+  size?: number;
+}
+const { size = 34 } = Astro.props;
+---
+
+<svg width={size} height={size} viewBox="0 0 34 34" aria-hidden="true">
+  <circle class="logo-sun" cx="17" cy="17" r="16"></circle>
+  <line class="logo-hand" x1="17" y1="17" x2="17" y2="7.5" stroke-width="2.8"></line>
+  <line class="logo-hand" x1="17" y1="17" x2="23.5" y2="20.5" stroke-width="2.4"></line>
+  <circle class="logo-hub" cx="17" cy="17" r="2.4"></circle>
+</svg>

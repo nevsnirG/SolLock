@@ -1,0 +1,20 @@
+---
+import { AFFILIATE_NOTE, ESMA_REGISTER_URL } from '../config.ts';
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Affiliate links" description="How SolLock labels affiliate links to exchanges, and what they mean for you.">
+  <h1 class="section-title">Affiliate links</h1>
+  <div class="prose">
+    <p>
+      Under "Need Solana first?" on the lock page are exchanges where you can buy Solana. The note right under the links says what
+      they are: "{AFFILIATE_NOTE}" The exchange pays that commission, and your price stays the same.
+    </p>
+    <ul>
+      <li>Exchanges are listed alphabetically.</li>
+      <li>A sign-up offer shown with an exchange is that exchange's own, with its conditions, and can differ by country.</li>
+      <li>Choose an exchange yourself, and check that it is authorised in the <a href={ESMA_REGISTER_URL}>ESMA register</a> first.</li>
+      <li>Crypto prices can fall, and you can lose money.</li>
+    </ul>
+  </div>
+</Base>

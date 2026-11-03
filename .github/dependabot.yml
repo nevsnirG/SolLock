@@ -1,0 +1,8 @@
+# Proposes updates for the GitHub Actions, which are pinned to exact commits in .github/workflows.
+# Review each one before merging: the deploy job runs them with the Cloudflare token.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
