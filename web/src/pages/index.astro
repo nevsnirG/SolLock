@@ -36,7 +36,7 @@ const usd = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', c
     </div>
 
     <form class="quick" action="/lock" method="get" aria-labelledby="quickTitle">
-      <h2 id="quickTitle">Start your lock</h2>
+      <h2 id="quickTitle">Be the one who holds on.</h2>
       <label class="q" for="quickAmount">How much Solana?</label>
       <div class="quick-amount">
         <input id="quickAmount" name="amount" type="number" inputmode="decimal" min={formatSol(MIN_LOCK_AMOUNT)} step="any" placeholder="10" required />
