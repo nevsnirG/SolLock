@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "SolLock Worker: serves the static site, a read-only Solana RPC proxy and today's SOL price.",
-  "license": "MIT",
+  "license": "PolyForm-Noncommercial-1.0.0",
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",

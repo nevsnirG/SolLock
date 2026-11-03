@@ -59,4 +59,10 @@ See [SECURITY.md](SECURITY.md). SolLock never asks for a seed phrase, anywhere.
 
 ## Licence
 
-[MIT](LICENSE).
+[PolyForm Noncommercial 1.0.0](LICENSE). You may read, run, change and share this code for any non-commercial purpose: personal use, study, hobby projects, and use by charities, schools, public research bodies and governments. Running it as a paid service, or any other commercial use, needs a licence from us: write to hello@sollock.io.
+
+The SolLock name, logo and domain are not licensed. The first two commits of this repository were published under MIT and remain available under it.
+
+## Contributing
+
+By opening a pull request you agree that SolLock may use your contribution under any terms, including commercially on sollock.io. Say so in the pull request if you do not agree, and it will not be merged.

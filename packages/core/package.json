@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "SolLock lock core: custodian, seeds, transaction builder, decoder, fee and money maths.",
-  "license": "MIT",
+  "license": "PolyForm-Noncommercial-1.0.0",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",

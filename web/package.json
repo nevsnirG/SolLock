@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "The SolLock site: static Astro pages and one React island for the lock builder.",
-  "license": "MIT",
+  "license": "PolyForm-Noncommercial-1.0.0",
   "type": "module",
   "scripts": {
     "dev": "astro dev",
