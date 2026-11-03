@@ -81,6 +81,11 @@ const images = {
     title: 'The custodian address nobody has a key for.',
     sub: 'Every SolLock lock names it. Here is how it is made.',
   }),
+  'learn.png': card({
+    kicker: 'Guides',
+    title: 'How a Solana time lock works.',
+    sub: 'What a lock can do, what it cannot, and how to check one yourself.',
+  }),
 };
 for (const [name, node] of Object.entries(images)) {
   writeFileSync(join(out, name), await png(node));

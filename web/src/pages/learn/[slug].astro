@@ -1,0 +1,81 @@
+---
+import { getCollection, render } from 'astro:content';
+import { SITE_URL } from '../../config.ts';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const guides = await getCollection('learn');
+  return guides.map((guide) => ({ params: { slug: guide.id }, props: { guide, guides } }));
+}
+
+const { guide, guides } = Astro.props;
+const { Content } = await render(guide);
+const { title, searchTitle, description, published, updated } = guide.data;
+
+const related = guide.data.related.map((id) => {
+  const found = guides.find((g) => g.id === id);
+  if (!found) throw new Error(`"${guide.id}" points to "${id}", which is not a guide.`);
+  return found;
+});
+
+const longDate = (date: Date) => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date);
+
+const url = new URL(`/learn/${guide.id}`, SITE_URL);
+const image = '/og/learn.png';
+const sollock = { '@type': 'Organization', name: 'SolLock', url: SITE_URL };
+const structured = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: title,
+    description,
+    inLanguage: 'en',
+    datePublished: published.toISOString(),
+    dateModified: (updated ?? published).toISOString(),
+    mainEntityOfPage: url,
+    image: new URL(image, SITE_URL),
+    author: sollock,
+    publisher: { ...sollock, logo: { '@type': 'ImageObject', url: new URL('/icon-192.png', SITE_URL) } },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'SolLock', item: SITE_URL },
+      { '@type': 'ListItem', position: 2, name: 'Learn', item: new URL('/learn', SITE_URL) },
+      { '@type': 'ListItem', position: 3, name: title },
+    ],
+  },
+];
+---
+
+<Base title={searchTitle} description={description} image={image} type="article" published={published} modified={updated}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(structured)} />
+  </Fragment>
+  <article class="guide">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/learn">Learn</a></nav>
+    <h1 class="section-title">{title}</h1>
+    <p class="guide-meta">{updated ? `Updated ${longDate(updated)}` : `Published ${longDate(published)}`}</p>
+    <div class="prose"><Content /></div>
+    <aside class="guide-cta" aria-label="Try it">
+      <p>A test lock is free, takes a minute, and opens again after about a day.</p>
+      <div class="guide-cta-buttons">
+        <a class="btn cta" href="/lock">Lock Solana</a>
+        <a class="btn ghost" href="/lock?test">Try a free test lock</a>
+      </div>
+    </aside>
+    <section class="related" aria-labelledby="relatedTitle">
+      <h2 id="relatedTitle">Keep reading</h2>
+      <ul>
+        {
+          related.map((g) => (
+            <li>
+              <a href={`/learn/${g.id}`}>{g.data.title}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </article>
+</Base>

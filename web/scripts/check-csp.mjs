@@ -13,8 +13,10 @@ for (const file of readdirSync(dist, { recursive: true }).filter((f) => String(f
   const html = readFileSync(join(dist, String(file)), 'utf8');
   const csp = html.match(/http-equiv="content-security-policy" content="([^"]*)"/)?.[1];
   if (!csp) problems.push(`${file}: no CSP <meta>`);
-  for (const m of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
-    if (!csp?.includes(sha(m[1]))) problems.push(`${file}: an inline script without a hash`);
+  for (const m of html.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>([\s\S]*?)<\/script>/g)) {
+    // A JSON-LD block is data: browsers never run it, so the policy does not apply to it.
+    if (/\btype="application\/ld\+json"/.test(m[1])) continue;
+    if (!csp?.includes(sha(m[2]))) problems.push(`${file}: an inline script without a hash`);
   }
   for (const m of html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)) {
     if (!csp?.includes(sha(m[1]))) problems.push(`${file}: an inline style without a hash`);

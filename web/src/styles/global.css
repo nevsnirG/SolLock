@@ -2190,3 +2190,146 @@ details.more[open] > summary {
     padding: 14px;
   }
 }
+
+/* The guides under /learn */
+.guides {
+  list-style: none;
+  padding: 0;
+  margin: 32px 0 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  counter-reset: guide;
+}
+.guides li {
+  min-width: 0;
+}
+.guides a {
+  display: block;
+  height: 100%;
+  padding: 24px 24px 28px;
+  border-radius: var(--radius);
+  background: var(--paper-2);
+  color: inherit;
+  text-decoration: none;
+}
+.guides a:hover h2 {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.guides h2 {
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+}
+.guides h2::before {
+  counter-increment: guide;
+  content: counter(guide);
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.guides p {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 15.5px;
+}
+.crumbs {
+  margin: 40px 0 -28px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.crumbs a {
+  color: var(--ink-2);
+  text-decoration: none;
+}
+.crumbs a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+.crumbs a::before {
+  content: '\2190\00a0';
+}
+.guide .section-title {
+  max-width: 24ch;
+}
+.guide-meta {
+  margin: 0 0 28px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.guide .prose {
+  font-size: 17px;
+  line-height: 1.6;
+}
+.guide .prose h2 {
+  font-size: 23px;
+  letter-spacing: -0.02em;
+  margin-top: 36px;
+}
+.guide .prose p,
+.guide .prose ul,
+.guide .prose ol {
+  margin-bottom: 16px;
+}
+.guide .prose li {
+  margin: 6px 0;
+}
+.guide .prose strong {
+  color: var(--ink);
+}
+.guide-cta {
+  margin: 44px 0 0;
+  padding: 24px;
+  max-width: 70ch;
+  border-radius: var(--radius);
+  background: var(--tint-1);
+  color: var(--ink);
+}
+.guide-cta p {
+  margin: 0 0 14px;
+  font-weight: 600;
+}
+.guide-cta-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.related {
+  margin-top: 48px;
+  max-width: 70ch;
+}
+.related h2 {
+  font-size: 20px;
+  margin: 0;
+}
+.related ul {
+  list-style: none;
+  padding: 0;
+  margin: 14px 0 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.related a {
+  display: block;
+  padding: 16px 18px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+.related a:hover {
+  background: var(--paper-2);
+  border-color: var(--ink);
+}
+@media (max-width: 760px) {
+  .guides,
+  .related ul {
+    grid-template-columns: 1fr;
+  }
+}

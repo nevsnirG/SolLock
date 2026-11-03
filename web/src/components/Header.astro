@@ -3,10 +3,12 @@ import Logo from './Logo.astro';
 
 const links = [
   { href: '/#how', label: 'How it works' },
+  { href: '/learn', label: 'Learn' },
   { href: '/my-locks', label: 'My locks' },
   { href: '/faq', label: 'FAQ' },
 ];
 const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/') || '/';
+const current = (href: string) => path === href || path.startsWith(`${href}/`);
 ---
 
 <header class="top">
@@ -17,7 +19,7 @@ const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/') 
   <nav class="nav" aria-label="Sections">
     {
       links.map((l) => (
-        <a href={l.href} aria-current={path === l.href ? 'page' : undefined}>
+        <a href={l.href} aria-current={current(l.href) ? 'page' : undefined}>
           {l.label}
         </a>
       ))

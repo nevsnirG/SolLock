@@ -21,6 +21,9 @@ import Base from '../layouts/Base.astro';
       <summary>Can I unlock early?</summary>
       <div class="a">
         <p>No. The Solana network checks the date on every withdrawal, and the date is fixed once the lock exists.</p>
+        <p>
+          Why that holds, field by field: <a href="/learn/can-you-unlock-solana-early">Can you unlock Solana early?</a>
+        </p>
       </div>
     </details>
     <details>
@@ -50,6 +53,9 @@ import Base from '../layouts/Base.astro';
           Keeping your own hands off your Solana until a date you choose: a commitment device. It stays yours and keeps moving with
           the price of Solana, which can go down. You can sell it again from the unlock date.
         </p>
+        <p>
+          It is not staking, and it earns nothing: see <a href="/learn/solana-locking-vs-staking">Locking vs staking Solana</a>.
+        </p>
       </div>
     </details>
     <details>
@@ -70,6 +76,9 @@ import Base from '../layouts/Base.astro';
           time lock, a "stake account", so block explorers such as Solana Explorer and Solscan list it under that name. After the date,
           any tool that handles stake accounts can take the Solana out with your wallet's key, including the Solana command-line tool. The
           recovery note says how.
+        </p>
+        <p>
+          How to read your lock on a block explorer: <a href="/learn/verify-solana-lock-on-chain">How to check a Solana lock on the blockchain</a>.
         </p>
       </div>
     </details>
@@ -108,6 +117,9 @@ import Base from '../layouts/Base.astro';
           One transaction with five parts: a compute limit, creating the lock account, setting the lockup (the date, the custodian with
           no key, and who can withdraw), our fee, and a short label. Your browser builds it, reads it back and checks every field; you can
           see it all under "The full transaction". Your wallet shows it again before you approve.
+        </p>
+        <p>
+          What each field means: <a href="/learn/solana-stake-account-lockup">How Solana stake account lockups work</a>.
         </p>
       </div>
     </details>

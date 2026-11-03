@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+const guides = (await getCollection('learn')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Base
+  title="How a Solana time lock works: five guides"
+  image="/og/learn.png"
+  description="Plain guides to Solana time locks: how to lock, how the lockup works, why nobody can unlock early, locking versus staking, and how to check a lock yourself."
+>
+  <h1 class="section-title">How a Solana time lock works</h1>
+  <p class="lede">Five short guides, in plain words: what a lock can do, what it cannot, and how to check one yourself instead of taking our word for it.</p>
+  <ol class="guides">
+    {
+      guides.map((guide) => (
+        <li>
+          <a href={`/learn/${guide.id}`}>
+            <h2>{guide.data.title}</h2>
+            <p>{guide.data.description}</p>
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+</Base>
