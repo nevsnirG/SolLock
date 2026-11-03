@@ -69,6 +69,9 @@ export const BUSINESS: { tradeName: string; place: string; kvk: string | null; v
 
 export const SITE_URL = import.meta.env.PUBLIC_SITE || 'https://sollock.io';
 
+/** The public repository. The site is source-available: anyone can read the code it runs. */
+export const REPOSITORY_URL = 'https://github.com/nevsnirG/SolLock';
+
 /** Read as text by the deploy check, which refuses a production deploy while it is true. */
 export const LEGAL_DRAFT = false;
 
