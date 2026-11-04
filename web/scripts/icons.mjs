@@ -16,9 +16,8 @@ const pub = join(here, '../public');
 const BG = '#fbf8f3';
 const INK_DARK = '#f6f1ea';
 
-// The favicons have no background. The SVG one follows the system theme; the bitmaps cannot and keep the dark shackle.
-const favicon = lockSvg({ darkShackle: INK_DARK });
-const mark = lockSvg();
+// The favicons have no background and must read on light and dark tab bars alike: a light shackle with a thin dark edge does.
+const favicon = lockSvg({ shackle: INK_DARK, edge: 48 });
 // iOS rounds the corners itself and turns transparency black, so the touch icon fills the whole square.
 const touch = lockSvg({ tile: { fill: BG, pad: 0.12 } });
 
@@ -47,8 +46,8 @@ await initWasm(readFileSync(require.resolve('@resvg/resvg-wasm/index_bg.wasm')))
 
 const files = {
   'favicon.svg': `${favicon}\n`,
-  'favicon.ico': ico([16, 32, 48].map((size) => ({ size, data: png(mark, size) }))),
-  'icon-192.png': png(mark, 192),
+  'favicon.ico': ico([16, 32, 48].map((size) => ({ size, data: png(favicon, size) }))),
+  'icon-192.png': png(favicon, 192),
   'apple-touch-icon.png': png(touch, 180),
 };
 for (const [name, data] of Object.entries(files)) {

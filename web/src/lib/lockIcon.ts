@@ -20,21 +20,23 @@ export const LOCK_COLOURS = { shackle: '#17130f', upperBar: '#f7a823', lowerBar:
 export const viewBox = ({ x, y, size }: { x: number; y: number; size: number }): string => `${x} ${y} ${size} ${size}`;
 
 export interface LockSvgOptions {
-  /** The shackle's colour when the viewer prefers a dark colour scheme; an SVG favicon can follow that, a bitmap cannot. */
-  darkShackle?: string;
+  /** The shackle's fill; the bars keep their own colours. */
+  shackle?: string;
+  /** A dark edge around the shackle, in path units, so a light shackle still shows on a light tab bar. */
+  edge?: number;
   /** A filled square behind the mark: its padding as a fraction of the mark's box, its corner radius as a fraction of its own side. */
   tile?: { fill: string; pad: number; radius?: number };
 }
 
 /** The mark as a standalone SVG document. */
-export function lockSvg({ darkShackle, tile }: LockSvgOptions = {}): string {
+export function lockSvg({ shackle = LOCK_COLOURS.shackle, edge, tile }: LockSvgOptions = {}): string {
   const pad = tile ? tile.pad * LOCK_BOX.size : 0;
   const box = { x: LOCK_BOX.x - pad, y: LOCK_BOX.y - pad, size: LOCK_BOX.size + 2 * pad };
+  const edged = edge ? ` stroke="${LOCK_COLOURS.shackle}" stroke-width="${edge}" stroke-linejoin="round" paint-order="stroke"` : '';
   return [
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox(box)}">`,
-    darkShackle && `<style>@media (prefers-color-scheme: dark) { .shackle { fill: ${darkShackle} } }</style>`,
     tile && `<rect x="${box.x}" y="${box.y}" width="${box.size}" height="${box.size}" rx="${(tile.radius ?? 0) * box.size}" fill="${tile.fill}"/>`,
-    `<path class="shackle" fill="${LOCK_COLOURS.shackle}" d="${LOCK_PATHS.shackle}"/>`,
+    `<path fill="${shackle}"${edged} d="${LOCK_PATHS.shackle}"/>`,
     `<path fill="${LOCK_COLOURS.upperBar}" d="${LOCK_PATHS.upperBar}"/>`,
     `<path fill="${LOCK_COLOURS.lowerBar}" d="${LOCK_PATHS.lowerBar}"/>`,
     '</svg>',
