@@ -1,19 +1,26 @@
 // Mobile wallets, and Google's favicon service behind wallet popups, ask for /favicon.ico by name.
+// Every file here is drawn from src/lib/lockIcon.ts, which the header logo uses too (Node strips the types itself).
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { initWasm, Resvg } from '@resvg/resvg-wasm';
+import { lockSvg } from '../src/lib/lockIcon.ts';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const pub = join(here, '../public');
-const logo = readFileSync(join(pub, 'favicon.svg'), 'utf8');
 
+// From global.css: the light theme's background and the dark theme's ink.
+const BG = '#fbf8f3';
+const INK_DARK = '#f6f1ea';
+
+// The SVG favicon follows the system theme. The bitmaps cannot, so they sit on a light tile that reads on any tab bar or wallet card.
+const favicon = lockSvg({ darkShackle: INK_DARK });
+const tile = lockSvg({ tile: { fill: BG, pad: 0.1, radius: 0.22 } });
 // iOS rounds the corners itself and turns transparency black, so the touch icon fills the whole square.
-const SUN = '#f7a823';
-const tile = logo.replace('<circle cx="17" cy="17" r="16"', `<rect width="34" height="34" fill="${SUN}"/><circle cx="17" cy="17" r="16"`);
+const touch = lockSvg({ tile: { fill: BG, pad: 0.12 } });
 
 const png = (svg, size) => new Resvg(svg, { fitTo: { mode: 'width', value: size } }).render().asPng();
 
@@ -39,9 +46,10 @@ function ico(images) {
 await initWasm(readFileSync(require.resolve('@resvg/resvg-wasm/index_bg.wasm')));
 
 const files = {
-  'favicon.ico': ico([16, 32, 48].map((size) => ({ size, data: png(logo, size) }))),
-  'icon-192.png': png(logo, 192),
-  'apple-touch-icon.png': png(tile, 180),
+  'favicon.svg': `${favicon}\n`,
+  'favicon.ico': ico([16, 32, 48].map((size) => ({ size, data: png(tile, size) }))),
+  'icon-192.png': png(tile, 192),
+  'apple-touch-icon.png': png(touch, 180),
 };
 for (const [name, data] of Object.entries(files)) {
   writeFileSync(join(pub, name), data);

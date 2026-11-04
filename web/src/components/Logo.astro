@@ -1,13 +1,14 @@
 ---
+import { LOCK_BOX, LOCK_PATHS, viewBox } from '../lib/lockIcon.ts';
+
 interface Props {
   size?: number;
 }
 const { size = 34 } = Astro.props;
 ---
 
-<svg width={size} height={size} viewBox="0 0 34 34" aria-hidden="true">
-  <circle class="logo-sun" cx="17" cy="17" r="16"></circle>
-  <line class="logo-hand" x1="17" y1="17" x2="17" y2="7.5" stroke-width="2.8"></line>
-  <line class="logo-hand" x1="17" y1="17" x2="23.5" y2="20.5" stroke-width="2.4"></line>
-  <circle class="logo-hub" cx="17" cy="17" r="2.4"></circle>
+<svg width={size} height={size} viewBox={viewBox(LOCK_BOX)} aria-hidden="true">
+  <path class="logo-shackle" d={LOCK_PATHS.shackle}></path>
+  <path class="logo-bar-1" d={LOCK_PATHS.upperBar}></path>
+  <path class="logo-bar-2" d={LOCK_PATHS.lowerBar}></path>
 </svg>

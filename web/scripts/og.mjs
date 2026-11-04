@@ -6,6 +6,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { initWasm, Resvg } from '@resvg/resvg-wasm';
 import satori from 'satori';
+import { lockSvg } from '../src/lib/lockIcon.ts';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -22,18 +23,11 @@ const fonts = [
 const BG = '#fbf8f3';
 const INK = '#17130f';
 const INK_2 = '#463e36';
-const SUN = '#f7a823';
 
 const h = (type, style, ...children) => ({ type, props: { style: { display: 'flex', ...style }, children: children.flat() } });
 
-function sun(size) {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 34">
-    <circle cx="17" cy="17" r="16" fill="${SUN}"/>
-    <line x1="17" y1="17" x2="17" y2="7.5" stroke="${INK}" stroke-width="2.8" stroke-linecap="round"/>
-    <line x1="17" y1="17" x2="23.5" y2="20.5" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>
-    <circle cx="17" cy="17" r="2.4" fill="${INK}"/>
-  </svg>`;
-  return { type: 'img', props: { src: `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`, width: size, height: size } };
+function mark(size) {
+  return { type: 'img', props: { src: `data:image/svg+xml;base64,${Buffer.from(lockSvg()).toString('base64')}`, width: size, height: size } };
 }
 
 function card({ kicker, title, sub }) {
@@ -51,7 +45,7 @@ function card({ kicker, title, sub }) {
       fontFamily: 'Figtree',
       color: INK,
     },
-    h('div', { alignItems: 'center', gap: 14 }, sun(48), h('div', { fontFamily: 'Bricolage', fontSize: 34, fontWeight: 700, letterSpacing: -1 }, 'SolLock')),
+    h('div', { alignItems: 'center', gap: 14 }, mark(48), h('div', { fontFamily: 'Bricolage', fontSize: 34, fontWeight: 700, letterSpacing: -1 }, 'SolLock')),
     h(
       'div',
       { flexDirection: 'column', gap: 18, maxWidth: 940 },

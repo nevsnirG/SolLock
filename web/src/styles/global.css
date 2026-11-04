@@ -163,15 +163,15 @@ h3 {
 .logo svg {
   flex: none;
 }
-.logo-sun {
-  fill: var(--sun);
+/* The mark's own colours; only the shackle follows the theme (see lib/lockIcon.ts). */
+.logo-shackle {
+  fill: var(--ink);
 }
-.logo-hand {
-  stroke: var(--sun-ink);
-  stroke-linecap: round;
+.logo-bar-1 {
+  fill: #f7a823;
 }
-.logo-hub {
-  fill: var(--sun-ink);
+.logo-bar-2 {
+  fill: #a8530a;
 }
 .nav {
   display: flex;
