@@ -170,6 +170,6 @@ function describeFailure(error: unknown, sentByWallet: boolean, nothingLanded: b
   if (error instanceof FlowError) return { message: error.message, logs: error.logs };
   const detail = (error as Error)?.message ?? String(error);
   return {
-    message: sentByWallet ? `Something went wrong after your wallet sent it: ${detail}. ${checkFirst}` : `Your wallet reported a problem: ${detail}. ${checkFirst}`,
+    message: sentByWallet ? `Something went wrong after you approved it in your wallet: ${detail}. ${checkFirst}` : `Your wallet reported a problem: ${detail}. ${checkFirst}`,
   };
 }

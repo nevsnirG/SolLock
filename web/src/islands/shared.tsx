@@ -58,7 +58,7 @@ export function SigningStatus({ phase, walletName }: { phase: SigningPhase; wall
     case 'confirming':
       return (
         <p className="status-line">
-          Sent by your wallet. Waiting for the network to confirm… <ExternalLink href={explorerTxUrl(phase.signature)}>Follow it on the explorer</ExternalLink>
+          Approved in {walletName}. Waiting for the network to confirm it… <ExternalLink href={explorerTxUrl(phase.signature)}>Follow it on the explorer</ExternalLink>
         </p>
       );
     case 'checking':
