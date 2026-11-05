@@ -1,11 +1,13 @@
 import type { Address, TransactionSendingSigner } from '@solana/kit';
 import { formatSol } from '@sollock/core';
-import { createKitSignersFromWallet, getDefaultConfig, getDefaultMobileConfig } from '@solana/connector/headless';
+import { createKitSignersFromWallet, getDefaultConfig } from '@solana/connector/headless';
 import { ConnectorProvider, useConnector, useConnectorClient } from '@solana/connector/react';
 import { type ReactNode, type RefObject, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { CLUSTER, SITE_URL } from '../config.ts';
 import { shortAddress } from '../lib/draft.ts';
+import { askLoopbackPermission, isNoWalletApp, loopbackPermission, MOBILE_WALLET_NAME, shouldOfferMobileWallet } from '../lib/mobile.ts';
+import { browserStorage } from '../lib/money.ts';
 import { siteRpcUrl } from '../lib/siteRpc.ts';
 
 const CHAIN = `solana:${CLUSTER}` as const;
@@ -17,19 +19,26 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         appName: 'SolLock',
         appUrl: SITE_URL,
         autoConnect: true,
-        enableMobile: true,
+        // ConnectorKit's own Android wallet stays off; the one below takes its place.
+        enableMobile: false,
         network: CLUSTER,
         clusters: [{ id: CHAIN, label: CLUSTER === 'devnet' ? 'Devnet' : 'Mainnet', url: siteRpcUrl() }],
         persistClusterSelection: false,
       }),
     [],
   );
-  const mobile = useMemo(() => getDefaultMobileConfig({ appName: 'SolLock', appUrl: SITE_URL }), []);
-  return (
-    <ConnectorProvider config={config} mobile={mobile}>
-      {children}
-    </ConnectorProvider>
-  );
+  useMobileWallet();
+  return <ConnectorProvider config={config}>{children}</ConnectorProvider>;
+}
+
+/** Android reaches wallet apps through Solana Mobile's protocol; that code loads only there. */
+function useMobileWallet() {
+  useEffect(() => {
+    if (!shouldOfferMobileWallet(navigator.userAgent, window.isSecureContext)) return;
+    void import('../lib/mobileWallet.ts').then(({ registerMobileWallet }) =>
+      registerMobileWallet({ chain: CHAIN, identity: { name: 'SolLock', uri: window.location.origin, icon: '/icon-192.png' }, storage: browserStorage() }),
+    );
+  }, []);
 }
 
 export interface SiteWallet {
@@ -58,6 +67,13 @@ function signerFor(session: Session | null, client: ReturnType<typeof useConnect
   return { signer: transactionSigner, signerProblem: null };
 }
 
+/** The Android wallet names the app it reached when it is a known one; otherwise the page speaks of "your wallet app". */
+function displayNameFor(connector: Snapshot['connectors'][number] | undefined, session: Session | null): string {
+  if (!connector) return 'your wallet';
+  if (connector.name !== MOBILE_WALLET_NAME) return connector.name;
+  return session?.selectedAccount.account.label ?? 'your wallet app';
+}
+
 export function useSiteWallet(): SiteWallet {
   const snapshot = useConnector();
   const client = useConnectorClient();
@@ -68,7 +84,7 @@ export function useSiteWallet(): SiteWallet {
   return {
     status: status.status,
     address: session?.selectedAccount.address ?? null,
-    displayName: connector?.name ?? 'your wallet',
+    displayName: displayNameFor(connector, session),
     icon: connector?.icon ?? null,
     signer,
     signerProblem,
@@ -99,7 +115,7 @@ export function WalletChrome({
 
 const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-/** iOS browsers can't reach wallet apps, so the way in is this page opened in the wallet's own browser. */
+/** A wallet's own browser can reach the wallet; on iOS that is the only way in, on Android the way out when no app answers. */
 function browseLinks(): { name: string; href: string }[] {
   const url = encodeURIComponent(window.location.href);
   const ref = encodeURIComponent(window.location.origin);
@@ -125,26 +141,55 @@ function useDialog(dialog: RefObject<HTMLElement | null>, onClose: () => void) {
   }, [dialog]);
 }
 
+/** Chrome's question about the wallet app's socket on the phone, asked with a tap of its own so the next tap can open the app. */
+type PermissionStep = 'ask' | 'asking' | 'open' | 'blocked';
+
 function WalletPicker({ wallet, onClose }: { wallet: SiteWallet; onClose: () => void }) {
   const dialog = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [connectingId, setConnectingId] = useState<string | null>(null);
+  const [noWalletApp, setNoWalletApp] = useState(false);
+  const [permission, setPermission] = useState<PermissionStep | null>(null);
   useDialog(dialog, onClose);
 
-  const pick = async (id: string) => {
+  const ready = wallet.connectors.filter((c) => c.ready);
+  const mobile = ready.find((c) => c.name === MOBILE_WALLET_NAME);
+
+  const connectTo = async (id: string) => {
     setConnectingId(id);
     setError(null);
+    setNoWalletApp(false);
+    setPermission(null);
     try {
       await wallet.connect(id);
       onClose();
     } catch (e) {
-      setError((e as Error).message || 'The wallet did not connect.');
+      if (isNoWalletApp(e)) setNoWalletApp(true);
+      else setError((e as Error).message || 'The wallet did not connect.');
     } finally {
       setConnectingId(null);
     }
   };
 
-  const ready = wallet.connectors.filter((c) => c.ready);
+  const pick = async (id: string) => {
+    if (id !== mobile?.id) return connectTo(id);
+    const state = await loopbackPermission();
+    if (state === 'prompt') setPermission('ask');
+    else if (state === 'denied') setPermission('blocked');
+    else await connectTo(id);
+  };
+
+  const askPermission = async () => {
+    setPermission('asking');
+    setError(null);
+    const state = await askLoopbackPermission();
+    if (state === 'denied') setPermission('blocked');
+    else if (state === 'prompt') {
+      setPermission('ask');
+      setError('Chrome did not get an answer. Tap Continue and choose Allow.');
+    } else setPermission('open');
+  };
+
   return (
     <div className="overlay" onClick={(event) => event.target === event.currentTarget && onClose()}>
       <div className="wallet-modal" role="dialog" aria-modal="true" aria-labelledby="pickTitle" ref={dialog}>
@@ -155,12 +200,22 @@ function WalletPicker({ wallet, onClose }: { wallet: SiteWallet; onClose: () => 
           </button>
         </div>
         <div className="wm-body">
-          {ready.length > 0 ? (
-            <WalletList connectors={ready} connectingId={connectingId} onPick={(id) => void pick(id)} />
+          {permission ? (
+            <PermissionPrompt step={permission} onContinue={() => void askPermission()} onOpen={() => mobile && void connectTo(mobile.id)} />
+          ) : ready.length > 0 ? (
+            <>
+              <WalletList connectors={ready} connectingId={connectingId} onPick={(id) => void pick(id)} />
+              {mobile && <p className="help">Opens a wallet app installed on this phone, such as Phantom, Solflare or Backpack.</p>}
+            </>
           ) : isMobile() ? (
-            <OpenInWalletApp />
+            <OpenInWalletApp lead="No wallet in this browser. Open SolLock in your wallet app instead:" />
           ) : (
             <p className="no-margin">No Solana wallet found in this browser. Install Phantom, Solflare or Backpack, then reload this page.</p>
+          )}
+          {noWalletApp && (
+            <div className="note warn" role="alert">
+              <OpenInWalletApp lead="No wallet app on this phone answered. Install Phantom, Solflare or Backpack, or open SolLock inside the wallet app:" />
+            </div>
           )}
           {CLUSTER === 'devnet' && <p className="help">This is the devnet preview: set your wallet to devnet first.</p>}
           <p className="help">Connecting shares only your wallet's public address. You approve every transaction in the wallet.</p>
@@ -173,6 +228,41 @@ function WalletPicker({ wallet, onClose }: { wallet: SiteWallet; onClose: () => 
       </div>
     </div>
   );
+}
+
+function PermissionPrompt({ step, onContinue, onOpen }: { step: PermissionStep; onContinue: () => void; onOpen: () => void }) {
+  switch (step) {
+    case 'ask':
+      return (
+        <>
+          <p className="no-margin">
+            Chrome will ask whether SolLock may connect to the wallet app on this phone. Tap <b>Allow</b> when it does.
+          </p>
+          <p className="help">The connection stays on your phone: this page talks to the wallet app and to nothing else.</p>
+          <button type="button" className="btn cta" onClick={onContinue}>
+            Continue
+          </button>
+        </>
+      );
+    case 'asking':
+      return <p className="status-line">Waiting for your answer in Chrome…</p>;
+    case 'open':
+      return (
+        <>
+          <p className="no-margin">Allowed. Now open the wallet app to connect.</p>
+          <button type="button" className="btn cta" onClick={onOpen}>
+            Open wallet app
+          </button>
+        </>
+      );
+    case 'blocked':
+      return (
+        <p className="err" role="alert">
+          Chrome blocks this site from connecting to apps on this phone, so the wallet app cannot answer. Allow "Local network access" in Chrome's settings for
+          this site (tap the icon left of the address), then try again.
+        </p>
+      );
+  }
 }
 
 function WalletList({ connectors, connectingId, onPick }: { connectors: SiteWallet['connectors']; connectingId: string | null; onPick: (id: string) => void }) {
@@ -191,10 +281,10 @@ function WalletList({ connectors, connectingId, onPick }: { connectors: SiteWall
   );
 }
 
-function OpenInWalletApp() {
+function OpenInWalletApp({ lead }: { lead: string }) {
   return (
     <>
-      <p className="no-margin">No wallet in this browser. Open SolLock in your wallet app instead:</p>
+      <p className="no-margin">{lead}</p>
       <ul className="wallet-list">
         {browseLinks().map((link) => (
           <li key={link.name}>

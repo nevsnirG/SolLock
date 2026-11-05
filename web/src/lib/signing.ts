@@ -6,6 +6,7 @@ import {
   signAndSendTransactionMessageWithSigners,
 } from '@solana/kit';
 import { MAX_LOCK_COMPUTE_UNITS } from '@sollock/core';
+import { causeChain, isNoWalletApp } from './mobile.ts';
 import type { SiteRpc } from './siteRpc.ts';
 
 export type SigningPhase =
@@ -80,14 +81,12 @@ export async function signAndSend(message: Parameters<typeof signAndSendTransact
 
 /** EIP-1193's "user rejected the request" code, which Solana wallets use too. */
 const USER_REJECTED_CODE = 4001;
-const MAX_CAUSE_DEPTH = 5;
 
 export function isWalletRejection(error: unknown): boolean {
-  for (let current: unknown = error, depth = 0; current && depth < MAX_CAUSE_DEPTH; depth++) {
-    const { code, message, cause } = current as { code?: unknown; message?: unknown; cause?: unknown };
+  for (const current of causeChain(error)) {
+    const { code, message } = current as { code?: unknown; message?: unknown };
     if (code === USER_REJECTED_CODE) return true;
     if (typeof message === 'string' && /reject|declin|cancel|denied|disapprov/i.test(message)) return true;
-    current = cause;
   }
   return false;
 }
@@ -137,7 +136,8 @@ export async function runSigning<Prepared, Result>(
     onPhase({ kind: 'idle' });
     return { kind: 'done', result };
   } catch (error) {
-    const walletFailed = prepared !== undefined && !sentByWallet;
+    // A wallet app that never opened cannot have sent anything, so there is nothing to look for.
+    const walletFailed = prepared !== undefined && !sentByWallet && !isNoWalletApp(error);
     if (walletFailed) onPhase({ kind: 'checking' });
     const landed = walletFailed ? await checkLanded(() => steps.landed(prepared as Prepared), pollOptions) : false;
     if (landed) {
@@ -164,6 +164,10 @@ async function checkLanded(landed: () => Promise<boolean>, { tries = 3, interval
 
 function describeFailure(error: unknown, sentByWallet: boolean, nothingLanded: boolean): { message: string; logs?: readonly string[] } {
   const checkFirst = 'Check My locks before you try again, in case it went through.';
+  if (!sentByWallet && isNoWalletApp(error)) {
+    // Android gives a tap a few seconds to open an app; a slow network check before the wallet can use them up.
+    return { message: 'Your phone did not open the wallet app in time. Nothing was sent. Tap the button again, and check that the wallet app is still installed.' };
+  }
   if (!sentByWallet && isWalletRejection(error)) {
     return { message: nothingLanded ? 'You said no in your wallet. Nothing was sent.' : `You said no in your wallet. ${checkFirst}` };
   }

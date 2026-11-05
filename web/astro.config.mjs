@@ -17,8 +17,9 @@ export default defineConfig({
     csp: {
       directives: [
         "default-src 'self'",
-        // Mobile Wallet Adapter on Android talks to the wallet app over ws://localhost.
-        "connect-src 'self' ws://localhost:*",
+        // On Android the wallet app answers over ws://localhost. Chrome asks the visitor's permission for that
+        // the first time, and the question is raised by one fetch to http://localhost before the app is opened.
+        "connect-src 'self' ws://localhost:* http://localhost",
         "img-src 'self' data:",
         "font-src 'self'",
         "object-src 'none'",

@@ -21,7 +21,8 @@ export const test = base.extend<Fixtures>({
     const offSite: string[] = [];
     page.on('request', (request) => {
       const url = new URL(request.url());
-      if (url.origin !== origin && url.protocol !== 'data:' && url.protocol !== 'blob:') offSite.push(request.url());
+      // solana-wallet: is how an Android page opens the wallet app; it never leaves the phone.
+      if (url.origin !== origin && url.protocol !== 'data:' && url.protocol !== 'blob:' && url.protocol !== 'solana-wallet:') offSite.push(request.url());
     });
     await use(offSite);
   },
