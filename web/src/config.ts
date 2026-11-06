@@ -45,7 +45,6 @@ export function liveOffer(exchange: Exchange, today: Date): string | null {
 export const AFFILIATE_NOTE = 'These are affiliate links: we may earn a commission if you sign up through one.';
 export const OFFERS_NOTE = "The offers are the exchanges' own, with their conditions, and can differ by country.";
 
-
 export const EXPLORER_URL = 'https://explorer.solana.com';
 
 export function explorerAddressUrl(addr: string, cluster: Cluster = CLUSTER): string {
