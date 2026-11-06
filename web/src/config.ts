@@ -45,7 +45,6 @@ export function liveOffer(exchange: Exchange, today: Date): string | null {
 export const AFFILIATE_NOTE = 'These are affiliate links: we may earn a commission if you sign up through one.';
 export const OFFERS_NOTE = "The offers are the exchanges' own, with their conditions, and can differ by country.";
 
-export const ESMA_REGISTER_URL = 'https://www.esma.europa.eu/esmas-activities/digital-finance-and-innovation/markets-crypto-assets-regulation-mica';
 
 export const EXPLORER_URL = 'https://explorer.solana.com';
 
