@@ -4,7 +4,7 @@ searchTitle: "How to lock Solana (SOL) until a date you pick"
 description: "How to lock Solana until a future date with a lockup the network itself enforces, what to check before you sign, what it costs, and what happens on the day."
 published: 2026-11-03
 updated: 2026-11-09
-order: 1
+order: 5
 related: [can-you-unlock-solana-early, withdraw-solana-stake-account-after-lockup, solana-time-lock-risks]
 ---
 

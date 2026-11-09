@@ -3,7 +3,7 @@ title: "Locking vs staking Solana: what is the difference?"
 searchTitle: "Locking vs staking Solana (SOL): what is the difference?"
 description: "Locking and staking Solana are not the same thing. Staking delegates to a validator for rewards that vary; locking stops withdrawals until a date. You can do either without the other."
 published: 2026-11-03
-order: 4
+order: 8
 related: [solana-stake-account-lockup, how-to-lock-solana, stop-selling-crypto-in-a-dip]
 ---
 

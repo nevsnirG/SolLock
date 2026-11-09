@@ -3,7 +3,7 @@ title: "How to check a Solana lock on the blockchain"
 searchTitle: "How to check a Solana (SOL) lock on the blockchain"
 description: "How to verify a Solana lock yourself on a block explorer. The owner program, the unlock date, the withdraw authority, the custodian and the balance, and what each should say."
 published: 2026-11-03
-order: 5
+order: 9
 related: [solana-stake-account-lockup, can-you-unlock-solana-early, withdraw-solana-stake-account-after-lockup]
 ---
 

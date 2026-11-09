@@ -3,8 +3,8 @@ title: "How to give Solana as a gift that opens on a date"
 searchTitle: "How to give Solana (SOL) as a gift that opens on a birthday or another date"
 description: "Locking Solana for a child, a friend or a couple, to open on an 18th birthday, a graduation or a wedding. What the recipient needs, what to check in the address, and why a gift is final."
 published: 2026-11-09
-order: 7
-related: [how-to-lock-solana, withdraw-solana-stake-account-after-lockup, can-you-unlock-solana-early]
+order: 11
+related: [solana-gift-for-your-child, how-to-lock-solana, withdraw-solana-stake-account-after-lockup]
 ---
 
 A gift lock is a lock that belongs to someone else from the start. You pay for it, you pick the date, and the account names their wallet as the one that may withdraw. Until the date the network keeps it shut for everyone, you included. From the date on it is theirs to take out, with nobody in between.
@@ -48,6 +48,6 @@ Past ten years the page asks a fair question: wallet apps will change, so who wi
 - **The recovery note.** The success screen gives you one. It holds the lock's address, the date, the amount and the recipient's address, and explains how to withdraw with any Solana tool, in case this website is ever gone. Give it to the recipient, or to whoever keeps the recovery phrase, and keep a copy.
 - **A pointer to [My locks](/my-locks).** When the recipient connects their wallet there, the lock shows up by itself, with the date and a Withdraw button once it has passed. [How to withdraw after the lockup ends](/learn/withdraw-solana-stake-account-after-lockup) has the details.
 
-A gift may count for gift tax where you live, and the recipient owns the locked Solana from the start. [The FAQ](/faq) says what that means in the Netherlands. This is not tax advice.
+A gift may count for gift tax where you live, and the recipient owns the locked Solana from the start, so for tax it is theirs as well. The rules differ by country. This is not tax advice.
 
 Try the flow first with a [free test lock](/lock?test) to your own wallet. It costs you only the network fee, and you see every screen the real gift will go through. For the protocol's definition of the account and its withdraw authority, see Solana's [stake account reference](https://solana.com/docs/references/staking/stake-accounts).

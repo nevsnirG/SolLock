@@ -3,7 +3,7 @@ title: "How to withdraw from a Solana stake account after the lockup ends"
 searchTitle: "How to withdraw Solana (SOL) from a stake account after the lockup ends"
 description: "What to do on the unlock date: withdraw on My locks in one step, or with any Solana tool that handles stake accounts, including the command-line tool. The deposit comes back with it."
 published: 2026-11-09
-order: 6
+order: 10
 related: [how-to-lock-solana, solana-rent-deposit, verify-solana-lock-on-chain]
 ---
 

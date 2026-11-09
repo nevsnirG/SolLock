@@ -3,6 +3,10 @@ import type { Page } from '@playwright/test';
 import { expect, SOL_PRICE_USD, test } from './fixtures.ts';
 
 const GUIDES = [
+  'what-is-solana',
+  'buy-your-first-solana-and-keep-it',
+  'hold-solana-long-term',
+  'stop-selling-crypto-in-a-dip',
   'how-to-lock-solana',
   'solana-stake-account-lockup',
   'can-you-unlock-solana-early',
@@ -10,7 +14,9 @@ const GUIDES = [
   'verify-solana-lock-on-chain',
   'withdraw-solana-stake-account-after-lockup',
   'give-solana-as-a-gift',
-  'stop-selling-crypto-in-a-dip',
+  'solana-gift-for-your-child',
+  'crypto-time-capsule',
+  'time-lock-crypto-wallet',
   'solana-rent-deposit',
   'solana-time-lock-risks',
 ];
@@ -159,12 +165,13 @@ test.describe('the words on the site', () => {
     }
   });
 
-  test('say plainly that the FAQ is not tax advice, and that Box 3 still applies', async ({ page }) => {
+  test('say plainly that the FAQ is not tax advice, and that the owner still counts for tax wherever they live', async ({ page }) => {
     await page.goto('/faq');
     await page.getByText(/tax/i).first().click();
     const text = await visibleText(page);
     expect(text).toContain('This is not tax advice.');
-    expect(text).toContain('Box 3');
+    expect(text).toContain('still counts as yours for tax');
+    expect(text).not.toContain('Box 3');
   });
 
 });

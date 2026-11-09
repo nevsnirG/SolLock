@@ -12,17 +12,23 @@ const guides = readdirSync(dir)
   });
 
 describe('the guides', () => {
-  it('are the ten pages the site links to', () => {
+  it('are the sixteen pages the site links to', () => {
     expect(guides.map((g) => g.file).sort()).toEqual([
+      'buy-your-first-solana-and-keep-it.md',
       'can-you-unlock-solana-early.md',
+      'crypto-time-capsule.md',
       'give-solana-as-a-gift.md',
+      'hold-solana-long-term.md',
       'how-to-lock-solana.md',
+      'solana-gift-for-your-child.md',
       'solana-locking-vs-staking.md',
       'solana-rent-deposit.md',
       'solana-stake-account-lockup.md',
       'solana-time-lock-risks.md',
       'stop-selling-crypto-in-a-dip.md',
+      'time-lock-crypto-wallet.md',
       'verify-solana-lock-on-chain.md',
+      'what-is-solana.md',
       'withdraw-solana-stake-account-after-lockup.md',
     ]);
   });

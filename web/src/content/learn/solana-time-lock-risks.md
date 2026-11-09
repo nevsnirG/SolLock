@@ -3,7 +3,7 @@ title: "What can go wrong with a Solana time lock"
 searchTitle: "Solana (SOL) time lock risks: what can go wrong, and what cannot"
 description: "The risks of locking Solana, plainly: a lost recovery phrase, a date too far away, the price, a wrong gift address, a custodian with a key, and what this site going away would change."
 published: 2026-11-09
-order: 10
+order: 16
 related: [can-you-unlock-solana-early, verify-solana-lock-on-chain, stop-selling-crypto-in-a-dip]
 ---
 
