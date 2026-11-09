@@ -2,7 +2,9 @@
 import '../styles/global.css';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
-import { CLUSTER } from '../config.ts';
+import { CLUSTER, SITE_DESCRIPTION, SITE_TITLE } from '../config.ts';
+import { jsonLd } from '../lib/jsonLd.ts';
+import { breadcrumbs } from '../lib/structured.ts';
 
 interface Props {
   title?: string;
@@ -11,18 +13,23 @@ interface Props {
   type?: 'website' | 'article';
   published?: Date;
   modified?: Date;
+  /** schema.org blocks for the page. Left out, every page but the home page gets a breadcrumb trail. */
+  structured?: readonly unknown[];
 }
 const {
   title,
   image = '/og/default.png',
-  description = 'Lock your own Solana until a date you pick, with a lockup the network enforces, signed in your own wallet.',
+  description = SITE_DESCRIPTION,
   type = 'website',
   published,
   modified,
+  structured,
 } = Astro.props;
-const fullTitle = title ? `${title} · SolLock` : 'SolLock · A time lock for your own Solana';
-const canonical = new URL(Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/'), Astro.site);
+const fullTitle = `${title ?? SITE_TITLE} · SolLock`;
+const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/');
+const canonical = new URL(path, Astro.site);
 const modifiedAt = modified ?? published;
+const blocks = structured ?? (path === '/' ? [] : [breadcrumbs([{ name: title ?? 'SolLock' }])]);
 ---
 
 <!doctype html>
@@ -42,16 +49,18 @@ const modifiedAt = modified ?? published;
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content={type} />
     <meta property="og:site_name" content="SolLock" />
-    <meta property="og:title" content={title ?? 'SolLock'} />
+    <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={new URL(image, Astro.site)} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="SolLock: a time lock for your own Solana" />
     {published && <meta property="article:published_time" content={published.toISOString()} />}
     {modifiedAt && <meta property="article:modified_time" content={modifiedAt.toISOString()} />}
     <meta name="twitter:card" content="summary_large_image" />
     {CLUSTER === 'devnet' && <meta name="robots" content="noindex" />}
+    {blocks.length > 0 && <script type="application/ld+json" set:html={jsonLd(blocks)} />}
     <slot name="head" />
   </head>
   <body>

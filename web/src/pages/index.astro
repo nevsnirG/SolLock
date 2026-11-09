@@ -1,14 +1,19 @@
 ---
 import { formatSol, MIN_LOCK_AMOUNT } from '@sollock/core';
+import { getCollection } from 'astro:content';
 import { SALE_PRICE_2020_USD } from '../config.ts';
 import Base from '../layouts/Base.astro';
+import { organization, webSite } from '../lib/structured.ts';
 import { YEAR_PRESETS } from '../lib/unlockDate.ts';
 
 const EXAMPLE_SPEND = 1000;
+/** What the heading says until today's price arrives, and for anyone who reads the page without JavaScript. */
+const solBought = Math.floor(EXAMPLE_SPEND / SALE_PRICE_2020_USD);
+const guides = (await getCollection('learn')).sort((a, b) => a.data.order - b.data.order);
 const usd = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
 ---
 
-<Base>
+<Base structured={[webSite(), organization()]}>
   <section class="hero">
     <div class="hero-copy">
       <p class="then-now" data-sale={SALE_PRICE_2020_USD}>
@@ -19,7 +24,7 @@ const usd = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', c
       </p>
       <h1 id="heroTitle" data-spend={EXAMPLE_SPEND}>
         <span>{usd(EXAMPLE_SPEND)} in Solana in 2020</span>{' '}
-        <span>is <em class="worth pending" id="worth"></em> today.</span>
+        <span id="heroTail">bought {solBought.toLocaleString('en-US')} SOL.</span>
       </h1>
       <p class="hero-sub">
         <b id="multipleLine" hidden>That's <span id="multipleText"></span>× your money, for anyone who held on.</b>{' '}
@@ -220,6 +225,22 @@ const usd = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', c
     </div>
   </section>
 
+  <section class="section home-learn" aria-labelledby="learnTitle">
+    <div class="section-head">
+      <h2 id="learnTitle">Learn how it works</h2>
+      <p>Short guides in plain words, from the first lock to the day it opens.</p>
+      <a class="more-link" href="/learn">All guides</a>
+    </div>
+    <ul class="guide-links">
+      {
+        guides.map((guide) => (
+          <li>
+            <a href={`/learn/${guide.id}`}>{guide.data.title}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
 </Base>
 
 <script>
@@ -236,19 +257,20 @@ const usd = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', c
     return typeof perSol === 'number' && perSol > 0 && typeof asOf === 'number';
   };
 
-  function showSolBought() {
-    if (title) title.textContent = `${usd(spend, 0)} in Solana in 2020 bought ${Math.floor(spend / sale).toLocaleString('en-US')} SOL.`;
-  }
-
+  // Without a price the heading keeps the number of SOL it was built with.
   function showWorthToday({ perSol, asOf }: Quote) {
     const times = Math.round(perSol / sale).toLocaleString('en-US');
-    const worth = element('worth');
-    worth?.classList.remove('pending');
+    const tail = element('heroTail');
+    if (tail) {
+      const worth = document.createElement('em');
+      worth.className = 'worth';
+      worth.textContent = usd((spend / sale) * perSol, 0);
+      tail.replaceChildren('is ', worth, ' today.');
+    }
     for (const [id, text] of [
       ['todayPrice', usd(perSol, 2)],
       ['multiple', `${times}×`],
       ['multipleText', times],
-      ['worth', usd((spend / sale) * perSol, 0)],
     ] as const) {
       const target = element(id);
       if (target) target.textContent = text;
@@ -264,7 +286,9 @@ const usd = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', c
   if (sale > 0 && spend > 0) {
     fetch('/api/price?currency=USD')
       .then((response) => (response.ok ? response.json() : null))
-      .then((body: unknown) => (isQuote(body) ? showWorthToday(body) : showSolBought()))
-      .catch(showSolBought);
+      .then((body: unknown) => {
+        if (isQuote(body)) showWorthToday(body);
+      })
+      .catch(() => {});
   }
 </script>

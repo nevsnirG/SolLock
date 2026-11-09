@@ -1358,24 +1358,6 @@ details.more[open] > summary {
   background: linear-gradient(transparent 60%, color-mix(in srgb, var(--sun) 60%, transparent) 60%);
   padding: 0 0.04em;
 }
-.worth.pending {
-  display: inline-block;
-  width: 4.6em;
-  height: 0.78em;
-  vertical-align: -0.04em;
-  border-radius: 0.14em;
-  background: var(--paper-2);
-}
-@media (prefers-reduced-motion: no-preference) {
-  .worth.pending {
-    animation: pending 1.2s ease-in-out infinite alternate;
-  }
-  @keyframes pending {
-    to {
-      opacity: 0.45;
-    }
-  }
-}
 .hero-sub b {
   display: block;
   color: var(--ink);
@@ -1697,6 +1679,37 @@ details.more[open] > summary {
   font-weight: 700;
 }
 
+/* The guides on the home page */
+.home-learn {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 24px 56px;
+  align-items: start;
+}
+.guide-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.guide-links a {
+  display: block;
+  height: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 15.5px;
+  text-decoration: none;
+}
+.guide-links a:hover {
+  background: var(--paper-2);
+  border-color: var(--ink);
+}
+
 .cta-band {
   margin: 96px 0 0;
   background: var(--sun);
@@ -1754,7 +1767,8 @@ details.more[open] > summary {
   .trust-points {
     grid-template-columns: minmax(0, 1fr);
   }
-  .home-faq {
+  .home-faq,
+  .home-learn {
     grid-template-columns: minmax(0, 1fr);
   }
   .ico,
@@ -1763,7 +1777,8 @@ details.more[open] > summary {
   }
 }
 @media (max-width: 560px) {
-  .benefits {
+  .benefits,
+  .guide-links {
     grid-template-columns: minmax(0, 1fr);
   }
   .quick {
