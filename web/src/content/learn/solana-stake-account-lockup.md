@@ -4,7 +4,7 @@ searchTitle: "How Solana stake account lockups work"
 description: "The lockup inside a Solana stake account, field by field: the timestamp, the epoch and the custodian, what the network refuses while it is in force, and why the custodian decides everything."
 published: 2026-11-03
 order: 2
-related: [solana-locking-vs-staking, can-you-unlock-solana-early]
+related: [solana-locking-vs-staking, can-you-unlock-solana-early, solana-rent-deposit]
 ---
 
 Stake accounts usually come up when people talk about staking. They also carry a feature most people never touch: a lockup that stops withdrawals until a time you set. The rule is enforced by the Stake Program, a part of Solana itself, not by any website. SolLock builds on it, and this page explains what is actually in there.

@@ -2,7 +2,18 @@ import { existsSync, readFileSync } from 'node:fs';
 import type { Page } from '@playwright/test';
 import { expect, SOL_PRICE_USD, test } from './fixtures.ts';
 
-const GUIDES = ['how-to-lock-solana', 'solana-stake-account-lockup', 'can-you-unlock-solana-early', 'solana-locking-vs-staking', 'verify-solana-lock-on-chain'];
+const GUIDES = [
+  'how-to-lock-solana',
+  'solana-stake-account-lockup',
+  'can-you-unlock-solana-early',
+  'solana-locking-vs-staking',
+  'verify-solana-lock-on-chain',
+  'withdraw-solana-stake-account-after-lockup',
+  'give-solana-as-a-gift',
+  'stop-selling-crypto-in-a-dip',
+  'solana-rent-deposit',
+  'solana-time-lock-risks',
+];
 const PAGES = ['/', '/lock', '/my-locks', '/faq', '/custodian', '/terms', '/privacy', '/affiliates', '/learn', ...GUIDES.map((slug) => `/learn/${slug}`)];
 /** Legal texts need their own wording, so the house style rules skip them. */
 const LEGAL_PAGES = new Set(['/terms', '/privacy']);

@@ -4,7 +4,7 @@ searchTitle: "Can you unlock Solana (SOL) early?"
 description: "Whether locked Solana can be withdrawn before the date. What the custodian is, when a lockup can be overridden, and why a SolLock lock cannot be, by anyone."
 published: 2026-11-03
 order: 3
-related: [how-to-lock-solana, solana-stake-account-lockup]
+related: [how-to-lock-solana, solana-stake-account-lockup, solana-time-lock-risks]
 ---
 
 For a SolLock lock, no. Nobody can, you and SolLock included, and an emergency makes no difference. The Solana network checks the date on every withdrawal, and the one key that could make an exception does not exist.

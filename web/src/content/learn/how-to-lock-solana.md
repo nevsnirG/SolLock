@@ -3,8 +3,9 @@ title: "How to lock Solana until a date you pick"
 searchTitle: "How to lock Solana (SOL) until a date you pick"
 description: "How to lock Solana until a future date with a lockup the network itself enforces, what to check before you sign, what it costs, and what happens on the day."
 published: 2026-11-03
+updated: 2026-11-09
 order: 1
-related: [can-you-unlock-solana-early, verify-solana-lock-on-chain]
+related: [can-you-unlock-solana-early, withdraw-solana-stake-account-after-lockup, solana-time-lock-risks]
 ---
 
 If you plan to hold Solana for years, a normal wallet leaves you free to sell at any moment, including the worst one. Solana has a native way to take that option off the table: an account with a built-in lock, which the network keeps shut until a date you choose.
@@ -30,11 +31,11 @@ Start with a [free test lock](/lock?test): 0.01 SOL for about a day. You go thro
 
 ## What it costs
 
-SolLock's fee is 0.25% of the amount, at least 0.01 SOL, VAT included, paid in the same transaction. On top come the network fee, a fraction of a cent, and a rent deposit of about 0.0017 SOL, which stays in the lock and comes back when you withdraw. Test locks are free.
+SolLock's fee is 0.25% of the amount, at least 0.01 SOL, VAT included, paid in the same transaction. On top come the network fee, a fraction of a cent, and [a rent deposit of about 0.0017 SOL](/learn/solana-rent-deposit), which stays in the lock and comes back when you withdraw. Test locks are free.
 
 ## What happens on the unlock date
 
-The lock opens at 00:00 UTC on the date you picked. Nothing moves by itself: the Solana waits in the account until you withdraw it. On [My locks](/my-locks) that is one step, with the wallet that owns the lock. Any other tool that handles stake accounts works too, including the Solana command-line tool.
+The lock opens at 00:00 UTC on the date you picked. Nothing moves by itself: the Solana waits in the account until you withdraw it. On [My locks](/my-locks) that is one step, with the wallet that owns the lock. Any other tool that handles stake accounts works too, including the Solana command-line tool: [How to withdraw after the lockup ends](/learn/withdraw-solana-stake-account-after-lockup) has the steps.
 
 That wallet matters as much after the date as before. Only its key can withdraw, so back up its recovery phrase before you lock anything. Lose the key, and the lock opens on the date for nobody.
 

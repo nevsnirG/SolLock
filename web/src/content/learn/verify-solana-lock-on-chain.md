@@ -4,7 +4,7 @@ searchTitle: "How to check a Solana (SOL) lock on the blockchain"
 description: "How to verify a Solana lock yourself on a block explorer. The owner program, the unlock date, the withdraw authority, the custodian and the balance, and what each should say."
 published: 2026-11-03
 order: 5
-related: [solana-stake-account-lockup, can-you-unlock-solana-early]
+related: [solana-stake-account-lockup, can-you-unlock-solana-early, withdraw-solana-stake-account-after-lockup]
 ---
 
 A website telling you that your Solana is locked until a date is a claim. The lock itself is public, on the Solana blockchain, and anyone with its address can read every field without trusting the site, or even visiting it.
