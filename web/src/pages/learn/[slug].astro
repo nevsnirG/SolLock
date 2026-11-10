@@ -20,7 +20,8 @@ const related = guide.data.related.map((id) => {
 
 const longDate = (date: Date) => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date);
 
-const image = '/og/learn.png';
+/** Each guide has its own card, made by scripts/og.mjs from its heading. */
+const image = `/og/learn/${guide.id}.png`;
 const structured = [
   {
     '@context': 'https://schema.org',
@@ -39,7 +40,7 @@ const structured = [
 ];
 ---
 
-<Base title={searchTitle} description={description} image={image} type="article" published={published} modified={updated} structured={structured}>
+<Base title={searchTitle} description={description} image={image} imageAlt={`${title}. A SolLock guide.`} type="article" published={published} modified={updated} structured={structured}>
   <article class="guide">
     <nav class="crumbs" aria-label="Breadcrumb"><a href="/learn">Learn</a></nav>
     <h1 class="section-title">{title}</h1>

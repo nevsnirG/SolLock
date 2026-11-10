@@ -90,6 +90,7 @@ const FAQ: readonly FaqItem[] = [
     question: 'Where can I get Solana?',
     answer: [
       `Under "Need Solana first?" on the lock page are exchanges that sell Solana, listed alphabetically. Their links are affiliate links, as the note under them says: if you sign up through one, we may earn a commission from the exchange, and your price stays the same. See <a href="/affiliates">affiliate links</a>.`,
+      `The first steps, from choosing an exchange to a wallet of your own: <a href="/learn/buy-your-first-solana-and-keep-it">Buying your first Solana and keeping it</a>.`,
     ],
   },
   {
@@ -102,11 +103,11 @@ const FAQ: readonly FaqItem[] = [
 ---
 
 <Base
-  title="FAQ"
+  title="Solana time lock FAQ: early unlocks, lost keys, cost"
   description="Answers about locking Solana with SolLock: lost keys, early unlocks, cost, taxes, gifts, test locks, what can go wrong, and what happens if this site goes away."
   structured={[faqPage(FAQ), breadcrumbs([{ name: 'FAQ' }])]}
 >
-  <h1 class="section-title">FAQ</h1>
+  <h1 class="section-title">Questions about locking Solana</h1>
   <div class="faq">
     {
       FAQ.map((item, index) => (

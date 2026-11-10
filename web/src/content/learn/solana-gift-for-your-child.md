@@ -1,9 +1,10 @@
 ---
 title: "Solana for your child: a gift that opens on their 18th birthday"
-searchTitle: "Solana (SOL) for your child: a gift that opens on their 18th birthday"
-description: "How to give a child Solana they can only touch on a date you pick, such as their 18th birthday: the wallet, the recovery phrase, the lock, and what to hand over when the day comes."
+searchTitle: "Solana (SOL) for your child: a gift that opens at 18"
+description: "How to give a child Solana they can only touch on a date you pick, such as their 18th birthday: the wallet, the lock, and what to hand over on the day."
 published: 2026-11-09
 order: 12
+section: gifts
 related: [give-solana-as-a-gift, how-to-lock-solana, solana-time-lock-risks]
 ---
 
@@ -40,7 +41,7 @@ If you want to be sure the gift is where you think it is, [check the lock on cha
 ## Things to decide before you lock
 
 - **Whose wallet?** If you would rather lock in your own wallet and hand over the wallet itself later, that works too. The lock is then in your name until the day, and the handover is the recovery phrase. A separate wallet for the child makes the gift final from day one, which is often the point.
-- **What date?** Eighteen is common, but any date up to the end of 2076 works. Past ten years, SolLock asks who will still have the recovery phrase then. Take that question seriously: a lock for a newborn runs longer than most people keep a password.
+- **What date?** Eighteen is common, but any date up to the end of 2076 works. Past ten years, SolLock asks who will still have the recovery phrase then. Take that question seriously: a lock for a newborn runs longer than most people keep a password. What to put next to a lock that waits that long is in [A time capsule for your crypto](/learn/crypto-time-capsule).
 - **How much?** Only Solana you would not need back, whatever the price does. The fee is 0.25% with a minimum of 0.01 SOL, paid once in the same transaction, and about 0.0017 SOL stays in the account as a [deposit](/learn/solana-rent-deposit) that comes back on withdrawal.
 - **Tax.** A gift may count for gift tax where you live, and the child owns the Solana from the start. The rules differ by country. This is not tax advice.
 

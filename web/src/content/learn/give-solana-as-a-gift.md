@@ -1,15 +1,16 @@
 ---
 title: "How to give Solana as a gift that opens on a date"
-searchTitle: "How to give Solana (SOL) as a gift that opens on a birthday or another date"
-description: "Locking Solana for a child, a friend or a couple, to open on an 18th birthday, a graduation or a wedding. What the recipient needs, what to check in the address, and why a gift is final."
+searchTitle: "How to give Solana (SOL) as a gift that opens on a date"
+description: "Lock Solana for a child, a friend or a couple, to open on a birthday, a graduation or a wedding. What the recipient needs, and why a gift is final."
 published: 2026-11-09
 order: 11
+section: gifts
 related: [solana-gift-for-your-child, how-to-lock-solana, withdraw-solana-stake-account-after-lockup]
 ---
 
 A gift lock is a lock that belongs to someone else from the start. You pay for it, you pick the date, and the account names their wallet as the one that may withdraw. Until the date the network keeps it shut for everyone, you included. From the date on it is theirs to take out, with nobody in between.
 
-That makes it a different kind of present from sending Solana to someone's wallet today. Nobody can spend it early, not the recipient, not you, and the date can say something: an 18th birthday, a graduation, a wedding day, the first of January in ten years.
+That makes it a different kind of present from sending Solana to someone's wallet today. Nobody can spend it early, not the recipient, not you, and the date can say something: an 18th birthday, a graduation, a wedding day, the first of January in ten years. A lock you seal for your own later self works the same way: [A time capsule for your crypto](/learn/crypto-time-capsule).
 
 ## What the recipient needs
 

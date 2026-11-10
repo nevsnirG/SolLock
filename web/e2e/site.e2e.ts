@@ -54,6 +54,19 @@ test.describe('every page', () => {
     });
   }
 
+  test('lets a browser keep the hashed files for a year, and asks again for the pages themselves', async ({ page, request }) => {
+    await page.goto('/');
+    const hashed = await page.locator('link[rel="stylesheet"], link[rel="preload"]').evaluateAll((links) => links.map((link) => link.getAttribute('href')!));
+    expect(hashed.length).toBeGreaterThan(1);
+    for (const href of hashed) {
+      expect(href).toMatch(/^\/_astro\//);
+      expect((await request.get(href)).headers()['cache-control'], href).toBe('public, max-age=31536000, immutable');
+    }
+    for (const path of ['/', '/learn', '/og/default.png']) {
+      expect((await request.get(path)).headers()['cache-control'], path).not.toContain('immutable');
+    }
+  });
+
   test('fit a phone screen without sideways scrolling', async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 780 });
     for (const path of PAGES) {
@@ -220,6 +233,17 @@ test.describe('the home page example', () => {
     await expect(page.getByText(/today's price is from CoinGecko at \d\d:\d\d\. Past results are no guarantee of future results: crypto prices move both ways\./)).toBeVisible();
   });
 
+  test('leaves the sentence about the multiple out of the page until it has its number', async ({ page, request }) => {
+    const html = await (await request.get('/')).text();
+    expect(html).not.toContain('your money');
+    expect(html).toContain('Holding is the hard part.');
+
+    await page.route((url) => url.pathname === '/api/price', (route) => route.fulfill({ status: 503, json: { error: 'No price available right now.' } }));
+    await page.goto('/');
+    await expect(page.getByText('Holding is the hard part.', { exact: false })).toBeVisible();
+    expect(await page.locator('.hero-sub').innerText()).not.toContain('your money');
+  });
+
   test('falls back to the number of SOL when there is no price', async ({ page }) => {
     await page.route((url) => url.pathname === '/api/price', (route) => route.fulfill({ status: 503, json: { error: 'No price available right now.' } }));
     await page.goto('/');
@@ -278,10 +302,27 @@ test.describe('the guides', () => {
     expect(hrefs).toEqual(GUIDES.map((slug) => `/learn/${slug}`));
   });
 
+  test('are grouped by reader on the learn page, starting with the guides for newcomers', async ({ page }) => {
+    await page.goto('/learn');
+    await expect(page.locator('main').getByRole('heading', { level: 2 })).toHaveText(['New to Solana', 'How a lock works', 'Gifts', 'Risks and details']);
+    const firstSection = page.getByRole('region', { name: 'New to Solana' });
+    await expect(firstSection.getByRole('heading', { level: 3 })).toHaveText([
+      'What is Solana, in plain words',
+      'Buying your first Solana and keeping it',
+      'How to hold Solana for the long term',
+      'How to stop yourself from selling crypto in a dip',
+    ]);
+  });
+
   for (const slug of GUIDES) {
-    test(`/learn/${slug} is a complete article that links to the product and to Solana's own docs`, async ({ page }) => {
+    test(`/learn/${slug} is a complete article that links to the product and to Solana's own docs`, async ({ page, request }) => {
       await page.goto(`/learn/${slug}`);
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+      expect((await page.title()).length).toBeLessThanOrEqual(60);
+
+      const image = new URL((await page.locator('meta[property="og:image"]').getAttribute('content'))!);
+      expect(image.pathname).toBe(`/og/learn/${slug}.png`);
+      expect((await request.get(image.pathname)).headers()['content-type']).toBe('image/png');
 
       const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
       expect(new URL(canonical!).pathname).toBe(`/learn/${slug}`);

@@ -119,10 +119,17 @@ html:has(.hero) {
   margin-bottom: 4px;
   transition: opacity 0.3s;
 }
-/* The line waits for today's price. Until then it holds its place, so nothing below it moves when the price arrives. */
+/* The line waits for today's price. Until then a stand-in of the same length holds its place, so nothing below it moves when the price arrives. The stand-in is drawn here and not written in the page, so whoever reads the bare HTML never meets the sentence without its number. */
 .hero-sub b.pending {
   visibility: hidden;
   opacity: 0;
+}
+.hero-sub b.pending::before {
+  content: "That's 000× your money, for anyone who held on.";
+}
+/* Without a script the price never arrives, so the line takes no room. */
+html:not(.js) .hero-sub b.pending {
+  display: none;
 }
 .hero-cta {
   display: flex;

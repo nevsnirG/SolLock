@@ -1,9 +1,10 @@
 ---
 title: "What can go wrong with a Solana time lock"
-searchTitle: "Solana (SOL) time lock risks: what can go wrong, and what cannot"
-description: "The risks of locking Solana, plainly: a lost recovery phrase, a date too far away, the price, a wrong gift address, a custodian with a key, and what this site going away would change."
+searchTitle: "Solana (SOL) time lock risks: what can go wrong"
+description: "The risks of locking Solana, plainly: a lost recovery phrase, a date too far away, the price, a wrong gift address, and a custodian that has a key."
 published: 2026-11-09
 order: 16
+section: details
 related: [can-you-unlock-solana-early, verify-solana-lock-on-chain, stop-selling-crypto-in-a-dip]
 ---
 
@@ -29,7 +30,7 @@ A gift lock names the recipient's wallet, and that cannot be changed afterwards.
 
 ## A lock made elsewhere, with a key
 
-Every Solana lockup names a custodian, and the custodian's signature lets a withdrawal through early and can move the date. On a SolLock lock the custodian is [an address nobody has a key for](/custodian). A lock made by another tool may name a wallet instead, which makes it only as firm as whoever holds that wallet. For any lock, yours or someone else's, look up the custodian on a block explorer before you trust the date: [How to check a Solana lock on the blockchain](/learn/verify-solana-lock-on-chain).
+Every Solana lockup names a custodian, and the custodian's signature lets a withdrawal through early and can move the date. On a SolLock lock the custodian is [an address nobody has a key for](/custodian). A lock made by another tool may name a wallet instead, which makes it only as firm as whoever holds that wallet. For any lock, yours or someone else's, look up the custodian on a block explorer before you trust the date: [How to check a Solana lock on the blockchain](/learn/verify-solana-lock-on-chain). What to ask of a time lock on any blockchain is in [Time lock wallets: Bitcoin, Ethereum and Solana compared](/learn/time-lock-crypto-wallet).
 
 ## A look-alike website
 

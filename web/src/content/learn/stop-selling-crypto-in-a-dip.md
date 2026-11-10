@@ -1,13 +1,14 @@
 ---
 title: "How to stop yourself from selling crypto in a dip"
-searchTitle: "How to stop yourself from selling crypto in a dip: a commitment device for Solana"
-description: "Why people sell at the worst moment, what a commitment device is, and how a Solana time lock takes the sell button away until a date you chose while calm. And what it cannot do."
+searchTitle: "How to stop yourself from selling crypto in a dip"
+description: "Why people sell at the worst moment, what a commitment device is, and how a Solana time lock takes the sell button away until a date you chose while calm."
 published: 2026-11-09
 order: 4
+section: start
 related: [hold-solana-long-term, how-to-lock-solana, solana-time-lock-risks]
 ---
 
-Most people who sell in a crash did not plan to. They had decided to hold for years, and then one red week, one headline and one open app later, the decision was gone. The problem was not what they knew. It was that the sell button was within reach at the one moment they could not be trusted with it.
+Most people who sell in a crash did not plan to. They had decided to hold for years, and then one red week, one headline and one open app later, the decision was gone. People call it panic selling. The problem was not what they knew. It was that the sell button was within reach at the one moment they could not be trusted with it.
 
 A commitment device fixes that by changing what you can do, not what you want to do. Odysseus had himself tied to the mast before the sirens sang, because he knew he would not resist them once he heard them. An alarm clock across the room works the same way. So does a time lock.
 

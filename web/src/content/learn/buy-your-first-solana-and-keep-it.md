@@ -1,9 +1,10 @@
 ---
 title: "Buying your first Solana and keeping it"
-searchTitle: "How to buy your first Solana (SOL) and keep it in your own wallet"
-description: "The first steps in plain words: choosing an exchange, verifying your identity, buying, setting up your own wallet, moving the Solana there safely, and what to do next."
+searchTitle: "How to buy your first Solana (SOL) and keep it"
+description: "The first steps in plain words: choosing an exchange, buying a little, setting up your own wallet, and moving the Solana there safely."
 published: 2026-11-09
 order: 2
+section: start
 related: [what-is-solana, hold-solana-long-term, how-to-lock-solana]
 ---
 
@@ -25,7 +26,7 @@ Deposit money, buy a little Solana, and get used to the screens. Exchanges show 
 
 ## 4. Set up your own wallet
 
-A wallet is an app that holds your own keys, so the Solana is yours rather than a balance at a company. Phantom, Solflare and Backpack are widely used on phones and in browsers; Solana's [wallet directory](https://solana.com/wallets) has more. When you create a wallet, it shows a recovery phrase of twelve or twenty-four words. Write it on paper, store it in two safe places, and never type it into any website or app that asks for it. No real service needs it, SolLock included.
+A wallet is an app that holds your own keys, so the Solana is yours rather than a balance at a company. Phantom, Solflare and Backpack are widely used on phones and in browsers; Solana's [wallet directory](https://solana.com/wallets) has more. When you create a wallet, it shows a recovery phrase of twelve or twenty-four words. Some wallets call it a seed phrase. Write it on paper, store it in two safe places, and never type it into any website or app that asks for it. No real service needs it, SolLock included.
 
 Your wallet has an address, a long string of letters and digits. That is what you give to anyone sending you Solana, and it is safe to share.
 

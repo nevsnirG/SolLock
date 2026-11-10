@@ -1,6 +1,6 @@
 // 1200×630 is the standard Open Graph image size.
 
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -28,7 +28,7 @@ function mark(size) {
   return { type: 'img', props: { src: `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`, width: size, height: size } };
 }
 
-function card({ kicker, title, sub }) {
+function card({ kicker, title, sub, titleSize = 76 }) {
   return h(
     'div',
     {
@@ -48,8 +48,8 @@ function card({ kicker, title, sub }) {
       'div',
       { flexDirection: 'column', gap: 20, maxWidth: 960 },
       h('div', { fontSize: 22, fontWeight: 500, color: SUN, letterSpacing: 0.2 }, kicker),
-      h('div', { fontSize: 76, fontWeight: 600, lineHeight: 1.02, letterSpacing: -3 }, title),
-      h('div', { fontSize: 30, color: INK_2, lineHeight: 1.35 }, sub),
+      h('div', { fontSize: titleSize, fontWeight: 600, lineHeight: 1.02, letterSpacing: (-3 * titleSize) / 76 }, title),
+      sub ? h('div', { fontSize: 30, color: INK_2, lineHeight: 1.35 }, sub) : [],
     ),
   );
 }
@@ -83,3 +83,15 @@ for (const [name, node] of Object.entries(images)) {
   writeFileSync(join(out, name), await png(node));
   console.log(`og/${name}`);
 }
+
+// One card per guide, carrying its heading, so a shared link shows which guide it is. A long heading is set smaller to stay within three lines.
+const guides = join(here, '../src/content/learn');
+rmSync(join(out, 'learn'), { recursive: true, force: true });
+mkdirSync(join(out, 'learn'));
+for (const file of readdirSync(guides).filter((name) => name.endsWith('.md'))) {
+  const title = readFileSync(join(guides, file), 'utf8').match(/^title: "(.+)"$/m)?.[1];
+  if (!title) throw new Error(`${file} has no title to put on its card.`);
+  const titleSize = title.length <= 36 ? 76 : title.length <= 52 ? 68 : 60;
+  writeFileSync(join(out, 'learn', `${file.slice(0, -3)}.png`), await png(card({ kicker: 'Guide', title, titleSize })));
+}
+console.log(`og/learn: ${readdirSync(join(out, 'learn')).length} guides`);

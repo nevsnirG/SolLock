@@ -1,9 +1,10 @@
 ---
 title: "A time capsule for your crypto"
-searchTitle: "A crypto time capsule: lock Solana (SOL) until a date and open it later"
-description: "What a crypto time capsule is, how to make one on Solana in one signature, what fits inside, what to put next to it, and how whoever opens it gets in on the day."
+searchTitle: "Crypto time capsule: lock Solana (SOL) until a date"
+description: "What a crypto time capsule is, how to make one on Solana in one signature, what to put next to it, and how whoever opens it gets in on the day."
 published: 2026-11-09
 order: 13
+section: gifts
 related: [solana-gift-for-your-child, how-to-lock-solana, can-you-unlock-solana-early]
 ---
 

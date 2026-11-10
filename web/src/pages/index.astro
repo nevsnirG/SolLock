@@ -61,7 +61,7 @@ const years = (count: number) => (count === 1 ? '1 year' : `${count} years`);
           <span id="heroTail">bought {solBought.toLocaleString('en-US')} SOL.</span>
         </h1>
         <p class="hero-sub">
-          <b id="multipleLine" class="pending">That's <span id="multipleText">000</span>× your money, for anyone who held on.</b>{' '}
+          <b id="multipleLine" class="pending"></b>{' '}
           Holding is the hard part. Lock your Solana until a date you choose, and nobody can move it before then, not even you.
         </p>
         <div class="hero-cta">
@@ -482,7 +482,8 @@ const years = (count: number) => (count === 1 ? '1 year' : `${count} years`);
     for (const [id, text] of [
       ['todayPrice', usd(perSol, 2)],
       ['multiple', `${times}×`],
-      ['multipleText', times],
+      // The stylesheet holds this line's place with a stand-in of the same length.
+      ['multipleLine', `That's ${times}× your money, for anyone who held on.`],
     ] as const) {
       const target = element(id);
       if (target) target.textContent = text;

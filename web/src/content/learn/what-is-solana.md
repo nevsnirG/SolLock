@@ -1,9 +1,10 @@
 ---
 title: "What is Solana, in plain words"
-searchTitle: "What is Solana (SOL)? The network and the coin, in plain words"
-description: "Solana explained from zero: the network, the coin, wallets and addresses, what a transaction costs, what validators and staking are, what on-chain means, and the risks."
+searchTitle: "What is Solana (SOL)? A beginner's guide in plain words"
+description: "Solana explained from zero: the network, the coin, wallets and addresses, what a transaction costs, what staking is, what on-chain means, and the risks."
 published: 2026-11-09
 order: 1
+section: start
 related: [buy-your-first-solana-and-keep-it, hold-solana-long-term, solana-locking-vs-staking]
 ---
 
@@ -23,7 +24,7 @@ The coin has two jobs inside the network. It pays the [fees](https://solana.com/
 
 ## Wallets, addresses and keys
 
-A wallet is an app that holds your keys, not your coins; the coins are always on the ledger. The keys come from a recovery phrase of twelve or twenty-four words, shown once when you create the wallet. Whoever has the phrase has the coins, which is why it goes on paper in a safe place and never into a website.
+A wallet is an app that holds your keys, not your coins; the coins are always on the ledger. The keys come from a recovery phrase, also called a seed phrase: twelve or twenty-four words, shown once when you create the wallet. Whoever has the phrase has the coins, which is why it goes on paper in a safe place and never into a website.
 
 An address is the public side of the key: a string of about forty-four letters and digits that others use to send to you. Sharing it is fine. Phantom, Solflare and Backpack are common wallets; Solana's [wallet directory](https://solana.com/wallets) lists more.
 

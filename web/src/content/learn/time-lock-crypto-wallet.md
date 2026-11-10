@@ -1,13 +1,14 @@
 ---
 title: "Time lock wallets: Bitcoin, Ethereum and Solana compared"
-searchTitle: "Time lock crypto wallets compared: Bitcoin, Ethereum and Solana (SOL)"
-description: "What a time lock means for crypto, how Bitcoin script locks, Ethereum contracts and Solana's native lockup each do it, who can break each one, and what to check before you trust a date."
+searchTitle: "Time lock crypto wallets: Bitcoin, Ethereum and Solana"
+description: "How Bitcoin script locks, Ethereum contracts and Solana's native lockup each time-lock crypto, who can break each one, and what to check before you trust one."
 published: 2026-11-09
 order: 14
+section: details
 related: [solana-stake-account-lockup, crypto-time-capsule, can-you-unlock-solana-early]
 ---
 
-A time lock wallet holds coins that cannot be spent before a date. The idea is simple and the search results for it are confusing, because three different things share the name: files that open later, time lock puzzles in cryptography, and coins locked on a blockchain. This guide is about the third, and about how three big chains do it differently.
+A time lock wallet, also written timelock wallet, holds coins that cannot be spent before a date. The idea is simple and the search results for it are confusing, because three different things share the name: files that open later, time lock puzzles in cryptography, and coins locked on a blockchain. This guide is about the third, and about how three big chains do it differently.
 
 ## What a time lock on a blockchain is
 

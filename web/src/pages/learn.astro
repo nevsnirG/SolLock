@@ -1,8 +1,10 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import { bySection } from '../lib/guideSections.ts';
 
-const guides = (await getCollection('learn')).sort((a, b) => a.data.order - b.data.order);
+const guides = await getCollection('learn');
+const sections = bySection(guides);
 const WORDS = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'];
 const count = WORDS[guides.length] ?? String(guides.length);
 const Count = count.charAt(0).toUpperCase() + count.slice(1);
@@ -11,20 +13,28 @@ const Count = count.charAt(0).toUpperCase() + count.slice(1);
 <Base
   title={`Solana and time locks, explained: ${count} guides`}
   image="/og/learn.png"
-  description="Plain guides to Solana and time locks: what Solana is, buying and holding it, gifts for a child, how a lock holds, why nobody can unlock early, the risks, and how to check a lock yourself."
+  description="Plain guides to Solana and time locks: what Solana is, buying and holding it, gifts, how a lock holds, the risks, and how to check a lock yourself."
 >
   <h1 class="section-title">Solana and time locks, explained</h1>
   <p class="lede">{Count} short guides, in plain words: what Solana is, how to buy and hold it, what a lock can do, what it cannot, and how to check one yourself instead of taking our word for it.</p>
-  <ol class="guides">
+  <div class="guide-sections">
     {
-      guides.map((guide) => (
-        <li>
-          <a href={`/learn/${guide.id}`}>
-            <h2>{guide.data.title}</h2>
-            <p>{guide.data.description}</p>
-          </a>
-        </li>
+      sections.map(({ section, guides }) => (
+        <section aria-labelledby={`section-${section.id}`}>
+          <h2 id={`section-${section.id}`}>{section.title}</h2>
+          <p class="guide-section-intro">{section.intro}</p>
+          <ol class="guides">
+            {guides.map((guide) => (
+              <li>
+                <a href={`/learn/${guide.id}`}>
+                  <h3>{guide.data.title}</h3>
+                  <p>{guide.data.description}</p>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </section>
       ))
     }
-  </ol>
+  </div>
 </Base>

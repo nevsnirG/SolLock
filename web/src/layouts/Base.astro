@@ -5,12 +5,15 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { CLUSTER, SITE_DESCRIPTION, SITE_TITLE } from '../config.ts';
 import { jsonLd } from '../lib/jsonLd.ts';
+import { pageTitle } from '../lib/pageTitle.ts';
 import { breadcrumbs } from '../lib/structured.ts';
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
+  /** What the image shows, for people who cannot see it. */
+  imageAlt?: string;
   type?: 'website' | 'article';
   published?: Date;
   modified?: Date;
@@ -18,18 +21,22 @@ interface Props {
   structured?: readonly unknown[];
   /** The page lays out its own full-width sections, so <main> adds no column or padding around them. */
   bleed?: boolean;
+  /** Keeps the page out of search results. */
+  noindex?: boolean;
 }
 const {
   title,
   image = '/og/default.png',
+  imageAlt = 'SolLock: a time lock for your own Solana',
   description = SITE_DESCRIPTION,
   type = 'website',
   published,
   modified,
   structured,
   bleed = false,
+  noindex = false,
 } = Astro.props;
-const fullTitle = `${title ?? SITE_TITLE} · SolLock`;
+const fullTitle = pageTitle(title ?? SITE_TITLE);
 const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/');
 const canonical = new URL(path, Astro.site);
 const modifiedAt = modified ?? published;
@@ -61,11 +68,11 @@ const blocks = structured ?? (path === '/' ? [] : [breadcrumbs([{ name: title ??
     <meta property="og:image" content={new URL(image, Astro.site)} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="SolLock: a time lock for your own Solana" />
+    <meta property="og:image:alt" content={imageAlt} />
     {published && <meta property="article:published_time" content={published.toISOString()} />}
     {modifiedAt && <meta property="article:modified_time" content={modifiedAt.toISOString()} />}
     <meta name="twitter:card" content="summary_large_image" />
-    {CLUSTER === 'devnet' && <meta name="robots" content="noindex" />}
+    {(noindex || CLUSTER === 'devnet') && <meta name="robots" content="noindex" />}
     {blocks.length > 0 && <script type="application/ld+json" set:html={jsonLd(blocks)} />}
     <slot name="head" />
   </head>

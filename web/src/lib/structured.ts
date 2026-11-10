@@ -53,12 +53,15 @@ export interface FaqItem {
   answer: readonly string[];
 }
 
+/** Answers link from the site's root. Structured data is read away from the page, so there each link carries the whole address. */
+const withFullLinks = (html: string) => html.replaceAll('href="/', `href="${absolute('/')}`);
+
 export const faqPage = (items: readonly FaqItem[]) => ({
   '@context': CONTEXT,
   '@type': 'FAQPage',
   mainEntity: items.map(({ question, answer }) => ({
     '@type': 'Question',
     name: question,
-    acceptedAnswer: { '@type': 'Answer', text: answer.map((p) => `<p>${p}</p>`).join('') },
+    acceptedAnswer: { '@type': 'Answer', text: answer.map((p) => `<p>${withFullLinks(p)}</p>`).join('') },
   })),
 });

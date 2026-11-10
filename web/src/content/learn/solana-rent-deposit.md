@@ -1,9 +1,10 @@
 ---
 title: "The rent deposit on a Solana lock, explained"
-searchTitle: "The 0.0017 SOL rent deposit on a Solana stake account, explained"
-description: "Why every Solana lock holds a little more than you locked: the network's minimum balance for a 200-byte stake account, about 0.0017 SOL, which comes back when you withdraw."
+searchTitle: "The 0.0017 SOL rent deposit on a Solana stake account"
+description: "Why every Solana lock holds a little more than you locked: the network's minimum balance of about 0.0017 SOL, which comes back when you withdraw."
 published: 2026-11-09
 order: 15
+section: details
 related: [withdraw-solana-stake-account-after-lockup, verify-solana-lock-on-chain, how-to-lock-solana]
 ---
 

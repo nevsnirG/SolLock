@@ -4,6 +4,7 @@ searchTitle: "Can you unlock Solana (SOL) early?"
 description: "Whether locked Solana can be withdrawn before the date. What the custodian is, when a lockup can be overridden, and why a SolLock lock cannot be, by anyone."
 published: 2026-11-03
 order: 7
+section: lock
 related: [how-to-lock-solana, solana-stake-account-lockup, solana-time-lock-risks]
 ---
 
@@ -35,4 +36,4 @@ So lock only Solana you can leave alone until the date. Keep an accessible balan
 
 ## Checking a lock made elsewhere
 
-If a service promises an "irreversible" lock, look up the lock's custodian on a block explorer and ask who can sign for it. A published address alone proves nothing. What matters is whether a key for it can exist. [How to check a Solana lock on the blockchain](/learn/verify-solana-lock-on-chain) shows where the field is, and Solana's [stake account reference](https://solana.com/docs/references/staking/stake-accounts) has the protocol rules.
+If a service promises an "irreversible" lock, look up the lock's custodian on a block explorer and ask who can sign for it. A published address alone proves nothing. What matters is whether a key for it can exist. [How to check a Solana lock on the blockchain](/learn/verify-solana-lock-on-chain) shows where the field is, and Solana's [stake account reference](https://solana.com/docs/references/staking/stake-accounts) has the protocol rules. The same question, who can break it, decides how firm a time lock is on Bitcoin and Ethereum too: [Time lock wallets: Bitcoin, Ethereum and Solana compared](/learn/time-lock-crypto-wallet).

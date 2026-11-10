@@ -1,15 +1,16 @@
 ---
 title: "How to hold Solana for the long term"
-searchTitle: "How to hold Solana (SOL) for the long term: a setup that lasts years"
-description: "A practical setup for holding Solana for years: where to keep it, how to back up the recovery phrase, when to lock part of it, and how to stop the price from running your decisions."
+searchTitle: "How to hold Solana (SOL) for the long term"
+description: "A practical setup for holding Solana for years: where to keep it, how to back up the recovery phrase, and when to lock the part you have decided on."
 published: 2026-11-09
 order: 3
+section: start
 related: [stop-selling-crypto-in-a-dip, buy-your-first-solana-and-keep-it, how-to-lock-solana]
 ---
 
-"Buy and hold" sounds like doing nothing. In practice the holding is the part people fail at, and when they fail it is rarely because the plan was wrong. They lose the recovery phrase, leave the coins on an exchange that disappears, or sell in the one week they promised themselves they would not. Holding for years is a setup, not a mood. Here is one that lasts.
+"Buy and hold", or HODL as crypto forums spell it, sounds like doing nothing. In practice the holding is the part people fail at, and when they fail it is rarely because the plan was wrong. They lose the recovery phrase, leave the coins on an exchange that disappears, or sell in the one week they promised themselves they would not. Holding for years is a setup, not a mood. Here is one that lasts.
 
-This is a guide to the mechanics. It does not say whether to hold Solana at all. Its price can fall for years as well as rise, and a long hold is a decision to accept that.
+This is a guide to the mechanics. It does not say whether to hold Solana at all. Its price can fall for years as well as rise, and a long hold is a decision to accept that. If Solana itself is new to you, start with [What is Solana, in plain words](/learn/what-is-solana).
 
 ## 1. Keep it in your own wallet
 

@@ -5,12 +5,13 @@ description: "How to lock Solana until a future date with a lockup the network i
 published: 2026-11-03
 updated: 2026-11-09
 order: 5
+section: lock
 related: [can-you-unlock-solana-early, withdraw-solana-stake-account-after-lockup, solana-time-lock-risks]
 ---
 
 If you plan to hold Solana for years, a normal wallet leaves you free to sell at any moment, including the worst one. Solana has a native way to take that option off the table: an account with a built-in lock, which the network keeps shut until a date you choose.
 
-Solana calls that account type a "stake account", because it is also the kind used for staking. The lock works without staking, and a SolLock lock is not staked: it earns nothing and simply waits.
+Solana calls that account type a "stake account", because it is also the kind used for staking. The lock works without staking, and a SolLock lock is not staked: it earns nothing and simply waits. If wallets, addresses and "on chain" are new to you, [What is Solana, in plain words](/learn/what-is-solana) covers them first.
 
 ## What locking does
 
