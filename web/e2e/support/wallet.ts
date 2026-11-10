@@ -39,6 +39,13 @@ export class TestWallet {
     return this.signer.address;
   }
 
+  /** From now on the wallet leaves a request to connect unanswered, like a wallet whose window was closed, or answers again. */
+  async answerConnecting(page: Page, answers: boolean) {
+    await page.evaluate((silent) => {
+      (window as unknown as { __testWalletSilent?: boolean }).__testWalletSilent = silent;
+    }, !answers);
+  }
+
   private async send(wire: Uint8Array): Promise<SendReply> {
     if (this.rejectNext) {
       this.rejectNext = false;
@@ -86,7 +93,14 @@ function registerWalletStandardWallet(spec: WalletSpec) {
       return accounts;
     },
     features: {
-      'standard:connect': { version: '1.0.0', connect: async () => (setAccounts([account]), { accounts }) },
+      'standard:connect': {
+        version: '1.0.0',
+        connect: async () => {
+          if ((window as unknown as { __testWalletSilent?: boolean }).__testWalletSilent) await new Promise(() => {});
+          setAccounts([account]);
+          return { accounts };
+        },
+      },
       'standard:disconnect': { version: '1.0.0', disconnect: async () => setAccounts([]) },
       'standard:events': {
         version: '1.0.0',

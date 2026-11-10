@@ -144,32 +144,78 @@ function useDialog(dialog: RefObject<HTMLElement | null>, onClose: () => void) {
 /** Chrome's question about the wallet app's socket on the phone, asked with a tap of its own so the next tap can open the app. */
 type PermissionStep = 'ask' | 'asking' | 'open' | 'blocked';
 
+/** After its window closes, a wallet that was given an answer passes it on well within this time. */
+const ANSWER_GRACE_MS = 1500;
+
 function WalletPicker({ wallet, onClose }: { wallet: SiteWallet; onClose: () => void }) {
   const dialog = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [connectingId, setConnectingId] = useState<string | null>(null);
   const [noWalletApp, setNoWalletApp] = useState(false);
   const [permission, setPermission] = useState<PermissionStep | null>(null);
+  /** Counts the attempts to connect, so one that was given up on, or replaced, changes nothing when its answer comes after all. */
+  const attempt = useRef(0);
+  const waiting = useRef(false);
   useDialog(dialog, onClose);
 
   const ready = wallet.connectors.filter((c) => c.ready);
   const mobile = ready.find((c) => c.name === MOBILE_WALLET_NAME);
 
   const connectTo = async (id: string) => {
+    const mine = ++attempt.current;
+    waiting.current = true;
     setConnectingId(id);
     setError(null);
     setNoWalletApp(false);
     setPermission(null);
     try {
       await wallet.connect(id);
-      onClose();
+      if (mine === attempt.current) onClose();
     } catch (e) {
+      if (mine !== attempt.current) return;
       if (isNoWalletApp(e)) setNoWalletApp(true);
       else setError((e as Error).message || 'The wallet did not connect.');
     } finally {
-      setConnectingId(null);
+      if (mine === attempt.current) {
+        waiting.current = false;
+        setConnectingId(null);
+      }
     }
   };
+
+  /**
+   * A wallet whose window is closed without an answer never answers at all, and the site would say "Connecting…" for good.
+   * Giving up tells the site it is not connected, so its buttons can be used again.
+   */
+  const giveUp = useEffectEvent((message: string | null) => {
+    if (!waiting.current) return;
+    attempt.current++;
+    waiting.current = false;
+    setConnectingId(null);
+    setError(message);
+    void wallet.disconnect().catch(() => {});
+  });
+
+  // Closing the picker gives up on a wallet that has not answered yet.
+  useEffect(() => () => giveUp(null), []);
+
+  // A wallet's window that closes hands the focus back to this page. No answer shortly after that means it was closed without one.
+  // The wallet app on a phone is left out: coming back from it also brings the focus back, with the answer still on its way.
+  const connecting = ready.find((c) => c.id === connectingId);
+  const connectingName = connecting && connecting.id !== mobile?.id ? connecting.name : null;
+  useEffect(() => {
+    if (connectingName === null) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const onFocus = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => giveUp(`${connectingName} did not answer. If you closed its window, pick it again.`), ANSWER_GRACE_MS);
+    };
+    window.addEventListener('focus', onFocus);
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      clearTimeout(timer);
+    };
+  }, [connectingName]);
 
   const pick = async (id: string) => {
     if (id !== mobile?.id) return connectTo(id);

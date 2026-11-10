@@ -251,6 +251,60 @@ test.describe('locking SOL', () => {
   });
 });
 
+test.describe('a wallet that does not answer', () => {
+  const picker = (page: Page) => page.getByRole('dialog', { name: 'Connect a wallet' });
+
+  async function askSilentWallet(page: Page, wallet: { answerConnecting: (page: Page, answers: boolean) => Promise<void> }) {
+    await page.goto('/lock?amount=2&years=1');
+    await continueButton(page).click();
+    await confirmEverything(page);
+    await wallet.answerConnecting(page, false);
+    await connectWallet(page, 'Connect your wallet to sign');
+    await expect(picker(page).getByText('Check your wallet…')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Connecting…' })).toHaveCount(2);
+  }
+
+  test('stops waiting when the wallet picker is closed, and connects on the next try', async ({ page, wallet }) => {
+    await askSilentWallet(page, wallet);
+
+    await picker(page).getByRole('button', { name: 'Close' }).click();
+    await expect(page.getByRole('button', { name: 'Connect your wallet to sign' })).toBeEnabled();
+    await expect(page.getByRole('button', { name: 'Connect wallet' })).toBeEnabled();
+    await expect(page.getByRole('button', { name: 'Connecting…' })).toHaveCount(0);
+
+    await wallet.answerConnecting(page, true);
+    await signWithTestWallet(page);
+    await expect(heading(page, /^Locked until/)).toBeVisible();
+  });
+
+  test("stops waiting when the wallet's window was closed without an answer, and says so", async ({ page, wallet }) => {
+    await askSilentWallet(page, wallet);
+
+    // A wallet's window that closes hands the focus back to the page.
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await expect(picker(page).getByText('Test Wallet did not answer. If you closed its window, pick it again.')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Connecting…' })).toHaveCount(0);
+
+    await wallet.answerConnecting(page, true);
+    await picker(page).getByRole('button', { name: 'Test Wallet' }).click();
+    await expect(page.getByRole('button', { name: 'Sign in Test Wallet' })).toBeEnabled();
+    await expect(picker(page)).toBeHidden();
+  });
+
+  test('keeps waiting while the wallet answers in time', async ({ page, wallet }) => {
+    await page.goto('/lock?amount=2&years=1');
+    await continueButton(page).click();
+    await confirmEverything(page);
+    await connectWallet(page, 'Connect your wallet to sign');
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+
+    await expect(page.getByRole('button', { name: 'Sign in Test Wallet' })).toBeEnabled();
+    await page.waitForTimeout(2_000);
+    await expect(page.getByRole('button', { name: 'Sign in Test Wallet' })).toBeEnabled();
+    expect(wallet.sent).toHaveLength(0);
+  });
+});
+
 test.describe('the fee', () => {
   for (const [amount, fee, rule] of [
     ['1', '0.01 SOL', 'The minimum fee, VAT included'],
