@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import geistLatin from '@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { CLUSTER, SITE_DESCRIPTION, SITE_TITLE } from '../config.ts';
@@ -15,6 +16,8 @@ interface Props {
   modified?: Date;
   /** schema.org blocks for the page. Left out, every page but the home page gets a breadcrumb trail. */
   structured?: readonly unknown[];
+  /** The page lays out its own full-width sections, so <main> adds no column or padding around them. */
+  bleed?: boolean;
 }
 const {
   title,
@@ -24,6 +27,7 @@ const {
   published,
   modified,
   structured,
+  bleed = false,
 } = Astro.props;
 const fullTitle = `${title ?? SITE_TITLE} · SolLock`;
 const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/');
@@ -36,12 +40,14 @@ const blocks = structured ?? (path === '/' ? [] : [breadcrumbs([{ name: title ??
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="referrer" content="no-referrer" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#fbf8f3" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#100e0c" media="(prefers-color-scheme: dark)" />
+    <!-- The header is ink in both themes, so the browser's own bar matches it. -->
+    <meta name="theme-color" content="#0b0b0a" />
+    <!-- The text font, fetched early so the first paint already has it. -->
+    <link rel="preload" href={geistLatin} as="font" type="font/woff2" crossorigin />
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
@@ -66,19 +72,18 @@ const blocks = structured ?? (path === '/' ? [] : [breadcrumbs([{ name: title ??
   <body>
     <!-- Blocking so the saved theme applies before first paint; after Astro's CSP <meta> so the policy covers it. -->
     <script is:inline src="/theme.js"></script>
-    <div class="shell">
-      {
-        CLUSTER === 'devnet' && (
-          <p class="stage">
-            <span><b>Devnet preview</b> with test Solana. Set your wallet to devnet before you connect it.</span>
-          </p>
-        )
-      }
-      <Header />
-      <main>
-        <slot />
-      </main>
-      <Footer />
-    </div>
+    <a class="skip" href="#main">Skip to content</a>
+    {
+      CLUSTER === 'devnet' && (
+        <p class="stage">
+          <span><b>Devnet preview</b> with test Solana. Set your wallet to devnet before you connect it.</span>
+        </p>
+      )
+    }
+    <Header />
+    <main id="main" class={bleed ? undefined : 'wrap page'}>
+      <slot />
+    </main>
+    <Footer />
   </body>
 </html>

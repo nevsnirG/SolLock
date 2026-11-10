@@ -5,44 +5,46 @@ import Logo from './Logo.astro';
 const year = new Date().getUTCFullYear();
 ---
 
-<footer>
-  <div class="about">
-    <a class="logo" href="/" aria-label="SolLock, home">
-      <Logo size={28} />
-      <span aria-hidden="true">SolLock</span>
-    </a>
-    <p>A time lock for your own Solana. Pick a date, sign once, and the Solana network keeps it until then.</p>
+<footer class="foot">
+  <div class="wrap foot-in">
+    <div class="foot-about">
+      <a class="logo" href="/" aria-label="SolLock, home">
+        <Logo />
+        <span aria-hidden="true">SolLock</span>
+      </a>
+      <p>A time lock for your own Solana. Pick a date, sign once, and the Solana network keeps it until then.</p>
+    </div>
+    <div>
+      <h2>Use it</h2>
+      <nav aria-label="Use SolLock">
+        <a href="/lock">Lock Solana</a>
+        <a href="/lock?test">Free test lock</a>
+        <a href="/my-locks">My locks</a>
+      </nav>
+    </div>
+    <div>
+      <h2>Learn</h2>
+      <nav aria-label="Learn more">
+        <a href="/learn">Guides</a>
+        <a href="/faq">FAQ</a>
+        <a href="/custodian">The custodian address</a>
+        <a href={REPOSITORY_URL}>Read the code</a>
+        <a href="/affiliates">Affiliate links</a>
+      </nav>
+    </div>
+    <div>
+      <h2>Contact</h2>
+      <nav aria-label="Contact and legal">
+        <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>
+        <a href="/terms">Terms</a>
+        <a href="/privacy">Privacy</a>
+      </nav>
+    </div>
+    <p class="fine">
+      <span>© {year} SolLock</span>
+      <span>General information, not financial, legal or tax advice.</span>
+      <!-- Hidden until theme.js shows and labels it, so it never appears without JavaScript. -->
+      <button type="button" class="btn ghost small" id="themeBtn" hidden>Theme: system</button>
+    </p>
   </div>
-  <div>
-    <h2>Use it</h2>
-    <nav aria-label="Use SolLock">
-      <a href="/lock">Lock Solana</a>
-      <a href="/lock?test">Free test lock</a>
-      <a href="/my-locks">My locks</a>
-    </nav>
-  </div>
-  <div>
-    <h2>Learn</h2>
-    <nav aria-label="Learn more">
-      <a href="/learn">Guides</a>
-      <a href="/faq">FAQ</a>
-      <a href="/custodian">The custodian address</a>
-      <a href={REPOSITORY_URL}>Read the code</a>
-      <a href="/affiliates">Affiliate links</a>
-    </nav>
-  </div>
-  <div>
-    <h2>Contact</h2>
-    <nav aria-label="Contact and legal">
-      <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>
-      <a href="/terms">Terms</a>
-      <a href="/privacy">Privacy</a>
-    </nav>
-  </div>
-  <p class="fine">
-    <span>© {year} SolLock</span>
-    <span>General information, not financial, legal or tax advice.</span>
-    <!-- Hidden until theme.js shows and labels it, so it never appears without JavaScript. -->
-    <button type="button" class="btn ghost small" id="themeBtn" hidden>Theme: system</button>
-  </p>
 </footer>

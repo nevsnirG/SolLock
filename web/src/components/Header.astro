@@ -1,4 +1,8 @@
 ---
+import ArrowRight from '@lucide/astro/icons/arrow-right';
+import ChevronRight from '@lucide/astro/icons/chevron-right';
+import Menu from '@lucide/astro/icons/menu';
+import X from '@lucide/astro/icons/x';
 import Logo from './Logo.astro';
 
 const links = [
@@ -12,31 +16,71 @@ const current = (href: string) => path === href || path.startsWith(`${href}/`);
 ---
 
 <header class="top">
-  <a class="logo" href="/" aria-label="SolLock, home">
-    <Logo />
-    <span aria-hidden="true">SolLock</span>
-  </a>
-  <nav class="nav" aria-label="Sections">
-    {
-      links.map((l) => (
-        <a href={l.href} aria-current={current(l.href) ? 'page' : undefined}>
-          {l.label}
+  <div class="wrap top-in">
+    <a class="logo" href="/" aria-label="SolLock, home">
+      <Logo />
+      <span aria-hidden="true">SolLock</span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      {
+        links.map((l) => (
+          <a href={l.href} aria-current={current(l.href) ? 'page' : undefined}>
+            {l.label}
+          </a>
+        ))
+      }
+    </nav>
+    <div class="top-actions">
+      <!-- The lock page and My locks put the wallet button here. -->
+      <div class="top-actions" id="wallet-slot"></div>
+      {
+        path !== '/lock' && (
+          <a class="btn cta" href="/lock">
+            Lock Solana
+            <ArrowRight class="go" />
+          </a>
+        )
+      }
+      <button type="button" class="menu-btn" popovertarget="menu" aria-label="Open the menu">
+        <Menu />
+      </button>
+    </div>
+  </div>
+
+  <!-- The menu for phones: a popover, so the browser itself opens it, and closes it on Escape. -->
+  <div class="menu" id="menu" popover>
+    <div class="wrap">
+      <div class="menu-top">
+        <a class="logo" href="/" aria-label="SolLock, home">
+          <Logo />
+          <span aria-hidden="true">SolLock</span>
         </a>
-      ))
-    }
-  </nav>
-  <div class="top-actions">
-    <!-- The lock page and My locks put the wallet button here. -->
-    <div class="top-actions" id="wallet-slot"></div>
-    {
-      path !== '/lock' && (
-        <a class="btn cta" href="/lock">
-          Lock Solana
-          <svg class="go" viewBox="0 0 16 16" aria-hidden="true">
-            <path d="M3 8h10M9 4l4 4-4 4" />
-          </svg>
-        </a>
-      )
-    }
+        <button type="button" class="menu-btn" popovertarget="menu" popovertargetaction="hide" aria-label="Close the menu">
+          <X />
+        </button>
+      </div>
+      <nav class="menu-links" aria-label="Menu">
+        {
+          links.map((l) => (
+            <a href={l.href} aria-current={current(l.href) ? 'page' : undefined}>
+              {l.label}
+              <ChevronRight />
+            </a>
+          ))
+        }
+      </nav>
+      <div class="menu-cta">
+        <a class="btn cta big" href="/lock">Lock Solana</a>
+        <a class="btn ghost big" href="/lock?test">Try a free test lock</a>
+      </div>
+    </div>
   </div>
 </header>
+
+<script>
+  // A link to another part of the page it is on would leave the menu open over it.
+  const menu = document.getElementById('menu');
+  menu?.addEventListener('click', (event) => {
+    if (event.target instanceof Element && event.target.closest('a')) menu.hidePopover();
+  });
+</script>

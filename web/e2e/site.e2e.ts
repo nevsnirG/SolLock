@@ -227,6 +227,50 @@ test.describe('the home page example', () => {
   });
 });
 
+test.describe('the form on the home page', () => {
+  test('shows the opening date and the fee as they are chosen, and takes the amount and the years to the lock page', async ({ page }) => {
+    await page.goto('/');
+    const form = page.getByRole('form', { name: 'Be the one who holds on.' });
+    // The test clock stands at 1 November 2026: a year on, the lock opens at the midnight after that date.
+    await expect(form.locator('#sumDate')).toHaveText('2 Nov 2027');
+    await expect(form.locator('#sumFee')).toHaveText('0.25%, at least 0.01 SOL');
+
+    await form.getByLabel('How much Solana?').fill('10');
+    await form.getByRole('radio', { name: '5 years' }).check();
+    await expect(form.locator('#sumDate')).toHaveText('2 Nov 2031');
+    await expect(form.locator('#sumFee')).toHaveText('0.025 SOL');
+    await expect(form.getByRole('status')).toHaveText('Opens on 2 Nov 2031. Fee: 0.025 SOL.');
+
+    await form.getByRole('button', { name: 'Continue' }).click();
+    await expect(page).toHaveURL(/\/lock\?amount=10&years=5$/);
+  });
+
+  test('reads an amount typed with a comma, and charges the minimum fee on a small one', async ({ page }) => {
+    await page.goto('/');
+    await page.getByLabel('How much Solana?').fill('0,5');
+    await expect(page.locator('#sumFee')).toHaveText('0.01 SOL');
+
+    await page.getByRole('button', { name: 'Continue' }).click();
+    await expect(page).toHaveURL(/\/lock\?amount=0\.5&years=1$/);
+  });
+});
+
+test.describe('the header on a phone', () => {
+  test('opens a menu with every section, and closes it when one is picked', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+    const menu = page.getByRole('navigation', { name: 'Menu' });
+    await expect(menu).toBeHidden();
+
+    await page.getByRole('button', { name: 'Open the menu' }).click();
+    for (const name of ['How it works', 'Learn', 'My locks', 'FAQ']) await expect(menu.getByRole('link', { name })).toBeVisible();
+
+    await menu.getByRole('link', { name: 'How it works' }).click();
+    await expect(menu).toBeHidden();
+    await expect(page.getByRole('heading', { name: 'Three steps, one signature' })).toBeInViewport();
+  });
+});
+
 test.describe('the guides', () => {
   test('are listed on the learn page, in order', async ({ page }) => {
     await page.goto('/learn');

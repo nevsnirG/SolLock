@@ -6,28 +6,26 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { initWasm, Resvg } from '@resvg/resvg-wasm';
 import satori from 'satori';
-import { lockSvg } from '../src/lib/lockIcon.ts';
+import { MARK_COLOURS, markSvg } from '../src/lib/lockIcon.ts';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const out = join(here, '../public/og');
-const font = (pkg, file) => readFileSync(join(dirname(require.resolve(`${pkg}/package.json`)), 'files', file));
+const font = (weight) => readFileSync(join(dirname(require.resolve('@fontsource/geist/package.json')), 'files', `geist-latin-${weight}-normal.woff`));
 
-const fonts = [
-  { name: 'Bricolage', data: font('@fontsource/bricolage-grotesque', 'bricolage-grotesque-latin-700-normal.woff'), weight: 700, style: 'normal' },
-  { name: 'Figtree', data: font('@fontsource/figtree', 'figtree-latin-400-normal.woff'), weight: 400, style: 'normal' },
-  { name: 'Figtree', data: font('@fontsource/figtree', 'figtree-latin-600-normal.woff'), weight: 600, style: 'normal' },
-];
+const fonts = [400, 500, 600].map((weight) => ({ name: 'Geist', data: font(weight), weight, style: 'normal' }));
 
-// The light theme's colours, copied from global.css.
-const BG = '#fbf8f3';
-const INK = '#17130f';
-const INK_2 = '#463e36';
+// The dark theme's colours, copied from global.css: the cards match the home page's hero.
+const BG = MARK_COLOURS.ink;
+const INK = '#f6f6f3';
+const INK_2 = '#c8c8c3';
+const SUN = MARK_COLOURS.sun;
 
 const h = (type, style, ...children) => ({ type, props: { style: { display: 'flex', ...style }, children: children.flat() } });
 
 function mark(size) {
-  return { type: 'img', props: { src: `data:image/svg+xml;base64,${Buffer.from(lockSvg()).toString('base64')}`, width: size, height: size } };
+  const svg = markSvg({ lock: MARK_COLOURS.paper });
+  return { type: 'img', props: { src: `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`, width: size, height: size } };
 }
 
 function card({ kicker, title, sub }) {
@@ -38,19 +36,19 @@ function card({ kicker, title, sub }) {
       height: 630 - 2 * 60,
       boxSizing: 'content-box',
       background: BG,
-      backgroundImage: 'radial-gradient(circle at 92% 18%, #fcd9a0 0%, rgba(251, 248, 243, 0) 46%)',
+      backgroundImage: 'radial-gradient(circle at 86% 118%, rgba(247, 168, 35, 0.42) 0%, rgba(11, 11, 10, 0) 54%)',
       padding: '60px 72px',
       flexDirection: 'column',
       justifyContent: 'space-between',
-      fontFamily: 'Figtree',
+      fontFamily: 'Geist',
       color: INK,
     },
-    h('div', { alignItems: 'center', gap: 14 }, mark(48), h('div', { fontFamily: 'Bricolage', fontSize: 34, fontWeight: 700, letterSpacing: -1 }, 'SolLock')),
+    h('div', { alignItems: 'center', gap: 14 }, mark(52), h('div', { fontSize: 36, fontWeight: 600, letterSpacing: -1.2 }, 'SolLock')),
     h(
       'div',
-      { flexDirection: 'column', gap: 18, maxWidth: 940 },
-      h('div', { fontSize: 22, fontWeight: 600, color: INK_2, letterSpacing: 0.5 }, kicker),
-      h('div', { fontFamily: 'Bricolage', fontSize: 74, fontWeight: 700, lineHeight: 1, letterSpacing: -2.5 }, title),
+      { flexDirection: 'column', gap: 20, maxWidth: 960 },
+      h('div', { fontSize: 22, fontWeight: 500, color: SUN, letterSpacing: 0.2 }, kicker),
+      h('div', { fontSize: 76, fontWeight: 600, lineHeight: 1.02, letterSpacing: -3 }, title),
       h('div', { fontSize: 30, color: INK_2, lineHeight: 1.35 }, sub),
     ),
   );

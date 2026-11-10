@@ -1,14 +1,14 @@
 ---
-import { LOCK_BOX, LOCK_PATHS, viewBox } from '../lib/lockIcon.ts';
+import { MARK, MARK_VIEW_BOX } from '../lib/lockIcon.ts';
 
 interface Props {
   size?: number;
 }
-const { size = 34 } = Astro.props;
+const { size = 28 } = Astro.props;
 ---
 
-<svg width={size} height={size} viewBox={viewBox(LOCK_BOX)} aria-hidden="true">
-  <path class="logo-shackle" d={LOCK_PATHS.shackle}></path>
-  <path class="logo-bar-1" d={LOCK_PATHS.upperBar}></path>
-  <path class="logo-bar-2" d={LOCK_PATHS.lowerBar}></path>
+<svg class="mark" width={size} height={size} viewBox={MARK_VIEW_BOX} aria-hidden="true">
+  <rect class="mark-lock" x={MARK.body.x} y={MARK.body.y} width={MARK.body.width} height={MARK.body.height} rx={MARK.body.rx}></rect>
+  <path class="mark-shackle" d={MARK.shackle} stroke-width={MARK.shackleWidth}></path>
+  <path class="mark-sun" d={MARK.sun}></path>
 </svg>

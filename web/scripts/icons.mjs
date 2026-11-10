@@ -6,20 +6,16 @@ import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { initWasm, Resvg } from '@resvg/resvg-wasm';
-import { lockSvg } from '../src/lib/lockIcon.ts';
+import { MARK_COLOURS, markSvg } from '../src/lib/lockIcon.ts';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const pub = join(here, '../public');
 
-// From global.css: the light theme's background and the dark theme's ink.
-const BG = '#fbf8f3';
-const INK_DARK = '#f6f1ea';
-
-// The favicons have no background and must read on light and dark tab bars alike: a light shackle with a thin dark edge does.
-const favicon = lockSvg({ shackle: INK_DARK, edge: 48 });
+// The favicons must read on light and dark tab bars alike: a white padlock on an ink tile does on both.
+const favicon = markSvg({ lock: MARK_COLOURS.paper, tile: { fill: MARK_COLOURS.ink, scale: 0.76, radius: 0.22 } });
 // iOS rounds the corners itself and turns transparency black, so the touch icon fills the whole square.
-const touch = lockSvg({ tile: { fill: BG, pad: 0.12 } });
+const touch = markSvg({ lock: MARK_COLOURS.paper, tile: { fill: MARK_COLOURS.ink, scale: 0.62 } });
 
 const png = (svg, size) => new Resvg(svg, { fitTo: { mode: 'width', value: size } }).render().asPng();
 

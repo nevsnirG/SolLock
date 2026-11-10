@@ -1,7 +1,23 @@
 ---
-import { formatSol, MIN_LOCK_AMOUNT } from '@sollock/core';
+import '../styles/home.css';
+import ArrowRight from '@lucide/astro/icons/arrow-right';
+import Anchor from '@lucide/astro/icons/anchor';
+import ArrowUpRight from '@lucide/astro/icons/arrow-up-right';
+import BellOff from '@lucide/astro/icons/bell-off';
+import Blocks from '@lucide/astro/icons/blocks';
+import Check from '@lucide/astro/icons/check';
+import CodeXml from '@lucide/astro/icons/code-xml';
+import Gift from '@lucide/astro/icons/gift';
+import Info from '@lucide/astro/icons/info';
+import KeyRound from '@lucide/astro/icons/key-round';
+import LockKeyhole from '@lucide/astro/icons/lock-keyhole';
+import Receipt from '@lucide/astro/icons/receipt';
+import ShieldCheck from '@lucide/astro/icons/shield-check';
+import Wallet from '@lucide/astro/icons/wallet';
+import Waypoints from '@lucide/astro/icons/waypoints';
+import { CUSTODIAN_ADDRESS, feeRule, formatSol, LAMPORTS_PER_SOL, lockFee } from '@sollock/core';
 import { getCollection } from 'astro:content';
-import { SALE_PRICE_2020_USD } from '../config.ts';
+import { REPOSITORY_URL, SALE_PRICE_2020_USD } from '../config.ts';
 import Base from '../layouts/Base.astro';
 import { organization, webSite } from '../lib/structured.ts';
 import { YEAR_PRESETS } from '../lib/unlockDate.ts';
@@ -11,243 +27,428 @@ const EXAMPLE_SPEND = 1000;
 const solBought = Math.floor(EXAMPLE_SPEND / SALE_PRICE_2020_USD);
 const guides = (await getCollection('learn')).sort((a, b) => a.data.order - b.data.order);
 const usd = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+
+/** The fee on a few round amounts, worked out by the same function the lock builder charges with. */
+const feeExamples = [1, 10, 100, 1000].map((sol) => {
+  const amount = BigInt(sol) * LAMPORTS_PER_SOL;
+  return { amount: sol.toLocaleString('en-US'), fee: formatSol(lockFee(amount, false)), minimum: feeRule(amount, false) === 'minimum' };
+});
+const custodian = `${CUSTODIAN_ADDRESS.slice(0, 6)}…${CUSTODIAN_ADDRESS.slice(-6)}`;
+const years = (count: number) => (count === 1 ? '1 year' : `${count} years`);
 ---
 
-<Base structured={[webSite(), organization()]}>
-  <section class="hero">
-    <div class="hero-copy">
-      <p class="then-now" data-sale={SALE_PRICE_2020_USD}>
-        <span>March 2020 <b>${SALE_PRICE_2020_USD.toFixed(2)}</b></span>
-        <span class="arrow" id="arrow" aria-hidden="true" hidden>→</span>
-        <span id="today" hidden>Today <b id="todayPrice"></b></span>
-        <span class="multiple" id="multiple" hidden></span>
-      </p>
-      <h1 id="heroTitle" data-spend={EXAMPLE_SPEND}>
-        <span>{usd(EXAMPLE_SPEND)} in Solana in 2020</span>{' '}
-        <span id="heroTail">bought {solBought.toLocaleString('en-US')} SOL.</span>
-      </h1>
-      <p class="hero-sub">
-        <b id="multipleLine" hidden>That's <span id="multipleText"></span>× your money, for anyone who held on.</b>{' '}
-        Holding is the hard part. Lock your Solana until a date you choose, and nobody can move it before then, not even you.
-      </p>
-      <div class="hero-cta">
-        <a class="btn big cta" href="/lock">Lock Solana</a>
-        <a class="btn big ghost" href="/lock?test">Try a free test lock</a>
-      </div>
-      <p class="hero-note" id="priceNote">
-        $0.22 was Solana's public sale price on 24 March 2020. Past results are no guarantee of future results: crypto prices move both
-        ways.
-      </p>
+<Base structured={[webSite(), organization()]} bleed>
+  <section class="hero" aria-labelledby="heroTitle">
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 1000 1000" fill="none">
+        <circle cx="500" cy="500" r="150"></circle>
+        <circle cx="500" cy="500" r="230"></circle>
+        <circle cx="500" cy="500" r="310"></circle>
+        <circle cx="500" cy="500" r="390"></circle>
+        <circle cx="500" cy="500" r="470"></circle>
+      </svg>
     </div>
-
-    <form class="quick" action="/lock" method="get" aria-labelledby="quickTitle">
-      <h2 id="quickTitle">Be the one who holds on.</h2>
-      <label class="q" for="quickAmount">How much Solana?</label>
-      <div class="quick-amount">
-        <input id="quickAmount" name="amount" type="number" inputmode="decimal" min={formatSol(MIN_LOCK_AMOUNT)} step="any" placeholder="10" required />
-        <span>SOL</span>
-      </div>
-      <fieldset>
-        <legend>For how long?</legend>
-        <div class="seg">
-          {
-            YEAR_PRESETS.map((years) => (
-              <label>
-                <input type="radio" name="years" value={years} checked={years === 1} />
-                <span>{years === 1 ? '1 year' : `${years} years`}</span>
-              </label>
-            ))
-          }
-        </div>
-      </fieldset>
-      <button class="btn wide" type="submit">Continue</button>
-      <p class="quick-foot">Next you see the exact cost. Nothing moves until you approve it in your wallet.</p>
-      <div class="quick-buy">
-        <p>No Solana yet?</p>
-        <a class="btn ghost small" href="/lock?buy">
-          Buy Solana
-          <svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"></path></svg>
-        </a>
-      </div>
-    </form>
-  </section>
-
-  <section class="section" aria-labelledby="whyTitle">
-    <div class="section-head">
-      <h2 id="whyTitle">Why lock your Solana?</h2>
-      <p>Buying is easy. Holding on when the market gets loud is the hard part. A lock makes that decision for you, in advance.</p>
-    </div>
-    <ul class="benefits">
-      <li class="benefit">
-        <span class="ico" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"></circle><path d="M12 22V8"></path><path d="M5 12H2a10 10 0 0 0 20 0h-3"></path></svg>
-        </span>
-        <h3>Ride out the dips</h3>
-        <p>When the price drops, selling in a panic is tempting. With a lock, that choice is off the table until your date.</p>
-      </li>
-      <li class="benefit">
-        <span class="ico" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
-        </span>
-        <h3>Tune out the noise</h3>
-        <p>Stop checking the price ten times a day. Your date is set, so the daily swings can wait.</p>
-      </li>
-      <li class="benefit">
-        <span class="ico" aria-hidden="true">
-          <svg viewBox="0 0 24 24"
-            ><rect x="3" y="8" width="18" height="4" rx="1"></rect><path d="M12 8v13"></path><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"
-            ></path><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"></path></svg
-          >
-        </span>
-        <h3>A gift that opens later</h3>
-        <p>Lock Solana for a child or a friend, to open on an 18th birthday, a graduation or a wedding. From that day it's theirs.</p>
-      </li>
-      <li class="benefit">
-        <span class="ico" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="M21 2l-9.6 9.6"></path><path d="M15.5 7.5l3 3L22 7l-3-3"></path></svg>
-        </span>
-        <h3>Yours the whole time</h3>
-        <p>Your Solana sits in an account on the Solana network that only your wallet can withdraw from, on your date.</p>
-      </li>
-    </ul>
-  </section>
-
-  <section class="section" id="how" aria-labelledby="howTitle">
-    <div class="section-head">
-      <h2 id="howTitle">Three steps, one signature</h2>
-      <p>All you need is a Solana wallet, like Phantom, Solflare or Backpack.</p>
-    </div>
-    <ol class="how">
-      <li>
-        <span class="n" aria-hidden="true">1</span>
-        <h3>Pick an amount and a date</h3>
-        <p>A year, ten years, or New Year's Day 2032. A free test lock shows you how it works first.</p>
-      </li>
-      <li>
-        <span class="n" aria-hidden="true">2</span>
-        <h3>Sign once in your wallet</h3>
-        <p>You see exactly what you sign, and your wallet shows it again before you approve.</p>
-      </li>
-      <li>
-        <span class="n" aria-hidden="true">3</span>
-        <h3>Withdraw on the date</h3>
-        <p>From the date on, take it out in one step on My locks, or with another Solana wallet tool.</p>
-      </li>
-    </ol>
-  </section>
-
-  <section class="trust" aria-labelledby="trustTitle">
-    <div class="section-head">
-      <h2 id="trustTitle">A date that holds</h2>
-      <p>The lock is part of the Solana network itself. SolLock builds it in your browser, your wallet signs it, and the network keeps it.</p>
-    </div>
-    <ul class="trust-points">
-      <li>
-        <span class="ico" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
-        </span>
-        <h3>The network keeps the date</h3>
-        <p>
-          Before the date, the Solana network refuses every withdrawal. Each lock names a custodian address without a key, so nobody can
-          open it early. <a href="/custodian">How that works</a>
+    <div class="wrap hero-in">
+      <div class="hero-copy">
+        <p class="then-now" data-sale={SALE_PRICE_2020_USD}>
+          <span>March 2020 <b>${SALE_PRICE_2020_USD.toFixed(2)}</b></span>
+          <span class="arrow" id="arrow" aria-hidden="true" hidden>→</span>
+          <span id="today" hidden>Today <b id="todayPrice"></b></span>
+          <span class="multiple" id="multiple" hidden></span>
         </p>
-      </li>
-      <li>
-        <span class="ico" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20"></path></svg>
-        </span>
-        <h3>Works with any Solana tool</h3>
-        <p>Your lock lives on the blockchain. On the date, withdraw on My locks or with other Solana wallet tools, with or without this website.</p>
-      </li>
-      <li>
-        <span class="ico" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><path d="M19 5L5 19"></path><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>
-        </span>
-        <h3>One clear fee</h3>
-        <p>0.25% of the amount, at least 0.01 SOL, VAT included. Test locks are free.</p>
-      </li>
-    </ul>
-    <div class="caution">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path></svg>
-      <p><b>Only lock what you can leave alone.</b> Before the date, nobody can get it out, including you. Crypto prices move both ways.</p>
+        <h1 id="heroTitle" data-spend={EXAMPLE_SPEND}>
+          <span>{usd(EXAMPLE_SPEND)} in Solana in 2020</span>{' '}
+          <span id="heroTail">bought {solBought.toLocaleString('en-US')} SOL.</span>
+        </h1>
+        <p class="hero-sub">
+          <b id="multipleLine" class="pending">That's <span id="multipleText">000</span>× your money, for anyone who held on.</b>{' '}
+          Holding is the hard part. Lock your Solana until a date you choose, and nobody can move it before then, not even you.
+        </p>
+        <div class="hero-cta">
+          <a class="btn big cta" href="/lock">
+            Lock Solana
+            <ArrowRight class="go" />
+          </a>
+          <a class="btn big ghost" href="/lock?test">Try a free test lock</a>
+        </div>
+        <p class="hero-note" id="priceNote">
+          $0.22 was Solana's public sale price on 24 March 2020. Past results are no guarantee of future results: crypto prices move both
+          ways.
+        </p>
+      </div>
+
+      <form class="composer" id="composer" action="/lock" method="get" aria-labelledby="composerTitle">
+        <h2 id="composerTitle">Be the one who holds on.</h2>
+        <label class="composer-label" for="quickAmount">How much Solana?</label>
+        <div class="amount-field">
+          <input
+            id="quickAmount"
+            name="amount"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            autocorrect="off"
+            spellcheck="false"
+            pattern="[0-9]{1,9}([.,][0-9]{1,9})?"
+            title="An amount, like 2 or 0.5"
+            placeholder="10"
+            required
+          />
+          <span>SOL</span>
+        </div>
+        <fieldset>
+          <legend class="composer-label">For how long?</legend>
+          <div class="seg">
+            {
+              YEAR_PRESETS.map((count) => (
+                <label>
+                  <input type="radio" name="years" value={count} checked={count === 1} />
+                  <span>{years(count)}</span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+        <p class="vh" id="sumSpoken" role="status"></p>
+        <dl class="composer-sum">
+          <div class="needs-js">
+            <dt>Opens on</dt>
+            <dd id="sumDate"></dd>
+          </div>
+          <div>
+            <dt>Fee</dt>
+            <dd id="sumFee">0.25%, at least 0.01 SOL</dd>
+          </div>
+        </dl>
+        <button class="btn wide" type="submit">
+          Continue
+          <ArrowRight class="go" />
+        </button>
+        <p class="composer-foot">Next you see the exact cost. Nothing moves until you approve it in your wallet.</p>
+        <div class="composer-buy">
+          <p>No Solana yet?</p>
+          <a class="btn ghost small" href="/lock?buy">
+            Buy Solana
+            <ArrowRight class="go" />
+          </a>
+        </div>
+      </form>
+    </div>
+
+    <div class="wrap">
+      <ul class="proof">
+        <li><Wallet /> Signed in your own wallet</li>
+        <li><ShieldCheck /> Kept by the Solana network</li>
+        <li><Receipt /> One fee, shown before you sign</li>
+        <li><CodeXml /> Code anyone can read</li>
+      </ul>
     </div>
   </section>
 
-  <section class="cta-band" aria-labelledby="ctaTitle">
-    <h2 id="ctaTitle">Pick your date.</h2>
-    <p>Start with a free test lock, or lock the real thing.</p>
-    <div class="hero-cta">
-      <a class="btn big" href="/lock">Lock Solana</a>
-      <a class="btn big ghost" href="/lock?test">Try a free test lock</a>
-    </div>
-  </section>
-  <section class="section home-faq" aria-labelledby="faqTitle">
-    <div class="section-head">
-      <h2 id="faqTitle">Questions</h2>
-      <p>The short answers.</p>
-      <a class="more-link" href="/faq">All questions</a>
-    </div>
-    <div class="faq">
-      <details>
-        <summary>Can I unlock early?</summary>
-        <div class="a">
-          <p>No. The Solana network checks the date on every withdrawal, and the date is fixed once the lock exists.</p>
-        </div>
-      </details>
-      <details>
-        <summary>What if this website goes away?</summary>
-        <div class="a">
-          <p>
-            Your lock carries on: it lives on the Solana blockchain. After the date, other Solana tools can withdraw it with your wallet's
-            key. The recovery note you get with every lock says how.
-          </p>
-        </div>
-      </details>
-      <details>
-        <summary>What if I lose my keys?</summary>
-        <div class="a">
-          <p>
-            Then your Solana is gone, for good. A lock only opens for the wallet that owns it, so back up your wallet's recovery phrase before
-            you lock anything, and start with a free test lock.
-          </p>
-        </div>
-      </details>
-      <details>
-        <summary>What does it cost?</summary>
-        <div class="a">
-          <p>
-            0.25% of the amount, at least 0.01 SOL, VAT included, paid in the same transaction. Test locks are free.
-            On top come the Solana network fee (a fraction of a cent) and a rent deposit of about 0.0017 SOL, which comes back when you
-            withdraw.
-          </p>
-        </div>
-      </details>
+  <section class="band" aria-labelledby="whyTitle">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="whyTitle">Why lock your Solana?</h2>
+        <p>Buying is easy. Holding on when the market gets loud is the hard part. A lock makes that decision for you, in advance.</p>
+      </div>
+      <ul class="benefits" data-reveal="group">
+        <li class="benefit">
+          <span class="ico" aria-hidden="true"><Anchor /></span>
+          <h3>Ride out the dips</h3>
+          <p>When the price drops, selling in a panic is tempting. With a lock, that choice is off the table until your date.</p>
+        </li>
+        <li class="benefit">
+          <span class="ico" aria-hidden="true"><BellOff /></span>
+          <h3>Tune out the noise</h3>
+          <p>Stop checking the price ten times a day. Your date is set, so the daily swings can wait.</p>
+        </li>
+        <li class="benefit">
+          <span class="ico" aria-hidden="true"><Gift /></span>
+          <h3>A gift that opens later</h3>
+          <p>Lock Solana for a child or a friend, to open on an 18th birthday, a graduation or a wedding. From that day it's theirs.</p>
+        </li>
+        <li class="benefit">
+          <span class="ico" aria-hidden="true"><KeyRound /></span>
+          <h3>Yours the whole time</h3>
+          <p>Your Solana sits in an account on the Solana network that only your wallet can withdraw from, on your date.</p>
+        </li>
+      </ul>
     </div>
   </section>
 
-  <section class="section home-learn" aria-labelledby="learnTitle">
-    <div class="section-head">
-      <h2 id="learnTitle">Learn how it works</h2>
-      <p>Short guides in plain words, from the first lock to the day it opens.</p>
-      <a class="more-link" href="/learn">All guides</a>
+  <section class="band tinted" id="how" aria-labelledby="howTitle">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="howTitle">Three steps, one signature</h2>
+        <p>All you need is a Solana wallet, like Phantom, Solflare or Backpack.</p>
+      </div>
+      <ol class="steps" data-reveal="group">
+        <li class="step">
+          <div class="shot" aria-hidden="true">
+            <div class="mock">
+              <p class="mock-label">Amount</p>
+              <p class="mock-amount">10 <span>SOL</span></p>
+              <p class="mock-chips"><span>1 year</span><span>10 years</span><span class="on">1 Jan 2032</span></p>
+            </div>
+          </div>
+          <div class="step-body">
+            <p class="step-n">Step 1</p>
+            <h3>Pick an amount and a date</h3>
+            <p>A year, ten years, or New Year's Day 2032. A free test lock shows you how it works first.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="shot" aria-hidden="true">
+            <div class="mock">
+              <p class="mock-head"><Wallet /> Your wallet <span>Approve?</span></p>
+              <ul class="mock-rows">
+                <li><Check /> Lock 10 SOL</li>
+                <li><Check /> Until 1 Jan 2032</li>
+                <li><Check /> Fee 0.025 SOL</li>
+              </ul>
+              <p class="mock-actions"><span>Reject</span><span class="on">Approve</span></p>
+            </div>
+          </div>
+          <div class="step-body">
+            <p class="step-n">Step 2</p>
+            <h3>Sign once in your wallet</h3>
+            <p>You see exactly what you sign, and your wallet shows it again before you approve.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="shot" aria-hidden="true">
+            <div class="mock">
+              <p class="mock-head"><LockKeyhole /> My locks <span class="open">Open</span></p>
+              <p class="mock-amount">10 <span>SOL</span></p>
+              <p class="mock-sub">Opened on 1 Jan 2032</p>
+              <p class="mock-actions"><span class="on wide">Withdraw</span></p>
+            </div>
+          </div>
+          <div class="step-body">
+            <p class="step-n">Step 3</p>
+            <h3>Withdraw on the date</h3>
+            <p>From the date on, take it out in one step on My locks, or with another Solana wallet tool.</p>
+          </div>
+        </li>
+      </ol>
     </div>
-    <ul class="guide-links">
-      {
-        guides.map((guide) => (
-          <li>
-            <a href={`/learn/${guide.id}`}>{guide.data.title}</a>
-          </li>
-        ))
-      }
-    </ul>
+  </section>
+
+  <section class="band trust" aria-labelledby="trustTitle">
+    <div class="wrap">
+      <div class="trust-in">
+        <div>
+          <div class="section-head">
+            <h2 id="trustTitle">A date that holds</h2>
+            <p>The lock is part of the Solana network itself. SolLock builds it in your browser, your wallet signs it, and the network keeps it.</p>
+          </div>
+          <ul class="trust-points">
+            <li>
+              <span class="ico" aria-hidden="true"><Blocks /></span>
+              <h3>The network keeps the date</h3>
+              <p>
+                Before the date, the Solana network refuses every withdrawal. Each lock names a custodian address without a key, so nobody can
+                open it early. <a href="/custodian">How that works</a>
+              </p>
+            </li>
+            <li>
+              <span class="ico" aria-hidden="true"><Waypoints /></span>
+              <h3>Works with any Solana tool</h3>
+              <p>Your lock lives on the blockchain. On the date, withdraw on My locks or with other Solana wallet tools, with or without this website.</p>
+            </li>
+            <li>
+              <span class="ico" aria-hidden="true"><CodeXml /></span>
+              <h3>Code anyone can read</h3>
+              <p>
+                SolLock is source-available: the code that builds your lock is public, so you can check what it does before you sign.{' '}
+                <a href={REPOSITORY_URL}>Read the code</a>
+              </p>
+            </li>
+          </ul>
+        </div>
+
+        <div class="record" aria-hidden="true" data-reveal>
+          <p class="record-head">
+            <span><LockKeyhole /> A lock, as the network stores it</span>
+            <span class="record-state">Locked</span>
+          </p>
+          <dl>
+            <div>
+              <dt>Lockup until</dt>
+              <dd>1 Jan 2032, 00:00 UTC</dd>
+            </div>
+            <div>
+              <dt>Custodian</dt>
+              <dd><span class="addr">{custodian}</span><small>An address without a key</small></dd>
+            </div>
+            <div>
+              <dt>Withdraw authority</dt>
+              <dd>Your wallet<small>The only one that can take it out</small></dd>
+            </div>
+            <div>
+              <dt>Kept by</dt>
+              <dd>Solana's stake program<small>Part of the network itself</small></dd>
+            </div>
+          </dl>
+          <p class="record-foot">An example. Every lock can be read like this on a block explorer.</p>
+        </div>
+      </div>
+
+      <div class="caution">
+        <Info aria-hidden="true" />
+        <p><b>Only lock what you can leave alone.</b> Before the date, nobody can get it out, including you. Crypto prices move both ways.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="feeTitle">
+    <div class="wrap fee-in">
+      <div class="section-head">
+        <h2 id="feeTitle">One clear fee</h2>
+        <p>0.25% of the amount, at least 0.01 SOL, VAT included. You see the exact cost before you sign, and you pay it in the same transaction.</p>
+        <p class="fee-free"><Check aria-hidden="true" /> Test locks are free.</p>
+      </div>
+      <div class="fee-card" data-reveal>
+        <p class="fee-figure" aria-hidden="true">0.25<span>%</span></p>
+        <p class="fee-rule" aria-hidden="true">of the amount you lock, at least 0.01 SOL</p>
+        <table class="fee-table">
+          <caption class="vh">What a lock costs</caption>
+          <thead>
+            <tr>
+              <th scope="col">You lock</th>
+              <th scope="col">Fee</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              feeExamples.map((example) => (
+                <tr>
+                  <td>{example.amount} SOL</td>
+                  <td>
+                    {example.fee} SOL
+                    {example.minimum && <small>the minimum</small>}
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+        <p class="fee-note">
+          On top come the Solana network fee (a fraction of a cent) and a rent deposit of about 0.0017 SOL, which comes back when you withdraw.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band split home-faq" aria-labelledby="faqTitle">
+    <div class="wrap split-in">
+      <div class="section-head">
+        <h2 id="faqTitle">Questions</h2>
+        <p>The short answers.</p>
+        <a class="more-link" href="/faq">All questions <ArrowRight /></a>
+      </div>
+      <div class="faq">
+        <details>
+          <summary>Can I unlock early?</summary>
+          <div class="a">
+            <p>No. The Solana network checks the date on every withdrawal, and the date is fixed once the lock exists.</p>
+          </div>
+        </details>
+        <details>
+          <summary>What if this website goes away?</summary>
+          <div class="a">
+            <p>
+              Your lock carries on: it lives on the Solana blockchain. After the date, other Solana tools can withdraw it with your wallet's
+              key. The recovery note you get with every lock says how.
+            </p>
+          </div>
+        </details>
+        <details>
+          <summary>What if I lose my keys?</summary>
+          <div class="a">
+            <p>
+              Then your Solana is gone, for good. A lock only opens for the wallet that owns it, so back up your wallet's recovery phrase before
+              you lock anything, and start with a free test lock.
+            </p>
+          </div>
+        </details>
+        <details>
+          <summary>What does it cost?</summary>
+          <div class="a">
+            <p>
+              0.25% of the amount, at least 0.01 SOL, VAT included, paid in the same transaction. Test locks are free.
+              On top come the Solana network fee (a fraction of a cent) and a rent deposit of about 0.0017 SOL, which comes back when you
+              withdraw.
+            </p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="band tinted split home-learn" aria-labelledby="learnTitle">
+    <div class="wrap split-in">
+      <div class="section-head">
+        <h2 id="learnTitle">Learn how it works</h2>
+        <p>Short guides in plain words, from the first lock to the day it opens.</p>
+        <a class="more-link" href="/learn">All guides <ArrowRight /></a>
+      </div>
+      <ul class="guide-links">
+        {
+          guides.map((guide) => (
+            <li>
+              <a href={`/learn/${guide.id}`}>
+                <span>{guide.data.title}</span>
+                <ArrowUpRight />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="band closing" aria-labelledby="ctaTitle">
+    <div class="wrap">
+      <div class="cta-card" data-reveal>
+        <div class="hero-art" aria-hidden="true">
+          <svg viewBox="0 0 1000 1000" fill="none">
+            <circle cx="500" cy="500" r="150"></circle>
+            <circle cx="500" cy="500" r="230"></circle>
+            <circle cx="500" cy="500" r="310"></circle>
+            <circle cx="500" cy="500" r="390"></circle>
+            <circle cx="500" cy="500" r="470"></circle>
+          </svg>
+        </div>
+        <h2 id="ctaTitle">Pick your date.</h2>
+        <p>Start with a free test lock, or lock the real thing.</p>
+        <div class="hero-cta">
+          <a class="btn big cta" href="/lock">
+            Lock Solana
+            <ArrowRight class="go" />
+          </a>
+          <a class="btn big ghost" href="/lock?test">Try a free test lock</a>
+        </div>
+      </div>
+    </div>
   </section>
 </Base>
 
 <script>
-  const sale = Number(document.querySelector<HTMLElement>('.then-now')?.dataset.sale);
-  const title = document.getElementById('heroTitle');
-  const spend = Number(title?.dataset.spend);
+  import { animate, inView, stagger } from 'motion';
+  import { lockFee } from '@sollock/core/fee';
+  import { formatSol, parseSol } from '@sollock/core/money';
+  import { nowSeconds, yearsFromNow } from '@sollock/core/time';
+  import { unlockLabel } from '../lib/dates.ts';
+
   const element = (id: string) => document.getElementById(id);
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const EASE = [0.22, 1, 0.36, 1] as const;
+
+  /* The example in the heading: what the 2020 purchase is worth at today's price. */
+
+  const sale = Number(document.querySelector<HTMLElement>('.then-now')?.dataset.sale);
+  const spend = Number(element('heroTitle')?.dataset.spend);
   const usd = (amount: number, digits: number) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: digits, maximumFractionDigits: digits }).format(amount);
 
@@ -260,12 +461,23 @@ const usd = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', c
   // Without a price the heading keeps the number of SOL it was built with.
   function showWorthToday({ perSol, asOf }: Quote) {
     const times = Math.round(perSol / sale).toLocaleString('en-US');
+    const worthToday = (spend / sale) * perSol;
     const tail = element('heroTail');
     if (tail) {
       const worth = document.createElement('em');
       worth.className = 'worth';
-      worth.textContent = usd((spend / sale) * perSol, 0);
+      worth.textContent = usd(worthToday, 0);
       tail.replaceChildren('is ', worth, ' today.');
+      // Counts up once, from what was spent to what it is worth.
+      if (!calm) {
+        worth.classList.add('counting');
+        animate(spend, worthToday, {
+          duration: 0.9,
+          ease: EASE,
+          onUpdate: (value) => (worth.textContent = usd(value, 0)),
+          onComplete: () => worth.classList.remove('counting'),
+        });
+      }
     }
     for (const [id, text] of [
       ['todayPrice', usd(perSol, 2)],
@@ -275,7 +487,8 @@ const usd = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', c
       const target = element(id);
       if (target) target.textContent = text;
     }
-    for (const id of ['arrow', 'today', 'multiple', 'multipleLine']) element(id)?.removeAttribute('hidden');
+    for (const id of ['arrow', 'today', 'multiple']) element(id)?.removeAttribute('hidden');
+    element('multipleLine')?.classList.remove('pending');
     const time = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(asOf * 1000);
     const note = element('priceNote');
     if (note) {
@@ -290,5 +503,74 @@ const usd = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', c
         if (isQuote(body)) showWorthToday(body);
       })
       .catch(() => {});
+  }
+
+  /* The form in the hero: the date the lock opens and the fee, worked out as the lock page will. */
+
+  const composer = element('composer') as HTMLFormElement | null;
+  const sumDate = element('sumDate');
+  const sumFee = element('sumFee');
+  const feeRuleText = sumFee?.textContent ?? '';
+
+  // Both answers appear at once, without a fade: nobody should wait for the result of their own input.
+  function showOpensOn() {
+    if (!composer || !sumDate) return;
+    const chosen = Number(new FormData(composer).get('years'));
+    sumDate.textContent = unlockLabel(yearsFromNow(nowSeconds(), chosen));
+  }
+
+  function showFee() {
+    if (!composer || !sumFee) return;
+    let fee: string | null = null;
+    try {
+      const amount = parseSol(String(new FormData(composer).get('amount') ?? ''));
+      if (amount > 0n) fee = `${formatSol(lockFee(amount, false))} SOL`;
+    } catch {
+      // Not an amount yet: the rule stays.
+    }
+    sumFee.textContent = fee ?? feeRuleText;
+  }
+
+  // For screen readers, said once the typing stops rather than on every key.
+  let speaking: ReturnType<typeof setTimeout> | undefined;
+  function sayResult() {
+    clearTimeout(speaking);
+    speaking = setTimeout(() => {
+      const spoken = element('sumSpoken');
+      if (spoken && sumDate && sumFee) spoken.textContent = `Opens on ${sumDate.textContent}. Fee: ${sumFee.textContent}.`;
+    }, 700);
+  }
+
+  if (composer) {
+    showOpensOn();
+    showFee();
+    composer.addEventListener('input', () => {
+      showOpensOn();
+      showFee();
+      sayResult();
+    });
+    // The lock page reads the amount with a point, whichever of the two the visitor typed.
+    composer.addEventListener('submit', () => {
+      const amount = composer.elements.namedItem('amount');
+      if (amount instanceof HTMLInputElement) amount.value = amount.value.trim().replace(',', '.');
+    });
+  }
+
+  /* On a wide screen the cards and pictures below the first screen rise into place, once, as they scroll in. What is already on screen is left alone. */
+
+  if (!calm && matchMedia('(min-width: 761px)').matches) {
+    for (const block of document.querySelectorAll<HTMLElement>('[data-reveal]')) {
+      if (block.getBoundingClientRect().top < innerHeight * 0.92) continue;
+      const items = block.dataset.reveal === 'group' ? ([...block.children] as HTMLElement[]) : [block];
+      for (const item of items) item.style.opacity = '0';
+      inView(
+        block,
+        () => {
+          animate(items, { opacity: [0, 1], y: [16, 0] }, { duration: 0.4, delay: stagger(0.06), ease: EASE });
+        },
+        // As soon as its top is a little way into the screen, however tall the block is.
+        { margin: '0px 0px -12% 0px' },
+      );
+    }
   }
 </script>

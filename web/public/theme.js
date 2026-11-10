@@ -17,6 +17,8 @@
 
   var current = read();
   apply(current);
+  // Lets the stylesheet show what only works with JavaScript, from the first paint.
+  document.documentElement.classList.add('js');
 
   document.addEventListener('DOMContentLoaded', function () {
     var button = document.getElementById('themeBtn');
