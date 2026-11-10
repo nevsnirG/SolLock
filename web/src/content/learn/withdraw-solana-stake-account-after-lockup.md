@@ -3,7 +3,8 @@ title: "How to withdraw from a Solana stake account after the lockup ends"
 searchTitle: "How to withdraw from a Solana stake account after a lockup"
 description: "What to do on the unlock date: withdraw on My locks in one step, or with any Solana tool that handles stake accounts. The deposit comes back with it."
 published: 2026-11-09
-order: 10
+updated: 2026-11-10
+order: 13
 section: lock
 related: [how-to-lock-solana, solana-rent-deposit, verify-solana-lock-on-chain]
 ---
@@ -37,13 +38,13 @@ With the Solana command-line tool, the recovery note's command is:
 solana withdraw-stake <lock address> <your address> ALL --withdraw-authority <your keypair>
 ```
 
-`ALL` takes the full balance and closes the account. Anza's [command-line examples](https://docs.anza.xyz/cli/examples/delegate-stake) show the tool's other stake commands.
+`ALL` takes the full balance and closes the account. Anza's [command-line examples](https://docs.anza.xyz/cli/examples/delegate-stake) show the tool's other stake commands. The command that makes a lock is in [How to make a locked stake account with the Solana command line](/learn/solana-cli-stake-account-lockup).
 
 Wallet apps with a staking view list stake accounts too, and several can withdraw from one that is not delegated. If yours shows the lock but no way to take the Solana out, the command-line tool does the job.
 
 ## If the lock is staked
 
-A SolLock lock is not staked, so this only applies to a lock made elsewhere, or one you delegated yourself through another tool. A staked account must be deactivated first. Deactivation takes effect at the end of the current epoch, usually within a few days, and then the withdrawal goes through. On My locks the button says Deactivate while that is the case, and Withdraw once the network has finished cooling it down.
+A SolLock lock is not staked, so this only applies to a lock made elsewhere, or one you delegated yourself through another tool. A staked account must be deactivated first. Deactivation takes effect at the end of the current epoch, about a day away at most in November 2026, and then the withdrawal goes through. [Is staked SOL locked? How long unstaking takes](/learn/solana-unstaking-period) explains the wait. On My locks the button says Deactivate while that is the case, and Withdraw once the network has finished cooling it down.
 
 ## If a withdrawal is refused
 

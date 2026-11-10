@@ -1,0 +1,119 @@
+---
+import { BUSINESS, REPOSITORY_URL } from '../config.ts';
+import Base from '../layouts/Base.astro';
+import { absolute, breadcrumbs, ORGANIZATION, organization } from '../lib/structured.ts';
+
+const mail = `mailto:${BUSINESS.email}`;
+const structured = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    name: 'About SolLock',
+    url: absolute('/about'),
+    inLanguage: 'en',
+    mainEntity: { '@id': ORGANIZATION['@id'] },
+  },
+  organization(),
+  breadcrumbs([{ name: 'About' }]),
+];
+---
+
+<Base
+  title="About SolLock: who runs it, how it earns, how to check it"
+  description="Who runs SolLock, how it makes money, where your Solana and your keys are while it is locked, and how to check all of it yourself."
+  structured={structured}
+>
+  <h1 class="section-title">About SolLock</h1>
+  <p class="lede">
+    SolLock is a small tool with one job: it locks your own Solana until a date you pick, in a way nobody can undo, its maker included. This page
+    says who is behind it, how it earns its keep, and how to check what it does.
+  </p>
+  <div class="prose">
+    <h2>What it is</h2>
+    <p>
+      A website that builds one Solana transaction for you. The transaction puts your Solana in an account with a built-in time lock, which is a
+      feature of the Solana network itself. You read the transaction and sign it in your own wallet, and from then on the network keeps the lock.
+      SolLock has been open on Solana's main network since 2 November 2026.
+    </p>
+    <p>
+      It is a commitment device, not an investment. Locked Solana earns nothing, and it keeps following the price of Solana, which can go down as
+      well as up.
+    </p>
+
+    <h2>Who runs it</h2>
+    <p>
+      SolLock is the trade name of a sole trader in {BUSINESS.place}{BUSINESS.kvk && `, registered with the Dutch Chamber of Commerce (KvK) under number ${BUSINESS.kvk}`}: a one-person business. One person builds and runs the site, answers for what the guides say, and reads the mail at <a href={mail}>{BUSINESS.email}</a>.
+    </p>
+
+    <h2>How it earns</h2>
+    <ul>
+      <li>
+        <strong>A fee for each lock.</strong> 0.25% of the amount you lock, at least 0.01 SOL, VAT included. It is paid in the same transaction that
+        makes the lock, and the page shows it before you sign. Test locks are free.
+      </li>
+      <li>
+        <strong>Affiliate links.</strong> The lock page lists exchanges where you can buy Solana. If you sign up through one of those links, the
+        exchange may pay SolLock a commission, and your price stays the same. The links are marked as what they are: see{' '}
+        <a href="/affiliates">affiliate links</a>.
+      </li>
+    </ul>
+    <p>That is all of it. There is no advertising, no token and no data to sell.</p>
+
+    <h2>What stays in your hands</h2>
+    <ul>
+      <li>
+        <strong>Your Solana and your keys.</strong> The transaction is built in your browser and signed in your wallet. The server signs nothing and
+        holds nothing.
+      </li>
+      <li>
+        <strong>The date.</strong> A lock opens on its date and not before, for anyone. The one key that could open it early does not exist: see{' '}
+        <a href="/custodian">the custodian address</a>.
+      </li>
+      <li>
+        <strong>The way back in.</strong> Your wallet's recovery phrase is the only thing that opens a lock on its date, so nobody, SolLock included,
+        can replace a lost one. Back it up before you lock anything.
+      </li>
+      <li>
+        <strong>Your data.</strong> SolLock has no accounts, no database and no analytics. The <a href="/privacy">privacy statement</a> says exactly what
+        passes through its server.
+      </li>
+    </ul>
+
+    <h2>How to check it</h2>
+    <ul>
+      <li>
+        <strong>Read the code.</strong> The site is source-available: the code that builds your lock is public on <a href={REPOSITORY_URL}>GitHub</a>.
+      </li>
+      <li>
+        <strong>Read the transaction.</strong> Before your wallet opens, the lock page shows what you are about to sign in plain words, and every
+        instruction of it under "The full transaction".
+      </li>
+      <li>
+        <strong>Check the custodian.</strong> <a href="/custodian">The custodian page</a> shows how the address is made and lets you redo the calculation
+        yourself.
+      </li>
+      <li>
+        <strong>Check a lock on the blockchain.</strong>{' '}
+        <a href="/learn/verify-solana-lock-on-chain">How to check a Solana lock on the blockchain</a> goes through it field by field.
+      </li>
+      <li>
+        <strong>Try it first.</strong> A <a href="/lock?test">free test lock</a> of 0.01 SOL opens again after about a day.
+      </li>
+      <li>
+        <strong>Do it without SolLock.</strong> Solana's own command-line tool makes the same lock:{' '}
+        <a href="/learn/solana-cli-stake-account-lockup">How to make a locked stake account with the Solana command line</a>.
+      </li>
+    </ul>
+    <p>
+      Found a security problem? Please report it privately, through the Security tab of the <a href={REPOSITORY_URL}>repository</a>.
+    </p>
+
+    <h2>How the guides are written</h2>
+    <p>
+      The <a href="/learn">guides</a> are written in plain words, for people new to crypto and for people who want the details. Facts are checked
+      against Solana's own documentation and against the network itself. Each guide carries the date it was written or last changed, and none of
+      them says what a price is going to do. They are general information, not financial, legal or tax advice. If you find a mistake, write to{' '}
+      <a href={mail}>{BUSINESS.email}</a> and it gets fixed.
+    </p>
+  </div>
+</Base>

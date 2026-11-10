@@ -3,8 +3,8 @@ title: "How to lock Solana until a date you pick"
 searchTitle: "How to lock Solana (SOL) until a date you pick"
 description: "How to lock Solana until a future date with a lockup the network itself enforces, what to check before you sign, what it costs, and what happens on the day."
 published: 2026-11-03
-updated: 2026-11-09
-order: 5
+updated: 2026-11-10
+order: 7
 section: lock
 related: [can-you-unlock-solana-early, withdraw-solana-stake-account-after-lockup, solana-time-lock-risks]
 ---
@@ -13,7 +13,7 @@ If you plan to hold Solana for years, a normal wallet leaves you free to sell at
 
 Solana calls that account type a "stake account", because it is also the kind used for staking. The lock works without staking, and a SolLock lock is not staked: it earns nothing and simply waits. If wallets, addresses and "on chain" are new to you, [What is Solana, in plain words](/learn/what-is-solana) covers them first.
 
-## What locking does
+## What locking SOL does
 
 Your Solana moves from your wallet into a new account on the Solana network. That account records who may withdraw (you, or the person you give it to), the unlock date, and a custodian. The custodian is the one key that could lift the lock early. Before the date, the network refuses every withdrawal unless the custodian signs.
 
@@ -30,7 +30,7 @@ The Solana stays Solana. It is not swapped, wrapped or lent out, and it keeps fo
 
 Start with a [free test lock](/lock?test): 0.01 SOL for about a day. You go through the whole flow, including the withdrawal, before you lock anything that matters.
 
-## What it costs
+## What locking SOL costs
 
 SolLock's fee is 0.25% of the amount, at least 0.01 SOL, VAT included, paid in the same transaction. On top come the network fee, a fraction of a cent, and [a rent deposit of about 0.0017 SOL](/learn/solana-rent-deposit), which stays in the lock and comes back when you withdraw. Test locks are free.
 
@@ -40,8 +40,8 @@ The lock opens at 00:00 UTC on the date you picked. Nothing moves by itself: the
 
 That wallet matters as much after the date as before. Only its key can withdraw, so back up its recovery phrase before you lock anything. Lose the key, and the lock opens on the date for nobody.
 
-## Should you lock at all?
+## Should you lock your SOL at all?
 
-A lock suits Solana you have already decided to hold, and want to protect from your own impulses when the market gets loud. It does not suit money you may need, and it does nothing about price risk. If you are unsure, lock a part and keep the rest where you can reach it.
+A lock suits Solana you have already decided to hold, and want to protect from your own impulses when the market gets loud. It does not suit money you may need, and it does nothing about price risk. If you are unsure, lock a part and keep the rest where you can reach it. And if it is tokens you want to lock, for a project, this is the wrong tool: [Locking your own SOL vs token locks: which one do you need?](/learn/lock-sol-vs-token-locks)
 
 Solana's own description of the account type is in its [stake account reference](https://solana.com/docs/references/staking/stake-accounts).

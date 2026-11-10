@@ -68,8 +68,8 @@ export const BUSINESS: { tradeName: string; place: string; kvk: string | null; v
 export const SITE_URL = import.meta.env.PUBLIC_SITE || 'https://sollock.io';
 
 /** The home page's <title> (before the site name) and its description, also used by the WebSite structured data. */
-export const SITE_TITLE = "Hold on to your Solana. Set a date you can't move";
-export const SITE_DESCRIPTION = 'Hold on to your own Solana with a lock the network enforces: pick a date, sign once in your own wallet, and nobody can move it before then, not even you.';
+export const SITE_TITLE = 'Lock your own Solana (SOL) until a date you choose';
+export const SITE_DESCRIPTION = 'Hold on to your Solana with a time lock the network enforces: pick a date, sign once in your own wallet, and nobody can move it before then, not even you.';
 
 /** The public repository. The site is source-available: anyone can read the code it runs. */
 export const REPOSITORY_URL = 'https://github.com/nevsnirG/SolLock';

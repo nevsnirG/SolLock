@@ -926,6 +926,11 @@ details.buy-card[open] > summary::after {
   overflow-x: auto;
   color: var(--ink);
 }
+/* A block of code is its own frame, so the lines inside it carry no background of their own. */
+.prose pre code {
+  background: none;
+  padding: 0;
+}
 .check-panel {
   margin: 18px 0 0;
   max-width: 860px;

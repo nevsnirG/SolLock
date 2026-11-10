@@ -3,7 +3,8 @@ title: "What can go wrong with a Solana time lock"
 searchTitle: "Solana (SOL) time lock risks: what can go wrong"
 description: "The risks of locking Solana, plainly: a lost recovery phrase, a date too far away, the price, a wrong gift address, and a custodian that has a key."
 published: 2026-11-09
-order: 16
+updated: 2026-11-10
+order: 22
 section: details
 related: [can-you-unlock-solana-early, verify-solana-lock-on-chain, stop-selling-crypto-in-a-dip]
 ---
@@ -34,7 +35,7 @@ Every Solana lockup names a custodian, and the custodian's signature lets a with
 
 ## A look-alike website
 
-A lock is created by a transaction your wallet signs, so the risk is signing the wrong one on a page that looks like this one. Check the address bar reads sollock.io. Read what your wallet shows before you approve: it should create one account owned by the Stake program and set a lockup, with the fee going to SolLock's published address. The lock page decodes the whole transaction for you first, and the success screen only appears after the lock has been read back from the network and checked field by field.
+A lock is created by a transaction your wallet signs, so the risk is signing the wrong one on a page that looks like this one. Check the address bar reads sollock.io. Read what your wallet shows before you approve: it should create one account owned by the Stake program and set a lockup, with the fee going to SolLock's published address. The lock page decodes the whole transaction for you first, and the success screen only appears after the lock has been read back from the network and checked field by field. [Is it safe to connect your wallet to a website?](/learn/is-it-safe-to-connect-a-crypto-wallet) has the checks for any site.
 
 ## Your wallet calls it a stake account
 

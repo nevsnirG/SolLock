@@ -3,9 +3,10 @@ title: "Time lock wallets: Bitcoin, Ethereum and Solana compared"
 searchTitle: "Time lock crypto wallets: Bitcoin, Ethereum and Solana"
 description: "How Bitcoin script locks, Ethereum contracts and Solana's native lockup each time-lock crypto, who can break each one, and what to check before you trust one."
 published: 2026-11-09
-order: 14
+updated: 2026-11-10
+order: 19
 section: details
-related: [solana-stake-account-lockup, crypto-time-capsule, can-you-unlock-solana-early]
+related: [solana-stake-account-lockup, lock-sol-vs-token-locks, crypto-time-capsule]
 ---
 
 A time lock wallet, also written timelock wallet, holds coins that cannot be spent before a date. The idea is simple and the search results for it are confusing, because three different things share the name: files that open later, time lock puzzles in cryptography, and coins locked on a blockchain. This guide is about the third, and about how three big chains do it differently.
@@ -26,7 +27,7 @@ On Ethereum a time lock is a smart contract: a program that holds the coins and 
 
 ## Solana: a lock built into an account type
 
-Solana has a native account type with a lockup field: the stake account, the same one used for staking. The lockup holds a date and a custodian address, and the Stake Program, which every validator runs, refuses any withdrawal before the date. No contract to audit, no company to ask. Solana's [stake account reference](https://solana.com/docs/references/staking/stake-accounts) describes it.
+Solana has a native account type with a lockup field: the stake account, the same one used for staking. The lockup holds a date and a custodian address, and the Stake Program, which every validator runs, refuses any withdrawal before the date. No contract to audit, no company to ask. Solana's [stake account reference](https://solana.com/docs/references/staking/stake-accounts) describes it. Token lockers on Solana are a different thing, closer to the Ethereum kind: [Locking your own SOL vs token locks: which one do you need?](/learn/lock-sol-vs-token-locks)
 
 One detail decides how firm it is. The custodian in the lockup may move the coins before the date. If that is a key somebody holds, the lock has a back door. If it is an address that provably has no key, there is no back door, for anyone. SolLock sets the custodian to [a published address with no key](/custodian), so a lock made there can only be opened by time. [Why nobody can unlock Solana early](/learn/can-you-unlock-solana-early) goes through what that means.
 

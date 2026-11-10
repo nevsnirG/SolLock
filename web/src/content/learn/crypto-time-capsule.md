@@ -3,9 +3,9 @@ title: "A time capsule for your crypto"
 searchTitle: "Crypto time capsule: lock Solana (SOL) until a date"
 description: "What a crypto time capsule is, how to make one on Solana in one signature, what to put next to it, and how whoever opens it gets in on the day."
 published: 2026-11-09
-order: 13
+order: 18
 section: gifts
-related: [solana-gift-for-your-child, how-to-lock-solana, can-you-unlock-solana-early]
+related: [solana-gift-for-your-child, crypto-christmas-gift, how-to-lock-solana]
 ---
 
 A time capsule is a box you seal with a date on the lid. Part of the appeal is that you give up control: once it is buried, the contents wait for the date whether or not you change your mind. Crypto turns out to be good at that, because a blockchain can enforce a date without anyone guarding the box.

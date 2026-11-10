@@ -3,7 +3,8 @@ title: "How to stop yourself from selling crypto in a dip"
 searchTitle: "How to stop yourself from selling crypto in a dip"
 description: "Why people sell at the worst moment, what a commitment device is, and how a Solana time lock takes the sell button away until a date you chose while calm."
 published: 2026-11-09
-order: 4
+updated: 2026-11-10
+order: 5
 section: start
 related: [hold-solana-long-term, how-to-lock-solana, solana-time-lock-risks]
 ---
@@ -14,7 +15,7 @@ A commitment device fixes that by changing what you can do, not what you want to
 
 ## Why willpower fails at exactly the wrong time
 
-Prices fall fastest when the news is worst, and that is when every signal around you says sell: the chart, the group chat, the notification. In that state, a plan made in a calm month feels like someone else's plan. Telling yourself to be disciplined next time assumes a calm you that is not there when it matters.
+Prices fall fastest when the news is worst, and that is when every signal around you says sell: the chart, the group chat, the notification. In that state, a plan made in a calm month feels like someone else's plan. Telling yourself to be disciplined next time assumes a calm you that is not there when it matters. Crypto has a word for holding on regardless: [HODL](/learn/what-does-hodl-mean).
 
 The reliable fix is to decide once, while calm, and make the decision hard to undo.
 

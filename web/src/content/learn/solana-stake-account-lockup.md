@@ -3,9 +3,10 @@ title: "How Solana stake account lockups work"
 searchTitle: "How Solana stake account lockups work"
 description: "The lockup inside a Solana stake account, field by field: the timestamp, the epoch and the custodian, and what the network refuses while it is in force."
 published: 2026-11-03
-order: 6
+updated: 2026-11-10
+order: 8
 section: lock
-related: [solana-locking-vs-staking, can-you-unlock-solana-early, solana-rent-deposit]
+related: [solana-locking-vs-staking, can-you-unlock-solana-early, solana-cli-stake-account-lockup]
 ---
 
 Stake accounts usually come up when people talk about staking. They also carry a feature most people never touch: a lockup that stops withdrawals until a time you set. The rule is enforced by the Stake Program, a part of Solana itself, not by any website. SolLock builds on it, and this page explains what is actually in there. How Bitcoin and Ethereum lock coins instead is in [Time lock wallets: Bitcoin, Ethereum and Solana compared](/learn/time-lock-crypto-wallet).
@@ -41,7 +42,7 @@ Some things stay allowed: delegating to a validator, deactivating, and splitting
 
 Every rule above has the same exception: the custodian. A lock whose custodian is a normal wallet is only as firm as whoever holds that wallet. If a service keeps the custodian key, the service can unlock early. If you keep it, you can.
 
-An irreversible lock needs a custodian that cannot sign at all. SolLock uses one fixed address, made with SHA-256 from a public text and chosen because it is not a point on the Ed25519 curve, so no private key for it can exist. [The custodian page](/custodian) shows every step and lets you redo the calculation in your own browser.
+An irreversible lock needs a custodian that cannot sign at all. SolLock uses one fixed address, made with SHA-256 from a public text and chosen because it is not a point on the Ed25519 curve, so no private key for it can exist. [The custodian page](/custodian) shows every step and lets you redo the calculation in your own browser. Anyone can name that address as the custodian of a lock of their own: [How to make a locked stake account with the Solana command line](/learn/solana-cli-stake-account-lockup) shows the command.
 
 ## Staked or not
 

@@ -1,9 +1,14 @@
 ---
 import LockBuilder from '../islands/LockBuilder.tsx';
 import Base from '../layouts/Base.astro';
+import { breadcrumbs } from '../lib/structured.ts';
 ---
 
-<Base title="Lock Solana" description="Lock your own Solana until a date you pick, in a Solana account with a built-in time lock, signed in your own wallet.">
+<Base
+  title="Lock SOL: pick an amount and a date"
+  description="Lock your own Solana until a date you pick, in a Solana account with a built-in time lock, signed in your own wallet."
+  structured={[breadcrumbs([{ name: 'Lock Solana' }])]}
+>
   <section class="intro flow-intro">
     <h1>Lock your Solana</h1>
     <p>A few quick questions. Nothing moves until you approve it in your wallet.</p>

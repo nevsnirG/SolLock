@@ -3,6 +3,7 @@ title: "Buying your first Solana and keeping it"
 searchTitle: "How to buy your first Solana (SOL) and keep it"
 description: "The first steps in plain words: choosing an exchange, buying a little, setting up your own wallet, and moving the Solana there safely."
 published: 2026-11-09
+updated: 2026-11-10
 order: 2
 section: start
 related: [what-is-solana, hold-solana-long-term, how-to-lock-solana]
@@ -51,4 +52,4 @@ Now the Solana is yours, and so are the decisions. Three common paths:
 - Leaving everything on the exchange for years because moving it felt hard.
 - Buying more than they could leave alone, then selling it at the first fall.
 
-The last one is the common one. [How to stop yourself from selling crypto in a dip](/learn/stop-selling-crypto-in-a-dip) is about exactly that. And if a word in this guide was new, [What is Solana, in plain words](/learn/what-is-solana) starts one step earlier.
+The last one is the common one. [How to stop yourself from selling crypto in a dip](/learn/stop-selling-crypto-in-a-dip) is about exactly that. And if a word in this guide was new, [What is Solana, in plain words](/learn/what-is-solana) starts one step earlier. Before you connect your new wallet to a website, [Is it safe to connect your wallet to a website?](/learn/is-it-safe-to-connect-a-crypto-wallet) says what to check.

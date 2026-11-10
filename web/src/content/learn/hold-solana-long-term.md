@@ -3,14 +3,15 @@ title: "How to hold Solana for the long term"
 searchTitle: "How to hold Solana (SOL) for the long term"
 description: "A practical setup for holding Solana for years: where to keep it, how to back up the recovery phrase, and when to lock the part you have decided on."
 published: 2026-11-09
-order: 3
+updated: 2026-11-10
+order: 4
 section: start
 related: [stop-selling-crypto-in-a-dip, buy-your-first-solana-and-keep-it, how-to-lock-solana]
 ---
 
 "Buy and hold", or HODL as crypto forums spell it, sounds like doing nothing. In practice the holding is the part people fail at, and when they fail it is rarely because the plan was wrong. They lose the recovery phrase, leave the coins on an exchange that disappears, or sell in the one week they promised themselves they would not. Holding for years is a setup, not a mood. Here is one that lasts.
 
-This is a guide to the mechanics. It does not say whether to hold Solana at all. Its price can fall for years as well as rise, and a long hold is a decision to accept that. If Solana itself is new to you, start with [What is Solana, in plain words](/learn/what-is-solana).
+This is a guide to the mechanics. It does not say whether to hold Solana at all. Its price can fall for years as well as rise, and a long hold is a decision to accept that. If Solana itself is new to you, start with [What is Solana, in plain words](/learn/what-is-solana). The words holders use are in [What HODL means, and why holding is harder than it sounds](/learn/what-does-hodl-mean).
 
 ## 1. Keep it in your own wallet
 
@@ -34,7 +35,7 @@ Delete the price widget, mute the group chat, keep the exchange app off your pho
 
 ## 6. Decide about staking on purpose
 
-Staked Solana earns rewards in Solana, paid by the network for helping secure it, and it carries its own conditions: a few days to unstake, and the chance that a validator misbehaves. A SolLock lock is not staked and earns nothing. [Locking vs staking Solana](/learn/solana-locking-vs-staking) sets the two side by side so you choose rather than drift.
+Staked Solana earns rewards in Solana, paid by the network for helping secure it, and it carries its own conditions: a wait of about a day to unstake, and the chance that a validator misbehaves. A SolLock lock is not staked and earns nothing. [Locking vs staking Solana](/learn/solana-locking-vs-staking) sets the two side by side so you choose rather than drift.
 
 ## 7. Keep records, and make sure someone else can find them
 

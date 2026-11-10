@@ -5,22 +5,28 @@ import { expect, SOL_PRICE_USD, test } from './fixtures.ts';
 const GUIDES = [
   'what-is-solana',
   'buy-your-first-solana-and-keep-it',
+  'is-it-safe-to-connect-a-crypto-wallet',
   'hold-solana-long-term',
   'stop-selling-crypto-in-a-dip',
+  'what-does-hodl-mean',
   'how-to-lock-solana',
   'solana-stake-account-lockup',
   'can-you-unlock-solana-early',
   'solana-locking-vs-staking',
+  'solana-unstaking-period',
   'verify-solana-lock-on-chain',
   'withdraw-solana-stake-account-after-lockup',
+  'solana-cli-stake-account-lockup',
   'give-solana-as-a-gift',
   'solana-gift-for-your-child',
+  'crypto-christmas-gift',
   'crypto-time-capsule',
   'time-lock-crypto-wallet',
+  'lock-sol-vs-token-locks',
   'solana-rent-deposit',
   'solana-time-lock-risks',
 ];
-const PAGES = ['/', '/lock', '/my-locks', '/faq', '/custodian', '/terms', '/privacy', '/affiliates', '/learn', ...GUIDES.map((slug) => `/learn/${slug}`)];
+const PAGES = ['/', '/lock', '/my-locks', '/faq', '/about', '/custodian', '/terms', '/privacy', '/affiliates', '/learn', ...GUIDES.map((slug) => `/learn/${slug}`)];
 /** Legal texts need their own wording, so the house style rules skip them. */
 const LEGAL_PAGES = new Set(['/terms', '/privacy']);
 
@@ -128,15 +134,24 @@ test.describe('the content security policy', () => {
 });
 
 test.describe('the words on the site', () => {
-  async function pagesText(page: Page, paths: string[]) {
+  async function pagesText(page: Page, paths: string[], prepare?: (page: Page) => Promise<void>) {
     const texts: string[] = [];
     for (const path of paths) {
       await page.goto(path);
       await page.waitForLoadState('networkidle');
+      await prepare?.(page);
       texts.push(await visibleText(page));
     }
     return texts.join('\n');
   }
+
+  /** Headings may say SOL, and so may a link that quotes a guide's heading, so the running text is read without them. */
+  const withoutHeadings = (page: Page) =>
+    page.evaluate(() => {
+      for (const element of document.querySelectorAll<HTMLElement>('h1, h2, h3, h4, h5, h6, a[href^="/learn/"]:not(:has(p))')) {
+        element.style.visibility = 'hidden';
+      }
+    });
 
   test('never call a lock savings or a vault, ask for a seed phrase, or predict prices', async ({ page }) => {
     const text = await pagesText(page, PAGES);
@@ -150,12 +165,13 @@ test.describe('the words on the site', () => {
     expect(text).not.toMatch(/\bhonest\b|small print|\bwe never\b|\bwe don't\b|\bwe do not\b|\bwe keep no\b|not you, not us/i);
   });
 
-  test('call the coin Solana, keeping SOL for amounts and units', async ({ page }) => {
-    const pages = await pagesText(page, PAGES);
+  test('call the coin Solana in running text, keeping SOL for amounts, units and headings', async ({ page }) => {
+    const pages = await pagesText(page, PAGES, withoutHeadings);
     await page.goto('/lock?amount=2&years=1');
     await page.getByRole('button', { name: 'Continue' }).click();
     await page.getByText("What's in the total").click();
     await page.getByText('The full transaction').click();
+    await withoutHeadings(page);
     const text = `${pages}\n${await visibleText(page)}`;
 
     const unitless = text
@@ -309,9 +325,23 @@ test.describe('the guides', () => {
     await expect(firstSection.getByRole('heading', { level: 3 })).toHaveText([
       'What is Solana, in plain words',
       'Buying your first Solana and keeping it',
+      'Is it safe to connect your wallet to a website?',
       'How to hold Solana for the long term',
       'How to stop yourself from selling crypto in a dip',
+      'What HODL means, and why holding is harder than it sounds',
     ]);
+  });
+
+  test('name their writer, with a link to the page about SolLock', async ({ page }) => {
+    await page.goto('/learn/how-to-lock-solana');
+    await page.locator('.guide-meta').getByRole('link', { name: 'SolLock' }).click();
+    await expect(page).toHaveURL(/\/about$/);
+    await expect(page.getByRole('heading', { level: 1, name: 'About SolLock' })).toBeVisible();
+    for (const name of ['Who runs it', 'How it earns', 'How to check it']) await expect(page.getByRole('heading', { level: 2, name })).toBeVisible();
+    await expect(page.getByText('0.25% of the amount you lock, at least 0.01 SOL, VAT included.')).toBeVisible();
+
+    await page.goto('/');
+    await expect(page.getByRole('contentinfo').getByRole('link', { name: 'About SolLock' })).toHaveAttribute('href', '/about');
   });
 
   for (const slug of GUIDES) {

@@ -3,6 +3,7 @@ title: "What is Solana, in plain words"
 searchTitle: "What is Solana (SOL)? A beginner's guide in plain words"
 description: "Solana explained from zero: the network, the coin, wallets and addresses, what a transaction costs, what staking is, what on-chain means, and the risks."
 published: 2026-11-09
+updated: 2026-11-10
 order: 1
 section: start
 related: [buy-your-first-solana-and-keep-it, hold-solana-long-term, solana-locking-vs-staking]
@@ -16,7 +17,7 @@ Solana is a blockchain: a ledger copied across many hundreds of computers around
 
 What set it apart from the start was speed and cost. A payment on Solana usually confirms within a second or two and costs a fraction of a cent, where Bitcoin takes minutes and Ethereum costs cents to dollars. The design behind that is in Solana's [documentation](https://solana.com/docs/core/transactions); you can use the network without knowing it.
 
-## The coin
+## The coin: SOL
 
 The coin is also called Solana. Exchanges show it under a three-letter ticker next to amounts, so a balance reads like 2.5 SOL. It is divisible to nine decimal places, so you can own a sliver of one.
 
@@ -26,7 +27,7 @@ The coin has two jobs inside the network. It pays the [fees](https://solana.com/
 
 A wallet is an app that holds your keys, not your coins; the coins are always on the ledger. The keys come from a recovery phrase, also called a seed phrase: twelve or twenty-four words, shown once when you create the wallet. Whoever has the phrase has the coins, which is why it goes on paper in a safe place and never into a website.
 
-An address is the public side of the key: a string of about forty-four letters and digits that others use to send to you. Sharing it is fine. Phantom, Solflare and Backpack are common wallets; Solana's [wallet directory](https://solana.com/wallets) lists more.
+An address is the public side of the key: a string of about forty-four letters and digits that others use to send to you. Sharing it is fine. Phantom, Solflare and Backpack are common wallets; Solana's [wallet directory](https://solana.com/wallets) lists more. What a website can and cannot do once you connect a wallet is in [Is it safe to connect your wallet to a website?](/learn/is-it-safe-to-connect-a-crypto-wallet).
 
 ## Transactions and "on chain"
 
@@ -36,7 +37,7 @@ That permanence is the point of a Solana time lock. The lock is a rule written i
 
 ## Staking
 
-Staking means putting your coins behind a validator to help secure the network, in return for rewards paid in Solana. The coins stay yours but take a few days to come back when you stop. Rewards vary and are not guaranteed. A SolLock lock is not staking and earns nothing; it uses the same account type for a different purpose, as [Locking vs staking Solana](/learn/solana-locking-vs-staking) explains.
+Staking means putting your coins behind a validator to help secure the network, in return for rewards paid in Solana. The coins stay yours, and take about a day at most to come back when you stop: [Is staked SOL locked? How long unstaking takes](/learn/solana-unstaking-period) has the times. Rewards vary and are not guaranteed. A SolLock lock is not staking and earns nothing; it uses the same account type for a different purpose, as [Locking vs staking Solana](/learn/solana-locking-vs-staking) explains.
 
 ## Tokens and apps
 

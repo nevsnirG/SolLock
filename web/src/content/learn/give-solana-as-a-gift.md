@@ -3,9 +3,10 @@ title: "How to give Solana as a gift that opens on a date"
 searchTitle: "How to give Solana (SOL) as a gift that opens on a date"
 description: "Lock Solana for a child, a friend or a couple, to open on a birthday, a graduation or a wedding. What the recipient needs, and why a gift is final."
 published: 2026-11-09
-order: 11
+updated: 2026-11-10
+order: 15
 section: gifts
-related: [solana-gift-for-your-child, how-to-lock-solana, withdraw-solana-stake-account-after-lockup]
+related: [solana-gift-for-your-child, crypto-christmas-gift, how-to-lock-solana]
 ---
 
 A gift lock is a lock that belongs to someone else from the start. You pay for it, you pick the date, and the account names their wallet as the one that may withdraw. Until the date the network keeps it shut for everyone, you included. From the date on it is theirs to take out, with nobody in between.
@@ -40,7 +41,7 @@ The gift also keeps following the price of Solana, which can go down as well as 
 
 ## Picking the date
 
-The date is a withdrawal ban, not a reminder, so pick one you can name a reason for. The lock page offers one, five and ten years, New Year's Day of a few coming years, and any date you type up to the end of 2076.
+The date is a withdrawal ban, not a reminder, so pick one you can name a reason for. The lock page offers one, five and ten years, New Year's Day of a few coming years, and any date you type up to the end of 2076. For a gift in December, [Solana for Christmas: a gift that opens on a date](/learn/crypto-christmas-gift) has a checklist.
 
 Past ten years the page asks a fair question: wallet apps will change, so who will still have the recovery phrase in that year? A long gift lock needs a plan for that, such as a written note with the recovery phrase in a safe place the recipient will have access to.
 

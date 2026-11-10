@@ -3,9 +3,10 @@ title: "Solana for your child: a gift that opens on their 18th birthday"
 searchTitle: "Solana (SOL) for your child: a gift that opens at 18"
 description: "How to give a child Solana they can only touch on a date you pick, such as their 18th birthday: the wallet, the lock, and what to hand over on the day."
 published: 2026-11-09
-order: 12
+updated: 2026-11-10
+order: 16
 section: gifts
-related: [give-solana-as-a-gift, how-to-lock-solana, solana-time-lock-risks]
+related: [give-solana-as-a-gift, crypto-christmas-gift, solana-time-lock-risks]
 ---
 
 Grandparents used to open an account for a newborn and pay in on every birthday, with a rule that nobody touched it until the child grew up. The crypto version of that gift is harder than it looks, because crypto has no bank to enforce the rule. Whoever holds the keys can sell on any bad day, and that includes you.

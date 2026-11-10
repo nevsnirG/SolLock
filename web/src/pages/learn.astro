@@ -2,10 +2,11 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import { bySection } from '../lib/guideSections.ts';
+import { breadcrumbs } from '../lib/structured.ts';
 
 const guides = await getCollection('learn');
 const sections = bySection(guides);
-const WORDS = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'];
+const WORDS = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty', 'twenty-one', 'twenty-two', 'twenty-three', 'twenty-four', 'twenty-five', 'twenty-six', 'twenty-seven', 'twenty-eight', 'twenty-nine', 'thirty'];
 const count = WORDS[guides.length] ?? String(guides.length);
 const Count = count.charAt(0).toUpperCase() + count.slice(1);
 ---
@@ -14,6 +15,7 @@ const Count = count.charAt(0).toUpperCase() + count.slice(1);
   title={`Solana and time locks, explained: ${count} guides`}
   image="/og/learn.png"
   description="Plain guides to Solana and time locks: what Solana is, buying and holding it, gifts, how a lock holds, the risks, and how to check a lock yourself."
+  structured={[breadcrumbs([{ name: 'Learn' }])]}
 >
   <h1 class="section-title">Solana and time locks, explained</h1>
   <p class="lede">{Count} short guides, in plain words: what Solana is, how to buy and hold it, what a lock can do, what it cannot, and how to check one yourself instead of taking our word for it.</p>

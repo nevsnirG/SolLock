@@ -44,7 +44,7 @@ const structured = [
   <article class="guide">
     <nav class="crumbs" aria-label="Breadcrumb"><a href="/learn">Learn</a></nav>
     <h1 class="section-title">{title}</h1>
-    <p class="guide-meta">{updated ? `Updated ${longDate(updated)}` : `Published ${longDate(published)}`}</p>
+    <p class="guide-meta">{updated ? `Updated ${longDate(updated)}` : `Published ${longDate(published)}`} · By <a href="/about">SolLock</a></p>
     <div class="prose"><Content /></div>
     <aside class="guide-cta" aria-label="Try it">
       <p>A test lock is free, takes a minute, and opens again after about a day.</p>

@@ -8,9 +8,9 @@ import { DESCRIPTION_LIMIT, TITLE_LIMIT } from './lib/pageTitle.ts';
 const learn = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/learn' }),
   schema: z.object({
-    /** The heading on the page, in sentence case, following the site's words. */
+    /** The heading on the page, in sentence case. Like any heading it may say SOL; the running text says Solana. */
     title: z.string(),
-    /** The <title> for search engines; the one place "(SOL)" may appear. Short enough to show whole in a search result. */
+    /** The <title> for search engines, short enough to show whole in a search result. */
     searchTitle: z.string().max(TITLE_LIMIT),
     description: z.string().max(DESCRIPTION_LIMIT),
     published: z.coerce.date(),
