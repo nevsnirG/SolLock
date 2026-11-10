@@ -1,4 +1,4 @@
-import { LAMPORTS_PER_SOL } from './constants.ts';
+import { LAMPORTS_PER_SOL } from './units.ts';
 
 const SOL_DECIMALS = 9;
 

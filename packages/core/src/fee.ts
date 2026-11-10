@@ -1,4 +1,4 @@
-import { LAMPORTS_PER_SOL } from './constants.ts';
+import { LAMPORTS_PER_SOL } from './units.ts';
 import { DAY, HOUR, type UnixSeconds } from './time.ts';
 
 export const FEE_BASIS_POINTS = 25n;

@@ -15,7 +15,7 @@ export const STAKE_ACCOUNT_SPACE = 200n;
 export const WITHDRAWER_OFFSET = 44n;
 export const CUSTODIAN_OFFSET = 92n;
 
-export const LAMPORTS_PER_SOL = 1_000_000_000n;
+export { LAMPORTS_PER_SOL } from './units.ts';
 
 /** Highest rent a 200-byte account has ever needed (old two-year rule); rent only goes down, so more is refused. */
 export const MAX_LOCK_RENT = 2_282_880n;

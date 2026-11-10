@@ -1,4 +1,4 @@
-import { DAY, formatUtc, type UnixSeconds } from '@sollock/core';
+import { DAY, formatUtc, type UnixSeconds } from '@sollock/core/time';
 
 export const DATE_LOCALE = 'en-GB';
 
